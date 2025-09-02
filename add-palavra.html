@@ -8,6 +8,10 @@
         *{
             font-family: Arial, Helvetica, sans-serif;
         }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
         main {
             display: flex;
             flex-direction: column;
@@ -33,6 +37,36 @@
         h1 {
             margin: 0;
         }
+        input {
+            background: #111827;
+            color: #e2e8f0;
+            border: 1px solid #1f2937;
+            border-radius: 10px; 
+            padding: 10px 12px;
+            min-width: 220px;
+            font-size: 1.2rem; 
+        }
+        textarea {
+            font-size: 1em;
+            background: #111827;
+            color: #e2e8f0;
+            border: 1px solid #1f2937;
+            border-radius: 10px; 
+            padding: 10px 12px;
+        }
+        :focus { 
+            outline: 2px solid #6366f1; 
+            outline-offset: 2px;
+        }
+        button {
+            font-size: 1em;
+            padding: 10px;
+            background-color: #111827;
+            border-style: none;
+            border: 1px solid #1f2937;
+            color: #e2e8f0;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -40,19 +74,10 @@
         <header><h1>Adicionar Palavra</h1></header>
         <form>
             <input type="text" id="nome-palavra" placeholder="Nome da palvra...">
-            <textarea id="cont-palavra" rows="30" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
+            <textarea id="cont-palavra" rows="15" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
         </form>
         <button id="bot-add">Adicionar</button>
     </main>
     <script src="main.js"></script>
-    <!-- <script src="src/main.js"></script> -->
-<!--      <script>
-        document.getElementById('bot-add').addEventListener('click', () => {
-    let contPalavra = document.getElementById('cont-palavra');
-    let conteudo = contPalavra.value;
-
-    console.log(`${conteudo[0]}`);
-});
-     </script> -->
 </body>
 </html>
