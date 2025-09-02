@@ -4,46 +4,69 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Palavras</title>
 <style>
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    header {
+        width: 100%;
+        margin-top: 30px;
+        text-align: center;
+    }
     main {
         position: absolute;
         width: 90%;
-        top: 45%;
+        top: 40%;
         left: 5%;
         display: flex;
+        flex-direction: column;
         justify-content: space-evenly;
+        align-items: center;
+        gap: 50px;
     }
     button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 3em;
+        font-size: 1.2em;
         border-radius: 10px;
         border-style: none;
         padding: 10px;
     }
 </style>
 </head>
-<body>
-<h1>Palavras</h1>
-<main>
-    <button>Adicionar palavra</button>
-    <button>Buscar palavras</button>
-</main>
+    <body>
+        <header>
+            <h1>Palavras</h1>
+        </header>
+        <main>
+            <a href="add-palavra.html"><button>Adicionar palavra</button></a>
+            <a href="busc-palavra.html"><button>Buscar palavras</button></a>
+            <pre id="cont-result"></pre>
+            <!-- <p id="cont-result"></p> -->
+        </main>
 
-<!-- <section class="toolbar" id="toolbar">
-<input type="search" id="q" placeholder="Buscar por título/tags…" aria-label="Buscar" />
+        <!-- <section class="toolbar" id="toolbar">
+        <input type="search" id="q" placeholder="Buscar por título/tags…" aria-label="Buscar" />
 
-<select id="cat" aria-label="Categoria">
-    <option value="">Todas as categorias</option>
-    <option>Natureza</option>
-    <option>Cidades</option>
-    <option>Pessoas</option>
-</select> -->
+        <select id="cat" aria-label="Categoria">
+            <option value="">Todas as categorias</option>
+            <option>Natureza</option>
+            <option>Cidades</option>
+            <option>Pessoas</option>
+        </select> -->
 
-<!-- <select id="sort" aria-label="Ordenação">
-<option value="recent">Mais recentes</option>
-<option value="title_asc">Título A-Z</option>
-</select>
-</section> -->
-
-<script src="src/main.js"></script>
-</body>
+        <!-- <select id="sort" aria-label="Ordenação">
+        <option value="recent">Mais recentes</option>
+        <option value="title_asc">Título A-Z</option>
+        </select>
+        </section> -->
+        <script src="main.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                
+                let item = localStorage.getItem('desc');
+                let result = document.getElementById('cont-result');
+                if(item) {
+                    result.textContent = item;
+                }
+            });
+        </script>
+    </body>
 </html>

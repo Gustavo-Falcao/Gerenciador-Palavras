@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adcionar Palavra</title>
+    <style>
+        *{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 90%;
+            position: absolute;
+            top: 10%;
+            left: 5%;
+        }
+        header {
+            width: 100%;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+        }
+        h1 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header><h1>Adicionar Palavra</h1></header>
+        <form>
+            <input type="text" id="nome-palavra" placeholder="Nome da palvra...">
+            <textarea id="cont-palavra" rows="30" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
+        </form>
+        <button id="bot-add">Adicionar</button>
+    </main>
+    <script src="main.js"></script>
+    <!-- <script src="src/main.js"></script> -->
+<!--      <script>
+        document.getElementById('bot-add').addEventListener('click', () => {
+    let contPalavra = document.getElementById('cont-palavra');
+    let conteudo = contPalavra.value;
+
+    console.log(`${conteudo[0]}`);
+});
+     </script> -->
+</body>
+</html>
