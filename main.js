@@ -51,12 +51,21 @@
    localStorage.setItem('arrayObjetos', JSON.stringify(objetos));
 }); */
 
+// document.addEventListener('DOMContentLoaded', () => {
+//     const array = localStorage.getItem('arrayCards');
+//     if(!array) {
+//         const array = []
+//         localStorage.setItem('arrayCards', array);
+//     }
+// });
+
 
 // Carregar dados
-let dadosCarregados = document.addEventListener('DOMContentLoaded', () => {
-    const dados = JSON.parse(localStorage.getItem('arrayCards')) ?? [];
-    return dados;
-});
+// let dadosCarregados = document.addEventListener('DOMContentLoaded', () => {
+//     const dados = JSON.parse(localStorage.getItem('arrayCards')) ?? [];
+//     return dados;
+// });
+
 
 
 // Gerar id aleatório e único
@@ -66,7 +75,7 @@ function gerarId() {
 
 // Estado da lista de cards
 let stateBusca = {
-    cards: dadosCarregados,
+    cards: [],
     busca: ''
 }
 
@@ -75,6 +84,19 @@ function setStateBusca(newState) {
     stateBusca = {...stateBusca, ...newState};
     render();
 }
+
+function setStateCards(newState) {
+    stateBusca.cards = [...stateBusca.cards, ...newState];
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const listStorage = localStorage.getItem('arrayCards');
+    if(listStorage) {
+    let cardsCarregados = JSON.parse(listStorage);
+        setStateCards([...stateBusca.cards, ...cardsCarregados]);
+    }
+});
+
 
 // Estado navegação entre páginas
 let stateNavegacao = {
@@ -122,36 +144,64 @@ function renderAddPalavra(root) {
 function renderBuscarPalavra(root) {
     root.innerHTML = '';
 
+    const cards = stateBusca.cards;
+    console.log(`Tamanho cards => ${stateBusca.cards.length}`)
+
+    let frag = document.createDocumentFragment();
+
+    if(cards.length > 0) {
+        cards.forEach(card => {
+            const article = document.createElement('article');
+            article.setAttribute('class', 'card');
+            article.setAttribute('id', `${card.id}`)
+            const h3 = document.createElement('h3');
+            h3.innerHTML = `${card.nome}`
+            article.appendChild(h3);
+            frag.appendChild(article);
+        });
+    } else {
+        const article = document.createElement('article');
+        article.setAttribute('class', 'card');
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Sem palavras ainda...'
+        article.appendChild(h3);
+        frag.appendChild(article);
+    }
+
+    const main = document.createElement('main');
+    main.setAttribute('id', 'grid');
+    main.setAttribute('class', "grid");
+    main.setAttribute('aria-alive', 'polite');
+
+    main.appendChild(frag);
+
     root.innerHTML = `
-        <div class=".main-buscar">
+        <div class="main-buscar">
             <header class="titulo-buscar">
                 <h1>Palavras</h1>
             </header>
             <section class="toolbar" id="toolbar">
                 <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
             </section>
-            <main id="grid" class="grid" aria-live="polite">
-                <article class="card">
-                    <h3>titulo</h3>
-                </article>
-                <article class="card">
-                    <h3>titulo2</h3>
-                </article>
-                <article class="card">
-                    <h3>titulo4</h3>
-                </article>
-            </main>
         </div>
     `;
+    root.appendChild(main);
 }
+
 
 function render() {
     console.log(`Qual pagina = > ${stateNavegacao.page}`)
 
     const container = document.getElementById('root');
 
-    if(stateNavegacao.page === 'add') renderAddPalavra(container);
-    if(stateNavegacao.page === 'buscar') renderBuscarPalavra(container);
+    if(stateNavegacao.page === 'add') {
+        renderAddPalavra(container);
+        listenerAddPalavra();
+    } 
+    if(stateNavegacao.page === 'buscar') {
+        renderBuscarPalavra(container);
+
+    } 
     if(stateNavegacao.page === 'home') renderHome(container);
 }
 
@@ -166,6 +216,28 @@ document.getElementById('add').addEventListener('click', () => {
 document.getElementById('buscar').addEventListener('click', () => {
     setStateNavegacao({page: 'buscar'});
 });
+
+// Listener para o botão que irá adicionar palavra
+function listenerAddPalavra() {
+    document.getElementById('bot-add').addEventListener('click', () => {
+    const nomePalavra = document.getElementById('nome-palavra').value;
+    const descPalavra = document.getElementById('cont-palavra').value;
+
+    if(nomePalavra && descPalavra) {
+        const newCard = {id: gerarId(), nome: nomePalavra, desc: descPalavra};
+        if(stateBusca.cards) {
+            localStorage.setItem('arrayCards', JSON.stringify([...stateBusca.cards, newCard]));
+            setStateBusca({cards: [...stateBusca.cards, newCard]})
+        } else {
+            console.log('Deu ruim');
+            console.log(`${stateBusca.cards}`);
+        }
+        nomePalavra.value = '';
+        descPalavra.value = '';
+    }
+});
+}
+
 
 
 
