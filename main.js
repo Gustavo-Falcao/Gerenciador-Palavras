@@ -177,7 +177,7 @@ function renderBuscarPalavra(root) {
 
     root.innerHTML = `
         <header class="menu-bar">
-            <button class="icone">
+            <button class="icone" id="home">
                 <span class="material-symbols-outlined">
                     home
                 </span>
@@ -207,22 +207,36 @@ function render() {
     } 
     if(stateNavegacao.page === 'buscar') {
         renderBuscarPalavra(container);
+        listenerIrHome();
 
     } 
-    if(stateNavegacao.page === 'home') renderHome(container);
+    if(stateNavegacao.page === 'home'){
+        renderHome(container);
+        listenersHome();
+    } 
 }
 
 render();
 
-// Listener para o botão que irá para a página de add palavra
-document.getElementById('add').addEventListener('click', () => {
-    setStateNavegacao({page: 'add'});
-});
+//Listener para o botão home da página de buscar palavra
+function listenerIrHome() {
+    document.getElementById('home').addEventListener('click', () => {
+        setStateNavegacao({page: 'home'});
+    });
+}
 
-// Listener para o botão que irá direcionar para a página de buscar palavar
-document.getElementById('buscar').addEventListener('click', () => {
-    setStateNavegacao({page: 'buscar'});
-});
+function listenersHome() {
+    // Listener para o botão que irá para a página de add palavra
+    document.getElementById('add').addEventListener('click', () => {
+        setStateNavegacao({page: 'add'});
+    });
+
+    // Listener para o botão que irá direcionar para a página de buscar palavar
+    document.getElementById('buscar').addEventListener('click', () => {
+        setStateNavegacao({page: 'buscar'});
+    });
+}
+
 
 // Listener para o botão que irá adicionar palavra
 function listenerAddPalavra() {

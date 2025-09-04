@@ -143,6 +143,7 @@ textarea {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     height: fit-content;
+    padding-bottom: 20px;
 }
 
 .card {
