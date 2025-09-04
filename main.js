@@ -66,7 +66,22 @@
 //     return dados;
 // });
 
+//Função debounce que será aplicada no input da busca
+function debounce(fn, delay) {
+    let timer = null;
 
+    return function debounced(...args) {
+        const context = this;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            fn.apply(context, args);
+        }, delay);
+    };
+}
+
+function ordenarCards(cards, busca) {
+    return cards.filter(card => !busca || card.nome.toLowerCase().icludes(busca.toLowerCase()));
+}
 
 // Gerar id aleatório e único
 function gerarId() {
@@ -145,12 +160,13 @@ function renderBuscarPalavra(root) {
     root.innerHTML = '';
 
     const cards = stateBusca.cards;
+    const cardsOrdenados = ordenarCards(cards, stateBusca.busca);
     console.log(`Tamanho cards => ${stateBusca.cards.length}`)
 
     let frag = document.createDocumentFragment();
 
-    if(cards.length > 0) {
-        cards.forEach(card => {
+    if(cardsOrdenados.length > 0) {
+        cardsOrdenados.forEach(card => {
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
             article.setAttribute('id', `${card.id}`)
@@ -208,6 +224,7 @@ function render() {
     if(stateNavegacao.page === 'buscar') {
         renderBuscarPalavra(container);
         listenerIrHome();
+        listenerBuscarPalavra();
 
     } 
     if(stateNavegacao.page === 'home'){
@@ -217,6 +234,13 @@ function render() {
 }
 
 render();
+
+//Listener para o input de buscar palavra
+function listenerBuscarPalavra() {
+    document.getElementById('q').addEventListener('input', debounce((evento)=> {
+        setStateBusca({q: evento.target.value});
+    }, 250));
+}
 
 //Listener para o botão home da página de buscar palavra
 function listenerIrHome() {
