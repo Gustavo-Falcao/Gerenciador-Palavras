@@ -111,7 +111,7 @@ function renderAddPalavra(root) {
             <header class="titulo-add"><h1>Adicionar Palavra</h1></header>
             <form>
             <input type="text" id="nome-palavra" placeholder="Nome da palvra...">
-            <textarea id="cont-palavra" rows="15" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
+            <textarea id="cont-palavra" rows="10" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
             </form>
             <button id="bot-add">Adicionar</button>
         </main>
