@@ -178,7 +178,7 @@ function renderBuscarPalavra(root) {
     root.innerHTML = `
         <header class="menu-bar">
             <button class="icone">
-                <span class="material-symbols-outlined icon">
+                <span class="material-symbols-outlined">
                     home
                 </span>
             </button>
