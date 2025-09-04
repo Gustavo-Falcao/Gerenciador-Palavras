@@ -176,6 +176,13 @@ function renderBuscarPalavra(root) {
     main.appendChild(frag);
 
     root.innerHTML = `
+        <header class="menu-bar">
+            <button class="icone">
+                <span class="material-symbols-outlined icon">
+                    home
+                </span>
+            </button>
+        </header>
         <div class="main-buscar">
             <header class="titulo-buscar">
                 <h1>Palavras</h1>

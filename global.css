@@ -45,6 +45,22 @@ button {
 }
 
 /* Estilo da Pagina add palavra */
+
+.icone {
+    padding: 5px;
+    backdrop-filter: blur(1px);
+    background-color: #0f172a1e;
+    border-style: none;
+}
+
+.menu-bar {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+    position: fixed;
+    z-index: 10px;
+}
+
 .main-add {
     display: flex;
     flex-direction: column;
@@ -103,11 +119,11 @@ textarea {
     display: grid;
     grid-template-rows: auto auto 1fr;
     gap: 12px;
-    padding: 16px;
+    padding: 30px 16px 16px 16px;
 }
 
 .titulo-buscar {
-    margin: 20px 0px 0px 20px;
+    margin: 30px 0px 0px 20px;
     font-weight: 700;
     letter-spacing: .3px;
 }
