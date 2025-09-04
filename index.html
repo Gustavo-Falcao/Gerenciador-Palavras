@@ -3,63 +3,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Palavras</title>
-<style>
-    * {
-        font-family: Arial, Helvetica, sans-serif;
-    }
-   body {
-    margin: 0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f172a; 
-    color: #e2e8f0;
-    display: grid; 
-    grid-template-rows: auto auto 1fr; 
-    gap: 12px; 
-    padding: 16px;
-}
-    header {
-        width: 100%;
-        margin-top: 30px;
-        text-align: center;
-    }
-    main {
-        position: absolute;
-        width: 90%;
-        top: 40%;
-        left: 5%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        align-items: center;
-        gap: 50px;
-    }
-    button {
-        background-color: #111827;
-        font-size: 1.2em;
-        border-radius: 10px;
-        border-style: none;
-        padding: 10px;
-        color: #e2e8f0;
-        border: 1px solid #1f2937;
-        box-shadow: 0 10px 24px rgba(0,0,0,.25);
-    }
-</style>
+<link rel="stylesheet" href="global.css">
 </head>
     <body>
-        <header>
+        <div id="root"></div>
+        <!-- <header>
             <h1>Palavras</h1>
         </header>
-        <main>
-            <a href="add-palavra.html"><button>Adicionar palavra</button></a>
+        <main id="botoes"> -->
+            <!-- <a href="add-palavra.html"><button>Adicionar palavra</button></a>
             <a href="busc-palavra.html"><button>Buscar palavras</button></a>
-            <pre id="cont-result"></pre>
+            <pre id="cont-result"></pre> -->
             <!-- <p id="cont-result"></p> -->
-        </main>
+        <!-- </main> -->
 
-        <!-- <section class="toolbar" id="toolbar">
-        <input type="search" id="q" placeholder="Buscar por título/tags…" aria-label="Buscar" />
-
-        <select id="cat" aria-label="Categoria">
+    <!--     <select id="cat" aria-label="Categoria">
             <option value="">Todas as categorias</option>
             <option>Natureza</option>
             <option>Cidades</option>
@@ -72,7 +30,7 @@
         </select>
         </section> -->
         <script src="main.js"></script>
-        <script>
+    <!--     <script>
             document.addEventListener('DOMContentLoaded', () => {
                 
                 let item = localStorage.getItem('desc');
@@ -81,6 +39,6 @@
                     result.textContent = item;
                 }
             });
-        </script>
+        </script> -->
     </body>
 </html>
