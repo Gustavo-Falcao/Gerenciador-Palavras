@@ -1,71 +1,3 @@
-/* document.getElementById('bot-add').addEventListener('click', () => {
-    let conteudo = document.getElementById('cont-palavra').value;
-    if(conteudo) {
-        localStorage.setItem('desc', conteudo);
-    }
-    window.location.href = "index.html";
-}); */
-
-/* let state = {
-    cards: [],
-    busca: ''
-} */
-
-// array para inserir
-/* objetos = [
-    {id: 'card1', nome:'Nome do Card1', desc: 'Desc do Card1'},
-    {id: 'card2', nome:'Nome do Card2', desc: 'Desc do Card2'},
-    {id: 'card3', nome:'Nome do Card3', desc: 'Desc do Card3'}
-] */
-
-/* document.addEventListener('DOMContentLoaded', () => {
-    const result = document.getElementById('grid');
-    let itemSalvo = localStorage.getItem('arrayObjetos');
-    if(itemSalvo) {
-        let frag = document.createDocumentFragment();
-        let item = JSON.parse(localStorage.getItem('arrayObjetos'));
-        item.forEach(element => {
-            let card = document.createElement('article');
-            card.setAttribute('class', 'card');
-            card.setAttribute('id', element.id);
-            card.innerHTML = `
-            <h3>${element.nome}</h3>
-            <pre>${element.desc}</pre>
-            `;
-            frag.appendChild(card);
-        });
-        result.appendChild(frag);
-    }
-});
- */
-/* document.getElementById('bot-add').addEventListener('click', () => {
-    let nomePalavra = document.getElementById('nome-palavra').value;
-    let descPalavra = document.getElementById('cont-palavra').value
-
-    if(nomePalavra && descPalavra) {
-        let novoCard = {
-            id: 'cardTeste', nome: nomePalavra, desc: descPalavra
-        };
-        localStorage.setItem(novoCard.id, JSON.stringify(novoCard));
-    }
-   localStorage.setItem('arrayObjetos', JSON.stringify(objetos));
-}); */
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const array = localStorage.getItem('arrayCards');
-//     if(!array) {
-//         const array = []
-//         localStorage.setItem('arrayCards', array);
-//     }
-// });
-
-
-// Carregar dados
-// let dadosCarregados = document.addEventListener('DOMContentLoaded', () => {
-//     const dados = JSON.parse(localStorage.getItem('arrayCards')) ?? [];
-//     return dados;
-// });
-
 //Função debounce que será aplicada no input da busca
 function debounce(fn, delay) {
     let timer = null;
@@ -80,7 +12,22 @@ function debounce(fn, delay) {
 }
 
 function ordenarCards(cards, busca) {
-    return cards.filter(card => !busca || card.nome.toLowerCase().icludes(busca.toLowerCase()));
+    // let filtroAlfabetico = [...filtroBusca].sort((a,b) => a.nome.localeCompare(b.nome, 'pt'));
+
+    let filtroBusca = cards.filter(function(card) {
+        if(!busca) return true;
+        
+        let nome = card.nome.toLowerCase();
+        let palavraBusca = busca.toLowerCase();
+        
+        if(nome.includes(palavraBusca)) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    return filtroBusca;
 }
 
 // Gerar id aleatório e único
@@ -97,7 +44,7 @@ let stateBusca = {
 // Mudança de estado da lista de cards
 function setStateBusca(newState) {
     stateBusca = {...stateBusca, ...newState};
-    render();
+    renderListaPalavras();
 }
 
 function setStateCards(newState) {
@@ -111,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setStateCards([...stateBusca.cards, ...cardsCarregados]);
     }
 });
-
 
 // Estado navegação entre páginas
 let stateNavegacao = {
@@ -155,18 +101,54 @@ function renderAddPalavra(root) {
     `;
 }
 
+//Renderização da lista de palavras
+function renderListaPalavras() {
+    const cardsOrdenados = ordenarCards(stateBusca.cards, stateBusca.busca);
+    console.log(`Tamanho cards normal => ${stateBusca.cards.length}`);
+    console.log(`Tamanho card filtrado => ${cardsOrdenados.length}`);
+    cardsOrdenados.forEach(element => {
+        console.log(`Nome card => ${element.nome}`);
+    });
+    let mainList = document.getElementById('grid');
+
+    if(mainList) {
+
+        mainList.innerHTML = '';
+    
+        let frag = document.createDocumentFragment();
+        
+        if(cardsOrdenados.length > 0) {
+            cardsOrdenados.forEach(card => {
+                const article = document.createElement('article');
+                article.setAttribute('class', 'card');
+                const h3Element = document.createElement('h3');
+                h3Element.textContent = `${card.nome}`;
+                article.appendChild(h3Element);
+                frag.appendChild(article);
+            });
+            
+            mainList.appendChild(frag);
+          
+        } else {
+            mainList.innerHTML = `
+                <article class="card">
+                    <h3>Não encontrado</h3>
+                </article>
+            `;
+        }
+    }
+}
+
 // Renderização da página de buscar palavra
 function renderBuscarPalavra(root) {
     root.innerHTML = '';
 
     const cards = stateBusca.cards;
-    const cardsOrdenados = ordenarCards(cards, stateBusca.busca);
-    console.log(`Tamanho cards => ${stateBusca.cards.length}`)
-
-    let frag = document.createDocumentFragment();
-
-    if(cardsOrdenados.length > 0) {
-        cardsOrdenados.forEach(card => {
+    
+    const frag = document.createDocumentFragment();
+    
+    if(cards.length > 0) {
+        cards.forEach(card => {
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
             article.setAttribute('id', `${card.id}`)
@@ -186,7 +168,7 @@ function renderBuscarPalavra(root) {
 
     const main = document.createElement('main');
     main.setAttribute('id', 'grid');
-    main.setAttribute('class', "grid");
+    main.setAttribute('class', 'grid');
     main.setAttribute('aria-alive', 'polite');
 
     main.appendChild(frag);
@@ -210,7 +192,6 @@ function renderBuscarPalavra(root) {
     `;
     root.appendChild(main);
 }
-
 
 function render() {
     console.log(`Qual pagina = > ${stateNavegacao.page}`)
@@ -237,8 +218,10 @@ render();
 
 //Listener para o input de buscar palavra
 function listenerBuscarPalavra() {
-    document.getElementById('q').addEventListener('input', debounce((evento)=> {
-        setStateBusca({q: evento.target.value});
+    document.getElementById('q').addEventListener('input', debounce((e)=> {
+        console.log(`Palavra para buscar => ${e.target.value}`);
+        setStateBusca({busca: e.target.value});
+        console.log('Entrou no debounceee')
     }, 250));
 }
 
@@ -261,7 +244,6 @@ function listenersHome() {
     });
 }
 
-
 // Listener para o botão que irá adicionar palavra
 function listenerAddPalavra() {
     document.getElementById('bot-add').addEventListener('click', () => {
@@ -277,8 +259,7 @@ function listenerAddPalavra() {
             console.log('Deu ruim');
             console.log(`${stateBusca.cards}`);
         }
-        nomePalavra.value = '';
-        descPalavra.value = '';
+        setStateNavegacao({page: 'home'});
     }
 });
 }
