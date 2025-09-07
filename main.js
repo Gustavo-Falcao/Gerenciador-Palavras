@@ -152,95 +152,109 @@ function renderListaPalavras() {
 }
 
 // Renderização da página de buscar palavra
-function renderBuscarPalavra(root) {
+function renderBuscarPalavra(valor) {
     console.log(`Estado do cardPopUp => ${stateCardPopUp.aberto}`);
+
+    let root = document.getElementById('root');
+
+    root.innerHTML = '';
+    const cards = stateBusca.cards;
+    
+    const frag = document.createDocumentFragment();
+    
+    if(cards.length > 0) {
+        cards.forEach(card => {
+            const article = document.createElement('article');
+            article.setAttribute('class', 'card');
+            article.setAttribute('id', `${card.id}`)
+            const h3 = document.createElement('h3');
+            h3.innerHTML = `${card.nome}`
+            article.appendChild(h3);
+            frag.appendChild(article);
+        });
+    } else {
+        const article = document.createElement('article');
+        article.setAttribute('class', 'card');
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Sem palavras ainda...'
+        article.appendChild(h3);
+        frag.appendChild(article);
+    }
+    const main = document.createElement('main');
+    main.setAttribute('id', 'grid');
+    main.setAttribute('class', 'grid');
+    main.setAttribute('aria-alive', 'polite');
+
+    main.appendChild(frag);
+
+    root.innerHTML = `
+        <header class="menu-bar">
+            <button class="icone" id="home">
+                <span class="material-symbols-outlined">
+                    home
+                </span>
+            </button>
+        </header>
+        <div class="main-buscar">
+            <header class="titulo-buscar">
+                <h1>Palavras</h1>
+            </header>
+            <section class="toolbar" id="toolbar">
+                <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
+            </section>
+        </div>
+    `;
+    root.appendChild(main);
+    
+    let janelaPai = document.createElement('div');
+    janelaPai.setAttribute('id', 'janela-pai');
+    janelaPai.setAttribute('class', 'janela-pai-popup');
+
+    let botSair = document.createElement('button');
+    botSair.setAttribute('class', 'botSair');
+    botSair.setAttribute('id', 'sair');
+    botSair.innerHTML = `&#x2715`;
+
+    let janelaInfo = document.createElement('div');
+    janelaInfo.setAttribute('id', 'janela-info');
+    janelaInfo.setAttribute('class', 'janela-pop');
+    let nomePalavra = document.createElement('h2');
+    let desc = document.createElement('pre');
+
     if(stateCardPopUp.aberto) {
-        let divMain = document.getElementById('root');
-        let janelaPai = document.createElement('div');
-        janelaPai.setAttribute('id', 'janela-pai');
-        janelaPai.setAttribute('class', 'janela-pai-popup');
-
-        let janelaInfo = document.createElement('div');
-        janelaInfo.setAttribute('id', 'janela-info');
-        janelaInfo.setAttribute('class', 'janela-pop');
-
+        if(janelaPai.classList.contains('esconder-janela')) {
+            janelaPai.classList.remove('esconder-janela');
+        }
         let cardPalavra = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
         
         console.log(`Id que está no estado do popup => ${stateCardPopUp.idCard}`)
 
-        let nomePalavra = document.createElement('h2');
         nomePalavra.innerHTML = `${cardPalavra.nome}`;
-        let desc = document.createElement('pre');
         desc.innerHTML = `${cardPalavra.desc}`;
 
-        janelaInfo.appendChild(nomePalavra);
-        janelaInfo.appendChild(desc);
-        janelaPai.appendChild(janelaInfo);
-        divMain.appendChild(janelaPai);
+        janelaPai.classList.add('mostrar-janela');
     } else {
-        let elementoParaRemover = document.getElementById('janela-pai');
-        if(elementoParaRemover) {
-            elementoParaRemover.parentNode.removeChild(elementoParaRemover);
+        if(janelaPai.classList.contains('mostrar-janela')) {
+            janelaPai.classList.remove('mostrar-janela');
         }
-
-        root.innerHTML = '';
-        const cards = stateBusca.cards;
-        
-        const frag = document.createDocumentFragment();
-        
-        if(cards.length > 0) {
-            cards.forEach(card => {
-                const article = document.createElement('article');
-                article.setAttribute('class', 'card');
-                article.setAttribute('id', `${card.id}`)
-                const h3 = document.createElement('h3');
-                h3.innerHTML = `${card.nome}`
-                article.appendChild(h3);
-                frag.appendChild(article);
-            });
-        } else {
-            const article = document.createElement('article');
-            article.setAttribute('class', 'card');
-            const h3 = document.createElement('h3');
-            h3.textContent = 'Sem palavras ainda...'
-            article.appendChild(h3);
-            frag.appendChild(article);
-        }
-        const main = document.createElement('main');
-        main.setAttribute('id', 'grid');
-        main.setAttribute('class', 'grid');
-        main.setAttribute('aria-alive', 'polite');
-    
-        main.appendChild(frag);
-    
-        root.innerHTML = `
-            <header class="menu-bar">
-                <button class="icone" id="home">
-                    <span class="material-symbols-outlined">
-                        home
-                    </span>
-                </button>
-            </header>
-            <div class="main-buscar">
-                <header class="titulo-buscar">
-                    <h1>Palavras</h1>
-                </header>
-                <section class="toolbar" id="toolbar">
-                    <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
-                </section>
-            </div>
-        `;
-        root.appendChild(main);
+        janelaPai.classList.add('esconder-janela');
     }
-
-
-
+    janelaInfo.appendChild(nomePalavra);
+    janelaInfo.appendChild(desc);
+    janelaPai.appendChild(janelaInfo);
+    janelaPai.appendChild(botSair);
+    root.appendChild(janelaPai);
+    listenerFecharPopUpCard();
+    listenerMostrarPopUpCard();
+    listenerBuscarPalavra();
+    listenerIrHome();
 }
+
 
 function render() {
     console.log(`Qual pagina = > ${stateNavegacao.page}`)
 
-    const container = document.getElementById('root');
+    let container = document.getElementById('root');
 
     if(stateNavegacao.page === 'add') {
         renderAddPalavra(container);
@@ -248,12 +262,6 @@ function render() {
     } 
     if(stateNavegacao.page === 'buscar') {
         renderBuscarPalavra(container);
-        listenerIrHome();
-        listenerBuscarPalavra();
-        listenerMostrarPopUpCard();
-        if(stateCardPopUp.aberto) {
-            listenerFecharPopUpCard();
-        }
     } 
     if(stateNavegacao.page === 'home'){
         renderHome(container);
@@ -281,11 +289,8 @@ function listenerMostrarPopUpCard() {
 }
 
 function listenerFecharPopUpCard() {
-    document.getElementById('root').addEventListener('click', (e) => {
-        let elementoClicado = e.target;
-        if(elementoClicado.id !== "janela-info") {
-            setStateCardPopUp({aberto: false, idCard: ''});
-        }
+    document.getElementById('sair').addEventListener('click', () => {
+        setStateCardPopUp({aberto: false, idCard: ''});
     });
 }
 
