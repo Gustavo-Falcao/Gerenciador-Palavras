@@ -38,7 +38,18 @@ function gerarId() {
 // Estado da lista de cards
 let stateBusca = {
     cards: [],
-    busca: ''
+    busca: '',
+}
+// Estado do popUp do card
+let stateCardPopUp = {
+    aberto: false,
+    idCard: ''
+}
+
+// Mudança de estado do card popUp
+function setStateCardPopUp(newState) {
+    stateCardPopUp = {...stateCardPopUp, ...newState};
+    renderBuscarPalavra();
 }
 
 // Mudança de estado da lista de cards
@@ -121,6 +132,7 @@ function renderListaPalavras() {
             cardsOrdenados.forEach(card => {
                 const article = document.createElement('article');
                 article.setAttribute('class', 'card');
+                article.setAttribute('id', `${card.id}`);
                 const h3Element = document.createElement('h3');
                 h3Element.textContent = `${card.nome}`;
                 article.appendChild(h3Element);
@@ -141,56 +153,88 @@ function renderListaPalavras() {
 
 // Renderização da página de buscar palavra
 function renderBuscarPalavra(root) {
-    root.innerHTML = '';
+    console.log(`Estado do cardPopUp => ${stateCardPopUp.aberto}`);
+    if(stateCardPopUp.aberto) {
+        let divMain = document.getElementById('root');
+        let janelaPai = document.createElement('div');
+        janelaPai.setAttribute('id', 'janela-pai');
+        janelaPai.setAttribute('class', 'janela-pai-popup');
 
-    const cards = stateBusca.cards;
-    
-    const frag = document.createDocumentFragment();
-    
-    if(cards.length > 0) {
-        cards.forEach(card => {
+        let janelaInfo = document.createElement('div');
+        janelaInfo.setAttribute('id', 'janela-info');
+        janelaInfo.setAttribute('class', 'janela-pop');
+
+        let cardPalavra = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
+        
+        console.log(`Id que está no estado do popup => ${stateCardPopUp.idCard}`)
+
+        let nomePalavra = document.createElement('h2');
+        nomePalavra.innerHTML = `${cardPalavra.nome}`;
+        let desc = document.createElement('pre');
+        desc.innerHTML = `${cardPalavra.desc}`;
+
+        janelaInfo.appendChild(nomePalavra);
+        janelaInfo.appendChild(desc);
+        janelaPai.appendChild(janelaInfo);
+        divMain.appendChild(janelaPai);
+    } else {
+        let elementoParaRemover = document.getElementById('janela-pai');
+        if(elementoParaRemover) {
+            elementoParaRemover.parentNode.removeChild(elementoParaRemover);
+        }
+
+        root.innerHTML = '';
+        const cards = stateBusca.cards;
+        
+        const frag = document.createDocumentFragment();
+        
+        if(cards.length > 0) {
+            cards.forEach(card => {
+                const article = document.createElement('article');
+                article.setAttribute('class', 'card');
+                article.setAttribute('id', `${card.id}`)
+                const h3 = document.createElement('h3');
+                h3.innerHTML = `${card.nome}`
+                article.appendChild(h3);
+                frag.appendChild(article);
+            });
+        } else {
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
-            article.setAttribute('id', `${card.id}`)
             const h3 = document.createElement('h3');
-            h3.innerHTML = `${card.nome}`
+            h3.textContent = 'Sem palavras ainda...'
             article.appendChild(h3);
             frag.appendChild(article);
-        });
-    } else {
-        const article = document.createElement('article');
-        article.setAttribute('class', 'card');
-        const h3 = document.createElement('h3');
-        h3.textContent = 'Sem palavras ainda...'
-        article.appendChild(h3);
-        frag.appendChild(article);
+        }
+        const main = document.createElement('main');
+        main.setAttribute('id', 'grid');
+        main.setAttribute('class', 'grid');
+        main.setAttribute('aria-alive', 'polite');
+    
+        main.appendChild(frag);
+    
+        root.innerHTML = `
+            <header class="menu-bar">
+                <button class="icone" id="home">
+                    <span class="material-symbols-outlined">
+                        home
+                    </span>
+                </button>
+            </header>
+            <div class="main-buscar">
+                <header class="titulo-buscar">
+                    <h1>Palavras</h1>
+                </header>
+                <section class="toolbar" id="toolbar">
+                    <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
+                </section>
+            </div>
+        `;
+        root.appendChild(main);
     }
 
-    const main = document.createElement('main');
-    main.setAttribute('id', 'grid');
-    main.setAttribute('class', 'grid');
-    main.setAttribute('aria-alive', 'polite');
 
-    main.appendChild(frag);
 
-    root.innerHTML = `
-        <header class="menu-bar">
-            <button class="icone" id="home">
-                <span class="material-symbols-outlined">
-                    home
-                </span>
-            </button>
-        </header>
-        <div class="main-buscar">
-            <header class="titulo-buscar">
-                <h1>Palavras</h1>
-            </header>
-            <section class="toolbar" id="toolbar">
-                <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
-            </section>
-        </div>
-    `;
-    root.appendChild(main);
 }
 
 function render() {
@@ -206,7 +250,10 @@ function render() {
         renderBuscarPalavra(container);
         listenerIrHome();
         listenerBuscarPalavra();
-
+        listenerMostrarPopUpCard();
+        if(stateCardPopUp.aberto) {
+            listenerFecharPopUpCard();
+        }
     } 
     if(stateNavegacao.page === 'home'){
         renderHome(container);
@@ -223,6 +270,23 @@ function listenerBuscarPalavra() {
         setStateBusca({busca: e.target.value});
         console.log('Entrou no debounceee')
     }, 250));
+}
+
+function listenerMostrarPopUpCard() {
+    document.getElementById('grid').addEventListener('click', (e) => {
+        let elementoClicado = e.target.closest('.card')
+        console.log(`Id do elemento clicado => ${elementoClicado.id}`);
+        setStateCardPopUp({aberto: true, idCard: elementoClicado.id});
+    });
+}
+
+function listenerFecharPopUpCard() {
+    document.getElementById('root').addEventListener('click', (e) => {
+        let elementoClicado = e.target;
+        if(elementoClicado.id !== "janela-info") {
+            setStateCardPopUp({aberto: false, idCard: ''});
+        }
+    });
 }
 
 //Listener para o botão home da página de buscar palavra

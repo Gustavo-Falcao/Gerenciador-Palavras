@@ -1,2 +1,2 @@
 # A fazer
-- Começar a implementar a lógica da adição de palavras e posteriormente a lógica para mostrar os cards.
+- Adicionar a janela pai ao root como padrão e controlar a visibilidade através de classe mudando o estilo
