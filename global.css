@@ -205,3 +205,7 @@ textarea {
         text-align: center;
     }
 }
+
+.travar-rolamento {
+    overflow: hidden;
+}

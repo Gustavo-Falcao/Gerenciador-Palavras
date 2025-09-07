@@ -221,6 +221,8 @@ function renderBuscarPalavra(valor) {
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre');
 
+    let bodyConteiner = document.getElementById('body')
+
     if(stateCardPopUp.aberto) {
         if(janelaPai.classList.contains('esconder-janela')) {
             janelaPai.classList.remove('esconder-janela');
@@ -233,7 +235,11 @@ function renderBuscarPalavra(valor) {
         desc.innerHTML = `${cardPalavra.desc}`;
 
         janelaPai.classList.add('mostrar-janela');
+        bodyConteiner.classList.add('.travar-rolamento');
     } else {
+        if(bodyConteiner.classList.contains('.travar-rolamento')) {
+            bodyConteiner.classList.remove('.travar-rolamento');
+        }
         if(janelaPai.classList.contains('mostrar-janela')) {
             janelaPai.classList.remove('mostrar-janela');
         }
