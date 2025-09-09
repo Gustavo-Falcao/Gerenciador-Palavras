@@ -59,8 +59,8 @@ function setStateBusca(newState) {
 }
 
 function setStateCards(newState) {
-    stateBusca.cards = [...new Set([...stateBusca.cards, ...newState])];
-    renderBuscarPalavra();
+    stateBusca.cards = newState;
+    renderListaPalavras();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,7 +71,7 @@ function atualizarCards() {
     const listStorage = localStorage.getItem('arrayCards');
     if(listStorage) {
     let cardsCarregados = JSON.parse(listStorage);
-        setStateCards([...stateBusca.cards, ...cardsCarregados]);
+        setStateCards(cardsCarregados);
     }
 }
 
@@ -126,7 +126,6 @@ function renderListaPalavras() {
         console.log(`Nome card => ${element.nome}`);
     });
     let mainList = document.getElementById('grid');
-
 
         mainList.innerHTML = '';
     
@@ -381,8 +380,8 @@ function listenerRemoverCard() {
         let idParaDeletar = janelaInfo.id;
         let novoCards = stateBusca.cards.filter(card => card.id !== idParaDeletar);
         localStorage.setItem('arrayCards', JSON.stringify(novoCards));
-        atualizarCards();
         setStateCardPopUp({aberto: false, idCard: ''});
+        atualizarCards();
     });
 }
 
