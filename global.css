@@ -200,7 +200,7 @@ textarea {
     top: 15%;
     left: 10%;
     border-radius: 10px;
-    border: 1px solid #3c506c;
+    border: 1px solid rgba(255, 255, 255, 0.328);
     padding: 10px;
     width: 280px;
     h2 {
