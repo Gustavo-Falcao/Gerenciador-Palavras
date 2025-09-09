@@ -162,7 +162,7 @@ textarea {
 }
 
 .janela-pai-popup {
-    background-color: #4848486f;
+    background-color: #11182761;
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -193,13 +193,14 @@ textarea {
 }
 
 .janela-pop {
-    background-color: #111827ba;
+    background-color: #0c111bba;
     backdrop-filter: blur(6px);
     flex-direction: column;
     position: absolute;
     top: 15%;
     left: 10%;
     border-radius: 10px;
+    border: 1px solid #3c506c;
     padding: 10px;
     width: 280px;
     h2 {
