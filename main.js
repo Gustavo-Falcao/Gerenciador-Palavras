@@ -105,7 +105,7 @@ function renderAddPalavra(root) {
             <header class="titulo-add"><h1>Adicionar Palavra</h1></header>
             <form>
             <input type="text" id="nome-palavra" placeholder="Nome da palvra...">
-            <textarea id="cont-palavra" rows="10" cols="40" placeholder="Digite o conteúdo aqui..."></textarea>
+            <textarea id="cont-palavra" rows="10" cols="35" placeholder="Digite o conteúdo aqui..."></textarea>
             </form>
             <button id="bot-add">Adicionar</button>
         </main>
@@ -221,8 +221,6 @@ function renderBuscarPalavra(valor) {
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre');
 
-    let bodyConteiner = document.getElementById('body')
-
     if(stateCardPopUp.aberto) {
         if(janelaPai.classList.contains('esconder-janela')) {
             janelaPai.classList.remove('esconder-janela');
@@ -235,11 +233,7 @@ function renderBuscarPalavra(valor) {
         desc.innerHTML = `${cardPalavra.desc}`;
 
         janelaPai.classList.add('mostrar-janela');
-        bodyConteiner.classList.add('.travar-rolamento');
     } else {
-        if(bodyConteiner.classList.contains('.travar-rolamento')) {
-            bodyConteiner.classList.remove('.travar-rolamento');
-        }
         if(janelaPai.classList.contains('mostrar-janela')) {
             janelaPai.classList.remove('mostrar-janela');
         }

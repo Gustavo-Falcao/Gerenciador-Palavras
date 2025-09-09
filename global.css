@@ -147,6 +147,7 @@ textarea {
 }
 
 .card {
+    cursor: pointer;
     background:  #111827;
     border: 1px solid #1f2937;
     border-radius: 14px;
@@ -164,7 +165,7 @@ textarea {
     background-color: #4848486f;
     width: 100vw;
     height: 100vh;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 999;
