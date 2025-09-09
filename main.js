@@ -59,16 +59,21 @@ function setStateBusca(newState) {
 }
 
 function setStateCards(newState) {
-    stateBusca.cards = [...stateBusca.cards, ...newState];
+    stateBusca.cards = [...new Set([...stateBusca.cards, ...newState])];
+    renderBuscarPalavra();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    atualizarCards();
+});
+
+function atualizarCards() {
     const listStorage = localStorage.getItem('arrayCards');
     if(listStorage) {
     let cardsCarregados = JSON.parse(listStorage);
         setStateCards([...stateBusca.cards, ...cardsCarregados]);
     }
-});
+}
 
 // Estado navegação entre páginas
 let stateNavegacao = {
@@ -122,7 +127,6 @@ function renderListaPalavras() {
     });
     let mainList = document.getElementById('grid');
 
-    if(mainList) {
 
         mainList.innerHTML = '';
     
@@ -148,8 +152,8 @@ function renderListaPalavras() {
                 </article>
             `;
         }
-    }
 }
+
 
 // Renderização da página de buscar palavra
 function renderBuscarPalavra(valor) {
@@ -161,6 +165,8 @@ function renderBuscarPalavra(valor) {
     const cards = stateBusca.cards;
     
     const frag = document.createDocumentFragment();
+
+    console.log(`Tamanho do array de cards => ${cards.length}`);
     
     if(cards.length > 0) {
         cards.forEach(card => {
@@ -206,20 +212,49 @@ function renderBuscarPalavra(valor) {
     `;
     root.appendChild(main);
     
+    //Criando a janela de fundo que irá cobrir a página inteira
     let janelaPai = document.createElement('div');
     janelaPai.setAttribute('id', 'janela-pai');
     janelaPai.setAttribute('class', 'janela-pai-popup');
 
+    //Criando o botao para sair da visualizacao do card
     let botSair = document.createElement('button');
     botSair.setAttribute('class', 'botSair');
     botSair.setAttribute('id', 'sair');
     botSair.innerHTML = `&#x2715`;
 
+    //Criando a janela que terá o conteudo do card e as opcoes para o card
     let janelaInfo = document.createElement('div');
-    janelaInfo.setAttribute('id', 'janela-info');
-    janelaInfo.setAttribute('class', 'janela-pop');
+    janelaInfo.setAttribute('class', 'janela-info');
+
+    //Criando a janela que terá o conteudo do card
+    let janelaConteudo = document.createElement('div');
+    janelaConteudo.setAttribute('class', 'janela-pop');
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre');
+
+    //Criando o botao para deletar o card
+    let botDeletar = document.createElement('button');
+    botDeletar.setAttribute('id', 'deletar');
+    let iconeDeletar = document.createElement('span');
+    iconeDeletar.setAttribute('class', 'material-symbols-outlined');
+    iconeDeletar.innerHTML = "delete";
+    botDeletar.appendChild(iconeDeletar);
+    
+    //Criando o botao para editar o card
+    let botEditar = document.createElement('button');
+    botEditar.setAttribute('id', 'editar');
+    let iconeEditar = document.createElement('span');
+    iconeEditar.setAttribute('class','material-symbols-outlined');
+    iconeEditar.innerHTML = "edit_note";
+    botEditar.appendChild(iconeEditar);
+    
+    //Criando um caixa para as opcoes com o card
+    let caixaOpcoes = document.createElement('div');
+    caixaOpcoes.setAttribute('class', 'caixa-op');
+
+    caixaOpcoes.appendChild(botEditar);
+    caixaOpcoes.appendChild(botDeletar);
 
     if(stateCardPopUp.aberto) {
         if(janelaPai.classList.contains('esconder-janela')) {
@@ -231,6 +266,7 @@ function renderBuscarPalavra(valor) {
 
         nomePalavra.innerHTML = `${cardPalavra.nome}`;
         desc.innerHTML = `${cardPalavra.desc}`;
+        janelaInfo.setAttribute('id', `${cardPalavra.id}`);
 
         janelaPai.classList.add('mostrar-janela');
     } else {
@@ -239,8 +275,10 @@ function renderBuscarPalavra(valor) {
         }
         janelaPai.classList.add('esconder-janela');
     }
-    janelaInfo.appendChild(nomePalavra);
-    janelaInfo.appendChild(desc);
+    janelaConteudo.appendChild(nomePalavra);
+    janelaConteudo.appendChild(desc);
+    janelaInfo.appendChild(janelaConteudo);
+    janelaInfo.appendChild(caixaOpcoes);
     janelaPai.appendChild(janelaInfo);
     janelaPai.appendChild(botSair);
     root.appendChild(janelaPai);
@@ -248,6 +286,7 @@ function renderBuscarPalavra(valor) {
     listenerMostrarPopUpCard();
     listenerBuscarPalavra();
     listenerIrHome();
+    listenerRemoverCard();
 }
 
 
@@ -280,6 +319,7 @@ function listenerBuscarPalavra() {
     }, 250));
 }
 
+//Listener para mostrar as informacoes do card
 function listenerMostrarPopUpCard() {
     document.getElementById('grid').addEventListener('click', (e) => {
         let elementoClicado = e.target.closest('.card')
@@ -288,6 +328,7 @@ function listenerMostrarPopUpCard() {
     });
 }
 
+//Listener para fechar o pop-up com as informacoes do card
 function listenerFecharPopUpCard() {
     document.getElementById('sair').addEventListener('click', () => {
         setStateCardPopUp({aberto: false, idCard: ''});
@@ -333,6 +374,16 @@ function listenerAddPalavra() {
 });
 }
 
-
+//Listener para remover um card
+function listenerRemoverCard() {
+    document.getElementById('deletar').addEventListener('click', (e) => {
+        let janelaInfo = e.target.closest('.janela-info');
+        let idParaDeletar = janelaInfo.id;
+        let novoCards = stateBusca.cards.filter(card => card.id !== idParaDeletar);
+        localStorage.setItem('arrayCards', JSON.stringify(novoCards));
+        atualizarCards();
+        setStateCardPopUp({aberto: false, idCard: ''});
+    });
+}
 
 

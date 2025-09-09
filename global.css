@@ -196,9 +196,9 @@ textarea {
     background-color: #0c111bba;
     backdrop-filter: blur(6px);
     flex-direction: column;
-    position: absolute;
+    /* position: absolute;
     top: 15%;
-    left: 10%;
+    left: 10%; */
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.328);
     padding: 10px;
@@ -208,6 +208,15 @@ textarea {
     }
 }
 
-.travar-rolamento {
-    overflow: hidden;
+.janela-info {
+    position: absolute;
+    top: 15%;
+    left: 10%;
+}
+ 
+.caixa-op {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
