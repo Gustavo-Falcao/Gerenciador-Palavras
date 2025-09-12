@@ -11,7 +11,8 @@ let stateBusca = {
 // Estado do popUp do card
 let stateCardPopUp = {
     aberto: false,
-    idCard: ''
+    idCard: '',
+    page: ''
 }
 
 // Estado navegação entre páginas

@@ -1,4 +1,4 @@
-import { listenersBuscarPalavra, listenerRemoverCard } from "../state/Listeners.js";
+import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit} from "../state/Listeners.js";
 import { getStateBusca, getStateCardPopUp } from "../state/State.js";
 
 function criarMainList() {
@@ -30,6 +30,7 @@ function criarJanelaInfo() {
     //Criando a janela que terá o conteudo do card e as opcoes para o card
     let janelaInfo = document.createElement('div');
     janelaInfo.setAttribute('class', 'janela-info');
+    janelaInfo.setAttribute('id', 'info');
     return janelaInfo;
 }
 
@@ -89,18 +90,21 @@ function criarTextArea(card) {
     textArea.setAttribute('id', 'cont-edit');
     textArea.setAttribute('rows', '10');
     textArea.setAttribute('cols', '35');
-    textArea.setAttribute('value', `${card.desc}`);
+    //textArea.setAttribute('value', `${card.desc}`);
+    textArea.innerHTML = `${card.desc}`
     return textArea;
 }
 
 function criarBotSalvar() {
     let botSalvar = document.createElement('button');
+    botSalvar.setAttribute('id', 'salvar');
     botSalvar.textContent = "Salvar";
     return botSalvar;
 }
 
 function criarBotCancelar() {
     let botCancelar = document.createElement('button');
+    botCancelar.setAttribute('id', 'cancelar');
     botCancelar.textContent = "Cancelar";
     return botCancelar;
 }
@@ -118,6 +122,7 @@ function criarCaixaOpcoesEditar() {
 }
 // Renderização da página de buscar palavra
 export function renderBuscarPalavra(valor) {
+    const stateCardPopUp = getStateCardPopUp();
     console.log(`Estado do cardPopUp => ${stateCardPopUp.aberto}`);
 
     let root = document.getElementById('root');
@@ -182,13 +187,11 @@ export function renderBuscarPalavra(valor) {
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre')
 
-    const stateCardPopUp = getStateCardPopUp();
-
-    if(stateCardPopUp.aberto || stateBusca.edit) {
+    if(stateCardPopUp.aberto) {
         if(janelaPai.classList.contains('esconder-janela')) {
             janelaPai.classList.remove('esconder-janela');
         }
-        if(stateCardPopUp.aberto) {
+        if(stateCardPopUp.page === 'info') {
             let cardPalavra = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
         
             console.log(`Id que está no estado do popup => ${stateCardPopUp.idCard}`)
@@ -200,9 +203,9 @@ export function renderBuscarPalavra(valor) {
             janelaConteudo.appendChild(desc);
             janelaInfo.appendChild(janelaConteudo);
             janelaInfo.appendChild(caixaOpcoes);
-            listenerRemoverCard();
-        } else {
-            let palavraMostrar = stateBusca.cards.find((element) => element.id === stateBusca.idEdit);
+        }   
+        else if(stateCardPopUp.page === 'edit') {
+            let palavraMostrar = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
 
             let input = criarInput(palavraMostrar);
             let textArea = criarTextArea(palavraMostrar);
@@ -224,5 +227,8 @@ export function renderBuscarPalavra(valor) {
     janelaPai.appendChild(janelaInfo);
     janelaPai.appendChild(botSair);
     root.appendChild(janelaPai);
+    if(stateCardPopUp.aberto) {
+        stateCardPopUp.page === 'info' ? listenerRemoverCard(stateBusca) : listenersOpcoesEdit();
+    }
     listenersBuscarPalavra();
 }
