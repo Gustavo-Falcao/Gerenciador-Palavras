@@ -1,5 +1,5 @@
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit} from "../state/Listeners.js";
-import { getStateBusca, getStateCardPopUp } from "../state/State.js";
+import { getStatePrincipal, statePrincipal } from "../state/State.js";
 
 function criarMainList() {
     const main = document.createElement('main');
@@ -89,7 +89,7 @@ function criarTextArea(card) {
     let textArea = document.createElement('textarea');
     textArea.setAttribute('id', 'cont-edit');
     textArea.setAttribute('rows', '10');
-    textArea.setAttribute('cols', '35');
+    textArea.setAttribute('cols', '30');
     //textArea.setAttribute('value', `${card.desc}`);
     textArea.innerHTML = `${card.desc}`
     return textArea;
@@ -121,23 +121,23 @@ function criarCaixaOpcoesEditar() {
     return caixaOpcoesEditar;
 }
 // Renderização da página de buscar palavra
-export function renderBuscarPalavra(valor) {
-    const stateCardPopUp = getStateCardPopUp();
-    console.log(`Estado do cardPopUp => ${stateCardPopUp.aberto}`);
+export function renderBuscarPalavra() {
+
+    const state = getStatePrincipal();
+    console.log(`Estado do cardPopUp => ${statePrincipal.cardPanel.isOpen}`);
 
     let root = document.getElementById('root');
 
-    const stateBusca = getStateBusca();
-
     root.innerHTML = '';
-    const cards = stateBusca.cards;
+    const cardes = state.entidades.cards;
     
     const frag = document.createDocumentFragment();
 
-    console.log(`Tamanho do array de cards => ${cards.length}`);
+    console.log(`Tamanho do array de cards => ${cardes.length}`);
     
-    if(cards.length > 0) {
-        cards.forEach(card => {
+    //usar cardes
+    if(cardes.length > 0) {
+        cardes.forEach(card => {
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
             article.setAttribute('id', `${card.id}`)
@@ -159,6 +159,7 @@ export function renderBuscarPalavra(valor) {
 
     main.appendChild(frag);
 
+    //colocar value no input
     root.innerHTML = `
         <header class="menu-bar">
             <button class="icone" id="home">
@@ -172,7 +173,7 @@ export function renderBuscarPalavra(valor) {
                 <h1>Palavras</h1>
             </header>
             <section class="toolbar" id="toolbar">
-                <input type="search" id="q" placeholder="Buscar..." autocomplete="off">
+                <input type="search" placeholder="Busca..." id="q" autocomplete="off">
             </section>
         </div>
     `;
@@ -186,26 +187,28 @@ export function renderBuscarPalavra(valor) {
 
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre')
+    desc.setAttribute('class', 'alinhar-conteudo');
 
-    if(stateCardPopUp.aberto) {
+    // usar satate principal
+    if(state.cardPanel.isOpen) {
         if(janelaPai.classList.contains('esconder-janela')) {
             janelaPai.classList.remove('esconder-janela');
         }
-        if(stateCardPopUp.page === 'info') {
-            let cardPalavra = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
+        if(state.cardPanel.mode === 'view') {
+            let cardPalavra = state.entidades.cards.find((element) => element.id === state.cardPanel.idCardAtivo);
         
-            console.log(`Id que está no estado do popup => ${stateCardPopUp.idCard}`)
+            console.log(`Id que está no estado do popup => ${state.cardPanel.idCardAtivo}`)
 
             nomePalavra.innerHTML = `${cardPalavra.nome}`;
             desc.innerHTML = `${cardPalavra.desc}`;
-            janelaInfo.setAttribute('id', `${cardPalavra.id}`);
+            janelaInfo.dataset.id = cardPalavra.id
             janelaConteudo.appendChild(nomePalavra);
             janelaConteudo.appendChild(desc);
             janelaInfo.appendChild(janelaConteudo);
             janelaInfo.appendChild(caixaOpcoes);
         }   
-        else if(stateCardPopUp.page === 'edit') {
-            let palavraMostrar = stateBusca.cards.find((element) => element.id === stateCardPopUp.idCard);
+        else if(state.cardPanel.mode === 'edit') {
+            let palavraMostrar = state.entidades.cards.find((element) => element.id === state.cardPanel.idCardAtivo);
 
             let input = criarInput(palavraMostrar);
             let textArea = criarTextArea(palavraMostrar);
@@ -215,6 +218,7 @@ export function renderBuscarPalavra(valor) {
             janelaConteudo.appendChild(textArea);
             janelaInfo.appendChild(janelaConteudo);
             janelaInfo.appendChild(caixaOpcoesEditar);
+            janelaInfo.dataset.id = palavraMostrar.id;
             
         }
         janelaPai.classList.add('mostrar-janela');
@@ -227,8 +231,9 @@ export function renderBuscarPalavra(valor) {
     janelaPai.appendChild(janelaInfo);
     janelaPai.appendChild(botSair);
     root.appendChild(janelaPai);
-    if(stateCardPopUp.aberto) {
-        stateCardPopUp.page === 'info' ? listenerRemoverCard(stateBusca) : listenersOpcoesEdit();
+    console.log(`Situação do card => ${state.cardPanel.mode}`);
+    if(state.cardPanel.isOpen) {
+        state.cardPanel.mode === 'view' ? listenerRemoverCard(state) : listenersOpcoesEdit();
     }
     listenersBuscarPalavra();
 }

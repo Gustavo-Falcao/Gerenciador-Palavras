@@ -1,10 +1,7 @@
-import { getStateBusca } from "../state/State.js";
+import { statePrincipal } from "../state/State.js";
 //Renderização da lista de palavras
 export function renderListaPalavras() {
-    const stateBusca = getStateBusca();
-    const cardsOrdenados = ordenarCards(stateBusca.cards, stateBusca.busca);
-    console.log(`Tamanho cards normal => ${stateBusca.cards.length}`);
-    console.log(`Tamanho card filtrado => ${cardsOrdenados.length}`);
+    const cardsOrdenados = ordenarCards(statePrincipal.entidades.cards, statePrincipal.busca.query);
     cardsOrdenados.forEach(element => {
         console.log(`Nome card => ${element.nome}`);
     });

@@ -1,3 +1,4 @@
+/*
 import { setStateCards, setStatePagBusca } from "../state/State.js";
 
 export function carregarCards() {
@@ -15,3 +16,4 @@ export function atualizarCards() {
         setStateCards(cardsCarregados);
     }
 }
+    */

@@ -1,23 +1,21 @@
-import { getStateNavegacao } from "./src/state/State.js";
+import { getStatePrincipal, statePrincipal } from "./src/state/State.js";
 import { renderAddPalavra } from "./src/components/RenderAdd.js";
 import { renderBuscarPalavra } from "./src/components/RenderBusca.js";
 import { renderHome } from "./src/components/RenderHome.js";
-import { carregarCards } from "./src/storage/Dados.js";
 
 let container = document.getElementById('root');
 
 export function render() {
-    const stateNavegacao = getStateNavegacao();
-    console.log(`Qual pagina = > ${stateNavegacao.page}`)
+    console.log(`Modo do cardPopUp => ${statePrincipal.cardPanel.mode}`);
+    console.log(`Qual pagina = > ${statePrincipal.navegacao.page}`)
 
-    if(stateNavegacao.page === 'add') {
+    if(statePrincipal.navegacao.page === 'add') {
         renderAddPalavra(container);
     } 
-    if(stateNavegacao.page === 'buscar') {
-        carregarCards();
-        renderBuscarPalavra(container);
+    if(statePrincipal.navegacao.page === 'buscar') {
+        renderBuscarPalavra();
     } 
-    if(stateNavegacao.page === 'home'){
+    if(statePrincipal.navegacao.page === 'home'){
         renderHome(container);
     } 
 }

@@ -197,6 +197,7 @@ textarea {
     background-color: #0c111bba;
     backdrop-filter: blur(6px);
     flex-direction: column;
+    text-align: center;
     /* position: absolute;
     top: 15%;
     left: 10%; */
@@ -220,4 +221,8 @@ textarea {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+}
+
+.alinhar-conteudo {
+    text-align: left;
 }
