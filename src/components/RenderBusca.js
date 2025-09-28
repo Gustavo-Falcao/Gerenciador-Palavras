@@ -159,6 +159,8 @@ export function renderBuscarPalavra() {
 
     main.appendChild(frag);
 
+    const totalPalavras = cardes.length;
+
     //colocar value no input
     root.innerHTML = `
         <header class="menu-bar">
@@ -174,6 +176,7 @@ export function renderBuscarPalavra() {
             </header>
             <section class="toolbar" id="toolbar">
                 <input type="search" placeholder="Busca..." id="q" autocomplete="off">
+                <span>Total de palavras: ${totalPalavras}</span>
             </section>
         </div>
     `;
