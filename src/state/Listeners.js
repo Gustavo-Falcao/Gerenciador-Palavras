@@ -1,6 +1,6 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { getStatePrincipal, setStatePrincipal, statePrincipal } from "./State.js";
+import { setStatePrincipal, statePrincipal } from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 export function listenersHome() {
@@ -23,7 +23,6 @@ export function listenersBuscarPalavra() {
         console.log(`Palavra para buscar => ${e.target.value}`);
         setStatePrincipal({busca: {query: e.target.value}});
         renderListaPalavras();
-        console.log('Entrou no debounceee')
     }, 250));
 
     //Listener para mostrar as informacoes do card
@@ -113,8 +112,9 @@ export function listenerAddPalavra() {
     if(nomePalavra && descPalavra) {
         const newCard = {id: gerarId(), nome: nomePalavra, desc: descPalavra};
         if(cards) {
-            setStatePrincipal({entidades: {cards: [...cards, newCard]}, navegacao: {page: 'home'}});
+            setStatePrincipal({entidades: {cards: [...cards, newCard]}, navegacao: {page: 'home'}, dailyWords: {amount: statePrincipal.dailyWords.amount + 1, day: statePrincipal.dailyWords.day}});
             localStorage.setItem('arrayCards', JSON.stringify(statePrincipal.entidades.cards));
+            localStorage.setItem('infoDailyWords', JSON.stringify(statePrincipal.dailyWords));
             render();
         } else {
             console.log('Deu ruim');

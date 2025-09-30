@@ -1,4 +1,5 @@
 //Estado principal
+const savedDailyWords = JSON.parse(localStorage.getItem('infoDailyWords')) || {};
 export let statePrincipal = {
     entidades: {
         cards: JSON.parse(localStorage.getItem('arrayCards')) || []
@@ -13,7 +14,12 @@ export let statePrincipal = {
         isOpen: false,
         idCardAtivo: null,
         mode: 'view'
+    },
+    dailyWords: {
+        amount: savedDailyWords.amount || 0,
+        day: savedDailyWords.day || 0
     }
+
 };
 
 export function getStatePrincipal() {
