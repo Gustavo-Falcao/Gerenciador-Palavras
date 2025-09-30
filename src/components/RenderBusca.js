@@ -1,3 +1,4 @@
+import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit} from "../state/Listeners.js";
 import { getStatePrincipal, statePrincipal } from "../state/State.js";
 
@@ -160,7 +161,9 @@ export function renderBuscarPalavra() {
     main.appendChild(frag);
 
     const totalPalavras = cardes.length;
-    const totalPalavrasDia = statePrincipal.dailyWords.amount;
+    const totalPalavrasDia = statePrincipal.
+    dailyWords.amount;
+    const currentDate = getCurrentDate();
     //colocar value no input
     root.innerHTML = `
         <header class="menu-bar">
@@ -176,7 +179,7 @@ export function renderBuscarPalavra() {
             </header>
             <section class="toolbar" id="toolbar">
                 <input type="search" placeholder="Busca..." id="q" autocomplete="off">
-                <p>Total de palavras: ${totalPalavras}<br>Palavras adicinonadas hoje: ${totalPalavrasDia}</p>
+                <p>Total: ${totalPalavras}<br>Adicinonadas hoje [${currentDate}]: ${totalPalavrasDia}</p>
             </section>
         </div>
     `;

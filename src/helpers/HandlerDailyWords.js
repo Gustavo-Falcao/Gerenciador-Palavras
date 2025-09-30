@@ -7,3 +7,9 @@ export function handlerDailyWords() {
     }
 
 }
+
+export function getCurrentDate() {
+    const data = new Date();
+    const dataFormatada = data.toLocaleDateString('pt-BR');
+    return dataFormatada;
+}
