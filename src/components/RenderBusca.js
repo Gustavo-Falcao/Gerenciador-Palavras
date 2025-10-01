@@ -194,6 +194,7 @@ export function renderBuscarPalavra() {
     let nomePalavra = document.createElement('h2');
     let desc = document.createElement('pre')
     desc.setAttribute('class', 'alinhar-conteudo');
+    desc.setAttribute('wrap', 'hard');
 
     // usar satate principal
     if(state.cardPanel.isOpen) {
