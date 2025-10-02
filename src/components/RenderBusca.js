@@ -179,8 +179,11 @@ export function renderBuscarPalavra() {
             </header>
             <section class="toolbar" id="toolbar">
                 <input type="search" placeholder="Busca..." id="q" autocomplete="off">
-                <p>Total: ${totalPalavras}<br>Adicinonadas hoje [${currentDate}]: ${totalPalavrasDia}</p>
-            </section>
+                <div class="box-infos"> 
+                    <small class="badge">Total: ${totalPalavras}</small>
+                    <small class="ok">Hoje: ${totalPalavrasDia}</small>
+                </div>
+                </section>
         </div>
     `;
     root.appendChild(main);

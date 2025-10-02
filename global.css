@@ -121,7 +121,7 @@ textarea {
     display: grid;
     grid-template-rows: auto auto 1fr;
     gap: 12px;
-    padding: 30px 16px 16px 16px;
+    padding: 30px 16px 0px 16px;
 }
 
 .titulo-buscar {
@@ -131,11 +131,13 @@ textarea {
 }
 
 .toolbar { 
-    margin: 0px 0px 9px 20px;
+    margin: 0px 10px 9px 10px;
     display: flex; 
     gap: 8px; 
     flex-wrap: wrap; 
     align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2d36;
 }
 
 .grid {
@@ -225,4 +227,29 @@ textarea {
 
 .alinhar-conteudo {
     text-align: left;
+}
+
+.badge {
+    font: 600 12px/1 system-ui;
+    border: 1px solid #2a2d36;
+    padding: 6px 10px;
+    border-radius: 999px;
+    letter-spacing: .2px;
+    background-color: var(--cardBg);
+}
+
+.ok {
+    font: 600 12px/1 system-ui;
+    padding: 6px 10px;
+    background: rgba(25, 195, 125, .12);
+    color: #19c37d;
+    border-color: transparent;
+    border-radius: 999px;
+    letter-spacing: .2px;
+}
+
+.box-infos {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
