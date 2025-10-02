@@ -231,11 +231,12 @@ textarea {
 
 .badge {
     font: 600 12px/1 system-ui;
-    border: 1px solid #2a2d36;
+    /* border: 1px solid #2a2d36; */
     padding: 6px 10px;
     border-radius: 999px;
     letter-spacing: .2px;
-    background-color: var(--cardBg);
+    background-color: rgba(168, 172, 184, .12);
+    color: #a8acb8;
 }
 
 .ok {
