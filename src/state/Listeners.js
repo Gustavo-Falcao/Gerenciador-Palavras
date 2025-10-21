@@ -3,18 +3,42 @@ import { gerarId } from "../helpers/GerarId.js";
 import { setStatePrincipal, statePrincipal } from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
+import { estadoModalDeck } from "./State.js";
 export function listenersHome() {
     // Listener para o botão que irá para a página de add palavra
-    document.getElementById('add').addEventListener('click', () => {
-       setStatePrincipal({navegacao: {page: 'add'}});
-       render();
-    });
+    // document.getElementById('add').addEventListener('click', () => {
+    //    setStatePrincipal({navegacao: {page: 'add'}});
+    //    render();
+    // });
 
     // Listener para o botão que irá direcionar para a página de buscar palavar
-    document.getElementById('buscar').addEventListener('click', () => {
-        setStatePrincipal({navegacao: {page: 'buscar'}});
+    // document.getElementById('buscar').addEventListener('click', () => {
+    //     setStatePrincipal({navegacao: {page: 'buscar'}});
+    //     render()
+    // });
+
+    //Abrir opcoes do deck
+    document.getElementById('conteudo').addEventListener('click', (e) => {
+        if(e.target) {
+            let pai = e.target.closest('.deck');
+            let cont = pai.getElementByClass('opcoes')
+            
+        }
+    })
+}
+
+export function handlerModal() {
+    document.getElementById('open-deck').addEventListener('click', () => {
+        estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
         render()
-    });
+    })
+
+    if(estadoModalDeck.isModelOpen) {
+        document.getElementById('cancel').addEventListener('click', () => {
+            estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
+            render()
+        })
+    }
 }
 
 export function listenersBuscarPalavra() {

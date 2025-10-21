@@ -22,6 +22,8 @@ export let statePrincipal = {
 
 };
 
+export let estadoModalDeck = {isModelOpen: false}
+
 export function getStatePrincipal() {
     return statePrincipal;
 }
