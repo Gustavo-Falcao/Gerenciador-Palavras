@@ -1,4 +1,4 @@
-import { statePrincipal } from "./src/state/State.js";
+import { statePrincipal, stateNavegacao } from "./src/state/State.js";
 import { renderAddPalavra } from "./src/components/RenderAdd.js";
 import { renderBuscarPalavra } from "./src/components/RenderBusca.js";
 import { renderHome } from "./src/components/RenderHome.js";
@@ -8,17 +8,17 @@ let container = document.getElementById('root');
 
 export function render() {
     console.log(`Modo do cardPopUp => ${statePrincipal.cardPanel.mode}`);
-    console.log(`Qual pagina = > ${statePrincipal.navegacao.page}`)
+    console.log(`Qual pagina = > ${stateNavegacao.page}`)
 
     handlerDailyWords();
 
-    if(statePrincipal.navegacao.page === 'add') {
+    if(stateNavegacao.page === 'add') {
         renderAddPalavra(container);
     } 
-    if(statePrincipal.navegacao.page === 'buscar') {
+    if(stateNavegacao.page === 'buscar') {
         renderBuscarPalavra();
     } 
-    if(statePrincipal.navegacao.page === 'home'){
+    if(stateNavegacao.page === 'home'){
         renderHome(container);
     } 
 }

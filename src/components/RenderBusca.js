@@ -1,6 +1,6 @@
 import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit} from "../state/Listeners.js";
-import { getStatePrincipal, statePrincipal } from "../state/State.js";
+import { getStatePrincipal, statePrincipal, stateNavegacao, arrayDecks } from "../state/State.js";
 
 function criarMainList() {
     const main = document.createElement('main');
@@ -122,7 +122,17 @@ function criarCaixaOpcoesEditar() {
     return caixaOpcoesEditar;
 }
 // Renderização da página de buscar palavra
+
+function encontraDeck(id) {
+    const deckFind = arrayDecks.find((deck) => deck.id === id)
+    return deckFind
+}
+
 export function renderBuscarPalavra() {
+
+    const deck = encontraDeck(stateNavegacao.idDeck)
+    const cardsDeck = deck.cards
+    console.log(cardsDeck)
 
     const state = getStatePrincipal();
     console.log(`Estado do cardPopUp => ${statePrincipal.cardPanel.isOpen}`);
@@ -130,15 +140,15 @@ export function renderBuscarPalavra() {
     let root = document.getElementById('root');
 
     root.innerHTML = '';
-    const cardes = state.entidades.cards;
+    // const cardsDeck = state.entidades.cards;
     
     const frag = document.createDocumentFragment();
 
-    console.log(`Tamanho do array de cards => ${cardes.length}`);
+    console.log(`Tamanho do array de cards => ${cardsDeck.length}`);
     
     //usar cardes
-    if(cardes.length > 0) {
-        cardes.forEach(card => {
+    if(cardsDeck.length > 0) {
+        cardsDeck.forEach(card => {
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
             article.setAttribute('id', `${card.id}`)
@@ -160,10 +170,8 @@ export function renderBuscarPalavra() {
 
     main.appendChild(frag);
 
-    const totalPalavras = cardes.length;
-    const totalPalavrasDia = statePrincipal.
-    dailyWords.amount;
-    const currentDate = getCurrentDate();
+    const totalPalavras = cardsDeck.length;
+    const totalPalavrasDia = deck.dailyWords.amount
     //colocar value no input
     root.innerHTML = `
         <header class="menu-bar">
@@ -200,14 +208,14 @@ export function renderBuscarPalavra() {
     desc.setAttribute('wrap', 'hard');
 
     // usar satate principal
-    if(state.cardPanel.isOpen) {
+    if(stateNavegacao.cardPanel.isOpen) {
         if(janelaPai.classList.contains('esconder-janela')) {
             janelaPai.classList.remove('esconder-janela');
         }
-        if(state.cardPanel.mode === 'view') {
-            let cardPalavra = state.entidades.cards.find((element) => element.id === state.cardPanel.idCardAtivo);
+        if(stateNavegacao.cardPanel.mode === 'view') {
+            let cardPalavra = cardsDeck.find((element) => element.id === stateNavegacao.cardPanel.idCardAtivo);
         
-            console.log(`Id que está no estado do popup => ${state.cardPanel.idCardAtivo}`)
+            console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
 
             nomePalavra.innerHTML = `${cardPalavra.nome}`;
             desc.innerHTML = `${cardPalavra.desc}`;
@@ -217,8 +225,8 @@ export function renderBuscarPalavra() {
             janelaInfo.appendChild(janelaConteudo);
             janelaInfo.appendChild(caixaOpcoes);
         }   
-        else if(state.cardPanel.mode === 'edit') {
-            let palavraMostrar = state.entidades.cards.find((element) => element.id === state.cardPanel.idCardAtivo);
+        else if(stateNavegacao.cardPanel.mode === 'edit') {
+            let palavraMostrar = cardsDeck.find((element) => element.id === stateNavegacao.cardPanel.idCardAtivo);
 
             let input = criarInput(palavraMostrar);
             let textArea = criarTextArea(palavraMostrar);
@@ -241,9 +249,9 @@ export function renderBuscarPalavra() {
     janelaPai.appendChild(janelaInfo);
     janelaPai.appendChild(botSair);
     root.appendChild(janelaPai);
-    console.log(`Situação do card => ${state.cardPanel.mode}`);
-    if(state.cardPanel.isOpen) {
-        state.cardPanel.mode === 'view' ? listenerRemoverCard(state) : listenersOpcoesEdit();
+    console.log(`Situação do card => ${stateNavegacao.cardPanel.mode}`);
+    if(stateNavegacao.cardPanel.isOpen) {
+        stateNavegacao.cardPanel.mode === 'view' ? listenerRemoverCard(stateNavegacao.idDeck) : listenersOpcoesEdit();
     }
     listenersBuscarPalavra();
 }

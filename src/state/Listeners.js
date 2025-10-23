@@ -1,10 +1,37 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setStatePrincipal, statePrincipal } from "./State.js";
+import { setStatePrincipal, statePrincipal, estadoModalDeck, setArrayDecks, arrayDecks, setStadoModal, atualizarDeck, setStateNavegacao } from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
-import { estadoModalDeck } from "./State.js";
 export function listenersHome() {
+
+    document.getElementById('conteudo').addEventListener('click', (e) => {
+        if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
+            let elementoPai = e.target.closest('.deck')
+            if(elementoPai) {
+                let idDoPai = elementoPai.id 
+                if(idDoPai != null) {
+                    let novoDecks = arrayDecks.map(
+                        deck => deck.id === idDoPai ? {...deck,...{mostrarOpcoes: !deck.mostrarOpcoes, }}: deck)
+                    setArrayDecks(novoDecks)
+                    render()
+                }
+            }
+        }
+        else if(e.target.closest('.opcoes')) {
+            const idElemento = e.target.id
+            const idDeck = e.target.closest('.deck').id
+
+            if(idElemento === 'add-palavra') {
+                alert("CLicou para add palavar")
+            }
+            else if(idElemento === 'buscar') {
+                setStateNavegacao({page: 'buscar', idDeck: idDeck})
+                render()
+            }
+        }
+    })
+
     // Listener para o botão que irá para a página de add palavra
     // document.getElementById('add').addEventListener('click', () => {
     //    setStatePrincipal({navegacao: {page: 'add'}});
@@ -18,26 +45,58 @@ export function listenersHome() {
     // });
 
     //Abrir opcoes do deck
-    document.getElementById('conteudo').addEventListener('click', (e) => {
-        if(e.target) {
-            let pai = e.target.closest('.deck');
-            let cont = pai.getElementByClass('opcoes')
+    // document.getElementById('conteudo').addEventListener('click', (e) => {
+    //     if(e.target) {
+    //         let pai = e.target.closest('.deck');
+    //         let cont = pai.getElementByClass('opcoes')
             
-        }
-    })
+    //     }
+    // })
 }
 
 export function handlerModal() {
-    document.getElementById('open-deck').addEventListener('click', () => {
+
+    if(estadoModalDeck.isModelOpen) {
+        document.getElementById('opcoes').addEventListener('click', (e) => {
+            if(e.target) {
+                if(e.target.id === 'cancel') {
+                    setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
+                    render()
+                }
+                else if (e.target.id === 'add-deck') {
+                    const nomeDeck = document.getElementById('nome-deck').value.trim();
+                    console.log("Entrou no else if e conteudo: ", nomeDeck)
+                    if(nomeDeck.length > 0) {
+                        const newDeck = {
+                            id: gerarId(),
+                            nome: nomeDeck,
+                            dailyWords: {
+                                amount: 0,
+                                day: 0
+                            },
+                            cards: [],
+                            mostrarOpcoes: false
+                        }
+                        setArrayDecks([...arrayDecks, newDeck])
+                        localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
+                        setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
+                        if(arrayDecks.length === 1 ) {
+                            atualizarDeck(newDeck.id)
+                        }
+                    }
+                    render()
+                }
+                else {
+                    return
+                }
+                
+            }
+        })
+    } else {
+        document.getElementById('open-deck').addEventListener('click', () => {
         estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
         render()
     })
-
-    if(estadoModalDeck.isModelOpen) {
-        document.getElementById('cancel').addEventListener('click', () => {
-            estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
-            render()
-        })
     }
 }
 
@@ -55,6 +114,7 @@ export function listenersBuscarPalavra() {
         console.log(`Id do elemento clicado => ${elementoClicado.id}`);
         //setStateCardPopUp({aberto: true, idCard: elementoClicado.id, page: 'info'});
         setStatePrincipal({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}});
+        setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
         render()
     });
 
@@ -68,13 +128,13 @@ export function listenersBuscarPalavra() {
     //Listener para o botão home da página de buscar palavra
     document.getElementById('home').addEventListener('click', () => {
        // setStateNavegacao({page: 'home'});
-        setStatePrincipal({navegacao: {page: 'home'}});
+        setStateNavegacao({page: 'home'})
         render()
     });
 }
 
 //Listener para remover um card
-export function listenerRemoverCard(state) {
+export function listenerRemoverCard(idDeck) {
     document.getElementById('opcoes').addEventListener('click', (e) => {
         
         let idCardAtual = e.target.closest('.janela-info').dataset.id;
@@ -82,10 +142,15 @@ export function listenerRemoverCard(state) {
         console.log(`ID CARD ATUAL => ${idCardAtual}`);
 
         if(e.target.closest('#deletar')) {    
-            let novoCards = state.entidades.cards.filter(card => card.id !== idCardAtual);
+            const deck = arrayDecks.find(dec => dec.id === idDeck)
+            //const novoDeck = deck.filter(card => card.id !== idCardAtual)
+            //let novoCards = state.entidades.cards.filter(card => card.id !== idCardAtual);
             //setStateCardPopUp({aberto: false, idCard: ''});
-            setStatePrincipal({entidades: {cards: novoCards}, cardPanel: {isOpen: false, idCardAtivo: statePrincipal.cardPanel.idCardAtivo, mode: statePrincipal.cardPanel.mode}});
-            localStorage.setItem('arrayCards', JSON.stringify(novoCards));
+            const novoDecks = arrayDecks.map(dec => dec.id === idDeck ? dec.cards.filter(card => card.id !== idCardAtual) : dec)
+            setArrayDecks(novoDecks)
+            
+            // setStatePrincipal({entidades: {cards: novoCards}, cardPanel: {isOpen: false, idCardAtivo: statePrincipal.cardPanel.idCardAtivo, mode: statePrincipal.cardPanel.mode}});
+            //localStorage.setItem('arrayCards', JSON.stringify(novoCards));
             //atualizarCards();
             render();
         }

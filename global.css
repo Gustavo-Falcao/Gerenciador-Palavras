@@ -105,15 +105,15 @@ textarea {
     align-items: center;
     justify-content: center;
     gap: 20px;
-}
-
-main {
-    margin-top: 100px;
+    padding-top: 40px;
+    border-top: 1px solid #2d3c50;
+    width: fit-content;
+    margin: auto;
 }
 
 footer {
     position: fixed;
-    top: 85%;
+    top: 90%;
     width: 100%;
     text-align: center;
 }
@@ -127,8 +127,13 @@ footer {
 
 .titulo-home {
     width: 100%;
-    margin-top: 30px;
+    margin: 50px 0px 30px 0px;
     text-align: center;
+
+}
+
+.titulo-home > h1 {
+    margin: 0px;
 }
 
 .deck {
@@ -146,6 +151,7 @@ footer {
 .deck > p {
     width: 100%;
     margin-top: 25px;
+    margin-bottom: 25px;
 }
 
 .row-info {
@@ -162,10 +168,11 @@ footer {
 
 .opcoes {
     width: 100%;
-    display: none;
+    display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #2d3c50;
 }
 
 .show {
