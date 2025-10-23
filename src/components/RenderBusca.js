@@ -1,5 +1,5 @@
 import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
-import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit} from "../state/Listeners.js";
+import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome} from "../state/Listeners.js";
 import { getStatePrincipal, statePrincipal, stateNavegacao, arrayDecks } from "../state/State.js";
 
 function criarMainList() {
@@ -133,9 +133,12 @@ export function renderBuscarPalavra() {
     const deck = encontraDeck(stateNavegacao.idDeck)
     const cardsDeck = deck.cards
     console.log(cardsDeck)
+    console.log(`Quantidade palavras: ${deck.dailyWords.amount}`)
+    console.log(`Dia: ${deck.dailyWords.day}`)
 
     const state = getStatePrincipal();
-    console.log(`Estado do cardPopUp => ${statePrincipal.cardPanel.isOpen}`);
+    console.log(`Estado do cardPopUp => ${stateNavegacao.cardPanel.isOpen}`);
+    console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
 
     let root = document.getElementById('root');
 
@@ -214,8 +217,6 @@ export function renderBuscarPalavra() {
         }
         if(stateNavegacao.cardPanel.mode === 'view') {
             let cardPalavra = cardsDeck.find((element) => element.id === stateNavegacao.cardPanel.idCardAtivo);
-        
-            console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
 
             nomePalavra.innerHTML = `${cardPalavra.nome}`;
             desc.innerHTML = `${cardPalavra.desc}`;
@@ -254,4 +255,5 @@ export function renderBuscarPalavra() {
         stateNavegacao.cardPanel.mode === 'view' ? listenerRemoverCard(stateNavegacao.idDeck) : listenersOpcoesEdit();
     }
     listenersBuscarPalavra();
+    voltarHome()
 }

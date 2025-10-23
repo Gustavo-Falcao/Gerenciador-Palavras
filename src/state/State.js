@@ -1,4 +1,5 @@
 //Estado principal
+import { handlerDailyWordsFirstDeck } from "../helpers/HandlerDailyWords.js";
 const savedDailyWords = JSON.parse(localStorage.getItem('infoDailyWords')) || {};
 export let statePrincipal = {
     entidades: {
@@ -21,7 +22,6 @@ export let statePrincipal = {
     }
 
 };
-
 
 export let stateNavegacao = {
     page: 'home',
@@ -46,13 +46,28 @@ export function setArrayDecks(newDeck) {
 
 export function atualizarDeck(idDeck) {
     //let cardsAnts = JSON.parse(localStorage.getItem('arrayCards'))
+
     let newArray = arrayDecks.map(deck => 
-        deck.id === idDeck ? {...deck, ...{dailyWords: {amount: savedDailyWords.amount, day: savedDailyWords.day}, cards: statePrincipal.entidades.cards}} : deck
+        deck.id === idDeck ? {...deck, ...{dailyWords: handlerDailyWordsFirstDeck(savedDailyWords.day, savedDailyWords.amount), cards: statePrincipal.entidades.cards}} : deck
     )
     setArrayDecks(newArray)
-    localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
+    //localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
 }
 
+export let mostrarOpcoesDeck = {
+    idDeckMostrar: '',
+    isMostrar: false
+}
+
+export function setMostrarOpcoesDeck(newState) {
+    mostrarOpcoesDeck = {...mostrarOpcoesDeck, ...newState}
+}
+
+export let deckComponent = {isCriado: false}
+
+export function setDeckComponente(newState) {
+    deckComponent = {...deckComponent, ...newState}
+}
 // {
 //     id: gerarId(),
 //     nome: nomeDeck,

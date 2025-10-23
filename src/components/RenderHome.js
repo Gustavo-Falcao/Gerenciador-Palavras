@@ -1,5 +1,5 @@
 import { listenersHome } from "../state/Listeners.js";
-import { arrayDecks, estadoModalDeck } from "../state/State.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck } from "../state/State.js";
 import { handlerModal } from "../state/Listeners.js";
 
 //criar janela modal
@@ -49,7 +49,7 @@ function janelaModal() {
 }
 
 //gerar deck
-function gerarDeck(nome, id, isMostrar, tamanhoDeck, palavrasDia) {
+function gerarDeck(nome, id, tamanhoDeck, dailyWords) {
     let deck = document.createElement('div')
     deck.setAttribute('class', 'deck')
     deck.setAttribute('id', id)
@@ -64,7 +64,7 @@ function gerarDeck(nome, id, isMostrar, tamanhoDeck, palavrasDia) {
     quantNoDeck.innerHTML = tamanhoDeck
 
     let infoDeck = document.createElement('p')
-    infoDeck.innerHTML = `Hoje: ${palavrasDia}`
+    infoDeck.innerHTML = `Hoje: ${dailyWords.amount} Dia: ${dailyWords.day}`
 
     let opcoesDeck = document.createElement('div')
     opcoesDeck.setAttribute('class', 'opcoes')
@@ -77,7 +77,6 @@ function gerarDeck(nome, id, isMostrar, tamanhoDeck, palavrasDia) {
     botBuscar.setAttribute('id', 'buscar')
     botBuscar.innerHTML = 'Find'
 
-
     opcoesDeck.appendChild(botAdicionar)
     opcoesDeck.appendChild(botBuscar)
 
@@ -86,9 +85,10 @@ function gerarDeck(nome, id, isMostrar, tamanhoDeck, palavrasDia) {
 
     deck.appendChild(rowInfo)
     deck.appendChild(infoDeck)
-    
-    if(isMostrar) {
-        deck.appendChild(opcoesDeck)
+    if(id === mostrarOpcoesDeck.idDeckMostrar) {
+        if(mostrarOpcoesDeck.isMostrar) {
+            deck.appendChild(opcoesDeck)
+        }
     }
 
     return deck
@@ -103,6 +103,13 @@ function nenhumDeckCriado() {
 
 // Renderização da página home
 export function renderHome(root) {
+    console.log(`Id do card: ${stateNavegacao.cardPanel.idCardAtivo}`)
+    console.log(`Modo cardPanel: ${stateNavegacao.cardPanel.mode}`)
+    console.log(`O card está aberto ? ${stateNavegacao.cardPanel.isOpen}`)
+    console.log(`ID do pai para mostrar op => ${mostrarOpcoesDeck.idDeckMostrar}`)
+    console.log(`É para mostrar ??? ${mostrarOpcoesDeck.isMostrar}`)
+    
+
 
     console.log(`Tamanho do array de decks => ${arrayDecks.length}`)
     root.innerHTML = '';
@@ -123,16 +130,16 @@ export function renderHome(root) {
 
     let sectionElement = document.getElementById('conteudo');
 
-    if(arrayDecks.length < 1) {
-        sectionElement.appendChild(nenhumDeckCriado())
-    }
-
     let frag = document.createDocumentFragment();
 
-    arrayDecks.forEach(deck => {
-        const deckElement = gerarDeck(deck.nome, deck.id, deck.mostrarOpcoes, deck.cards.length, deck.dailyWords.amount)
-        frag.appendChild(deckElement)
-    });
+    if(arrayDecks.length < 1) {
+        sectionElement.appendChild(nenhumDeckCriado())
+    } else {
+        arrayDecks.forEach(deck => {
+            const deckElement = gerarDeck(deck.nome, deck.id, deck.cards.length, deck.dailyWords)
+            frag.appendChild(deckElement)
+        });
+    }
     
     if(estadoModalDeck.isModelOpen) {
         frag.appendChild(janelaModal())

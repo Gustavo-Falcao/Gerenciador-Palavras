@@ -1,8 +1,9 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setStatePrincipal, statePrincipal, estadoModalDeck, setArrayDecks, arrayDecks, setStadoModal, atualizarDeck, setStateNavegacao } from "./State.js";
+import { setStatePrincipal, estadoModalDeck, setArrayDecks, arrayDecks, setStadoModal, atualizarDeck, setStateNavegacao, stateNavegacao, mostrarOpcoesDeck, setMostrarOpcoesDeck } from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
+import { getCurrentDay } from "../helpers/HandlerDailyWords.js";
 export function listenersHome() {
 
     document.getElementById('conteudo').addEventListener('click', (e) => {
@@ -10,10 +11,25 @@ export function listenersHome() {
             let elementoPai = e.target.closest('.deck')
             if(elementoPai) {
                 let idDoPai = elementoPai.id 
+                console.log(`ELEMENTO DO PAI (${idDoPai})`)
                 if(idDoPai != null) {
-                    let novoDecks = arrayDecks.map(
-                        deck => deck.id === idDoPai ? {...deck,...{mostrarOpcoes: !deck.mostrarOpcoes, }}: deck)
-                    setArrayDecks(novoDecks)
+                    if(mostrarOpcoesDeck.idDeckMostrar.length < 1 || (idDoPai !== mostrarOpcoesDeck.idDeckMostrar && !mostrarOpcoesDeck.isMostrar)) {
+                        console.log("111")
+                        setMostrarOpcoesDeck({idDeckMostrar: idDoPai, isMostrar: true})
+                    }
+                    else if(idDoPai === mostrarOpcoesDeck.idDeckMostrar && mostrarOpcoesDeck.isMostrar) {
+                        console.log("222")
+                        setMostrarOpcoesDeck({idDeckMostrar: idDoPai, isMostrar: false})
+                    }
+                    else if(idDoPai === mostrarOpcoesDeck.idDeckMostrar && !mostrarOpcoesDeck.isMostrar) {
+                        console.log("333")
+                        setMostrarOpcoesDeck({idDeckMostrar: mostrarOpcoesDeck.idDeckMostrar, isMostrar: true})
+                    }
+                    else if(idDoPai !== mostrarOpcoesDeck.idDeckMostrar && mostrarOpcoesDeck.isMostrar){
+                        console.log("444")
+                        setMostrarOpcoesDeck({idDeckMostrar: idDoPai, isMostrar: true})
+                    }
+    
                     render()
                 }
             }
@@ -23,7 +39,8 @@ export function listenersHome() {
             const idDeck = e.target.closest('.deck').id
 
             if(idElemento === 'add-palavra') {
-                alert("CLicou para add palavar")
+                setStateNavegacao({page: 'add', idDeck: idDeck})
+                render()
             }
             else if(idElemento === 'buscar') {
                 setStateNavegacao({page: 'buscar', idDeck: idDeck})
@@ -72,17 +89,17 @@ export function handlerModal() {
                             nome: nomeDeck,
                             dailyWords: {
                                 amount: 0,
-                                day: 0
+                                day: getCurrentDay()
                             },
                             cards: [],
                             mostrarOpcoes: false
                         }
                         setArrayDecks([...arrayDecks, newDeck])
-                        localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
-                        setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                         if(arrayDecks.length === 1 ) {
                             atualizarDeck(newDeck.id)
                         }
+                        localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
+                        setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                     }
                     render()
                 }
@@ -112,28 +129,28 @@ export function listenersBuscarPalavra() {
     document.getElementById('grid').addEventListener('click', (e) => {
         let elementoClicado = e.target.closest('.card')
         console.log(`Id do elemento clicado => ${elementoClicado.id}`);
-        //setStateCardPopUp({aberto: true, idCard: elementoClicado.id, page: 'info'});
-        setStatePrincipal({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}});
         setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
         render()
     });
 
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
-       // setStateCardPopUp({aberto: false, idCard: '', page: ''});
-        setStatePrincipal({cardPanel: {isOpen: false, idCardAtivo: statePrincipal.cardPanel.idCardAtivo, mode: statePrincipal.cardPanel.mode}});
+        setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
         render()
     });
 
+}
+
+export function voltarHome() {
     //Listener para o botão home da página de buscar palavra
     document.getElementById('home').addEventListener('click', () => {
        // setStateNavegacao({page: 'home'});
-        setStateNavegacao({page: 'home'})
+        setStateNavegacao({page: 'home', idDeck: null})
         render()
     });
 }
 
-//Listener para remover um card
+//Listener para tratar opçoes do card
 export function listenerRemoverCard(idDeck) {
     document.getElementById('opcoes').addEventListener('click', (e) => {
         
@@ -142,22 +159,18 @@ export function listenerRemoverCard(idDeck) {
         console.log(`ID CARD ATUAL => ${idCardAtual}`);
 
         if(e.target.closest('#deletar')) {    
-            const deck = arrayDecks.find(dec => dec.id === idDeck)
-            //const novoDeck = deck.filter(card => card.id !== idCardAtual)
-            //let novoCards = state.entidades.cards.filter(card => card.id !== idCardAtual);
-            //setStateCardPopUp({aberto: false, idCard: ''});
-            const novoDecks = arrayDecks.map(dec => dec.id === idDeck ? dec.cards.filter(card => card.id !== idCardAtual) : dec)
+            const novoDecks = arrayDecks.map((dec) => dec.id === idDeck ? {...dec, cards: dec.cards.filter(card => card.id !== idCardAtual)} : dec)
+
             setArrayDecks(novoDecks)
-            
-            // setStatePrincipal({entidades: {cards: novoCards}, cardPanel: {isOpen: false, idCardAtivo: statePrincipal.cardPanel.idCardAtivo, mode: statePrincipal.cardPanel.mode}});
+            setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
+
+            localStorage.setItem('arrayDecks', JSON.stringify(novoDecks))
             //localStorage.setItem('arrayCards', JSON.stringify(novoCards));
-            //atualizarCards();
             render();
         }
         
         if(e.target.closest('#editar')) {
-            //setStateCardPopUp({page: 'edit'});
-            setStatePrincipal({cardPanel: {isOpen: true, idCardAtivo: idCardAtual, mode: 'edit'}});
+            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: idCardAtual, mode: 'edit'}})
             render();
         }
     });
@@ -169,8 +182,7 @@ export function listenersOpcoesEdit() {
         const idCard = e.target.closest('.janela-info').dataset.id;
         console.log(`Id que está para ser editado => ${idCard}`);
         if(e.target.id === 'cancelar') {
-           // setStateCardPopUp({page: 'info'});
-            setStatePrincipal({cardPanel: {mode: 'view', isOpen: true, idCardAtivo: statePrincipal.cardPanel.idCardAtivo}});
+            setStateNavegacao({cardPanel: {mode: 'view', isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo}})
             render()
         }
         else if(e.target.id === 'salvar') {
@@ -178,13 +190,13 @@ export function listenersOpcoesEdit() {
             const contEdit = document.getElementById('cont-edit').value;
 
             if(nomeEdit && contEdit) {
-                const cards = statePrincipal.entidades.cards;
-                const cardEditado = {nome: nomeEdit, desc: contEdit};
-                const novoCards = cards.map(card => card.id === idCard ? {...card, ...cardEditado} : card);
-                //atualizarCards();
-                //setStateCardPopUp({page: 'info'});
-                setStatePrincipal({entidades: {cards: novoCards}, cardPanel: {mode: 'view', isOpen: true, idCardAtivo: statePrincipal.cardPanel.idCardAtivo}});
-                localStorage.setItem('arrayCards', JSON.stringify(novoCards));
+                const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card)} : dec)
+                
+                setArrayDecks(novoArrayDack)
+                localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+
+                setStateNavegacao({cardPanel: {isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'view'}})
+
                 render();
             }
         }
@@ -193,21 +205,20 @@ export function listenersOpcoesEdit() {
 
 // Listener para o botão que irá adicionar palavra
 export function listenerAddPalavra() {
-    const cards = statePrincipal.entidades.cards;
+    //const cards = statePrincipal.entidades.cards;
     document.getElementById('bot-add').addEventListener('click', () => {
-    const nomePalavra = document.getElementById('nome-palavra').value;
-    const descPalavra = document.getElementById('cont-palavra').value;
+        const nomePalavra = document.getElementById('nome-palavra').value;
+        const descPalavra = document.getElementById('cont-palavra').value;
 
-    if(nomePalavra && descPalavra) {
-        const newCard = {id: gerarId(), nome: nomePalavra, desc: descPalavra};
-        if(cards) {
-            setStatePrincipal({entidades: {cards: [...cards, newCard]}, navegacao: {page: 'home'}, dailyWords: {amount: statePrincipal.dailyWords.amount + 1, day: statePrincipal.dailyWords.day}});
-            localStorage.setItem('arrayCards', JSON.stringify(statePrincipal.entidades.cards));
-            localStorage.setItem('infoDailyWords', JSON.stringify(statePrincipal.dailyWords));
-            render();
-        } else {
-            console.log('Deu ruim');
+        if(nomePalavra && descPalavra) {
+            const newCard = {id: gerarId(), nome: nomePalavra, desc: descPalavra};
+
+            const novoArrayDack = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, newCard], dailyWords: {amount: (deck.dailyWords.amount + 1), day: deck.dailyWords.day} } : deck)
+            
+            setArrayDecks(novoArrayDack)
+            localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+            setStateNavegacao({page: 'home', idDeck: null})
+            render()
         }
-    }
-});
+    })
 }
