@@ -186,7 +186,7 @@ export function renderBuscarPalavra() {
         </header>
         <div class="main-buscar">
             <header class="titulo-buscar">
-                <h1>Palavras</h1>
+                <h1>${deck.nome}</h1>
             </header>
             <section class="toolbar" id="toolbar">
                 <input type="search" placeholder="Busca..." id="q" autocomplete="off">
@@ -254,6 +254,7 @@ export function renderBuscarPalavra() {
     if(stateNavegacao.cardPanel.isOpen) {
         stateNavegacao.cardPanel.mode === 'view' ? listenerRemoverCard(stateNavegacao.idDeck) : listenersOpcoesEdit();
     }
-    listenersBuscarPalavra();
+
+    if(cardsDeck.length > 0) listenersBuscarPalavra();
     voltarHome()
 }
