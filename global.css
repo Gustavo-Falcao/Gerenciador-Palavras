@@ -58,7 +58,7 @@ button {
 .menu-bar {
     width: 100%;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 18px;
     position: fixed;
     z-index: 10px;
 }
@@ -277,7 +277,7 @@ footer {
     background-color: #11182761;
     width: 100vw;
     height: 100vh;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 999;
@@ -323,8 +323,9 @@ footer {
 
 .janela-info {
     position: absolute;
-    top: 15%;
-    left: 10%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
 }
  
 .caixa-op {

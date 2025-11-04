@@ -1,7 +1,16 @@
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
+import { stateNavegacao, arrayDecks} from "../state/State.js";
 // Renderização da página de add palavra
+
+function encontraDeck(id) {
+    const deckFind = arrayDecks.find((deck) => deck.id === id)
+    return deckFind
+}
+
 export function renderAddPalavra(root) {
     root.innerHTML = '';
+
+    const deck = encontraDeck(stateNavegacao.idDeck)
     
     root.innerHTML = `
         <main class="main-add">
@@ -11,7 +20,7 @@ export function renderAddPalavra(root) {
                     home
                 </span>
             </button>
-                <h1>Adicionar Palavra</h1>
+                <h1>Add em ${deck.nome}</h1>
             </header>
             <form>
             <input type="text" id="nome-palavra" placeholder="Nome da palvra...">
