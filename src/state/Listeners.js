@@ -25,7 +25,7 @@ export function listenersHome() {
                 resultado.textContent = texto;
                 const dados = JSON.parse(texto);
                 console.log("Arquivo lido com sucesso!!");
-                setarValorLocalStorage('mesmoArrayDecks', dados)
+                setarValorLocalStorage('arrayDecks', dados)
             }
 
             leitor.readAsText(file);
