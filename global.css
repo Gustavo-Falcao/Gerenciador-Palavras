@@ -58,9 +58,8 @@ button {
 .menu-bar {
     width: 100%;
     text-align: center;
-    margin-top: 18px;
+    /* margin-top: 41.5px; */
     position: fixed;
-    z-index: 10px;
 }
 
 .main-add {
@@ -230,7 +229,8 @@ footer {
     display: grid;
     grid-template-rows: auto auto 1fr;
     gap: 12px;
-    padding: 30px 16px 0px 16px;
+    padding: 15px 16px 0px 16px;
+    margin-top: 42px;
 }
 
 .titulo-buscar {
