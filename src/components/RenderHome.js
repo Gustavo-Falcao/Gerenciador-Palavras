@@ -101,6 +101,36 @@ function nenhumDeckCriado() {
     return frase
 }
 
+function linkDownload() {
+    const arrayDeckData = arrayDecks;
+    const linkElement = document.createElement('a');
+    const dadosString = JSON.stringify(arrayDeckData, null, 2);
+    const blob = new Blob([dadosString], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    linkElement.setAttribute('href', url);
+    linkElement.setAttribute('download', 'dados.json');
+    linkElement.textContent = "download dados";
+    linkElement.style.color = 'white'
+
+    return linkElement;
+}
+
+function inserirArquivoJson() {
+    const labelElement = document.createElement('label');
+    labelElement.textContent = "select a file";
+    labelElement.setAttribute('for', 'my-file')
+    const inputFileElement = document.createElement('input');
+    inputFileElement.setAttribute('type', 'file');
+    inputFileElement.setAttribute('accept', '.json');
+    inputFileElement.setAttribute('id', 'my-file');
+
+    const div = document.createElement('div');
+    div.appendChild(labelElement);
+    div.appendChild(inputFileElement);
+
+    return div;
+}
+
 // Renderização da página home
 export function renderHome(root) {
     console.log(`Id do card: ${stateNavegacao.cardPanel.idCardAtivo}`)
@@ -115,7 +145,7 @@ export function renderHome(root) {
     root.innerHTML = '';
 
     root.innerHTML = `
-        <header class="titulo-home">
+        <header class="titulo-home" id="titulo-home">
                 <h1>Decks</h1>
         </header>
         <main>
@@ -126,7 +156,11 @@ export function renderHome(root) {
                 Novo deck
             </button>
         </footer>
-    `
+    `;
+    const tituloHome = document.getElementById('titulo-home');
+    tituloHome.appendChild(linkDownload())
+    tituloHome.appendChild(inserirArquivoJson())
+
 
     let sectionElement = document.getElementById('conteudo');
 
@@ -145,6 +179,10 @@ export function renderHome(root) {
         frag.appendChild(janelaModal())
     }
 
+    const preElement = document.createElement('pre');
+    preElement.setAttribute('id', 'cont');
+
+    frag.appendChild(preElement);
     sectionElement.appendChild(frag)
     
     console.log(estadoModalDeck.isModelOpen);

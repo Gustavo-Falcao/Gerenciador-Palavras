@@ -6,6 +6,34 @@ import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDay } from "../helpers/HandlerDailyWords.js";
 export function listenersHome() {
 
+    document.getElementById('my-file').addEventListener('change', (e) => {
+        const resultado = document.getElementById('cont');
+        const selectedFile = e.target.files;
+
+        if(selectedFile.length > 0) {
+            resultado.textContent = " ";
+            console.log("Selected files é maior que 0");
+            const file = selectedFile[0];
+            if(!file) {
+                console.error("Nenhum arquivo selecionado")
+                return
+            }
+            const leitor = new FileReader();
+
+            leitor.onload = () => {
+                const texto = leitor.result;
+                resultado.textContent = texto;
+                const dados = JSON.parse(texto);
+                console.log("Arquivo lido com sucesso!!");
+                setarValorLocalStorage('mesmoArrayDecks', dados)
+            }
+
+            leitor.readAsText(file);
+
+            render()
+        }
+    });
+
     document.getElementById('conteudo').addEventListener('click', (e) => {
         if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
             let elementoPai = e.target.closest('.deck')
@@ -98,7 +126,7 @@ export function handlerModal() {
                         if(arrayDecks.length === 1 ) {
                             atualizarDeck(newDeck.id)
                         }
-                        localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
+                        setarValorLocalStorage('arrayDecks', arrayDecks)
                         setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                     }
                     render()
@@ -164,7 +192,7 @@ export function listenerRemoverCard(idDeck) {
             setArrayDecks(novoDecks)
             setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
 
-            localStorage.setItem('arrayDecks', JSON.stringify(novoDecks))
+            setarValorLocalStorage('arrayDecks', novoDecks);
             //localStorage.setItem('arrayCards', JSON.stringify(novoCards));
             render();
         }
@@ -193,7 +221,7 @@ export function listenersOpcoesEdit() {
                 const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card)} : dec)
                 
                 setArrayDecks(novoArrayDack)
-                localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+                setarValorLocalStorage('arrayDecks', novoArrayDack)
 
                 setStateNavegacao({cardPanel: {isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'view'}})
 
@@ -216,9 +244,13 @@ export function listenerAddPalavra() {
             const novoArrayDack = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, newCard], dailyWords: {amount: (deck.dailyWords.amount + 1), day: deck.dailyWords.day} } : deck)
             
             setArrayDecks(novoArrayDack)
-            localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+            setarValorLocalStorage('arrayDecks', novoArrayDack)
             setStateNavegacao({page: 'home', idDeck: null})
             render()
         }
     })
+}
+
+function setarValorLocalStorage(chave, valor) {
+    localStorage.setItem(chave, JSON.stringify(valor, null, 2));
 }
