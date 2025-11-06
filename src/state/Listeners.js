@@ -5,35 +5,7 @@ import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDay } from "../helpers/HandlerDailyWords.js";
 export function listenersHome() {
-
-    document.getElementById('my-file').addEventListener('change', (e) => {
-        const resultado = document.getElementById('cont');
-        const selectedFile = e.target.files;
-
-        if(selectedFile.length > 0) {
-            resultado.textContent = " ";
-            console.log("Selected files é maior que 0");
-            const file = selectedFile[0];
-            if(!file) {
-                console.error("Nenhum arquivo selecionado")
-                return
-            }
-            const leitor = new FileReader();
-
-            leitor.onload = () => {
-                const texto = leitor.result;
-                resultado.textContent = texto;
-                const dados = JSON.parse(texto);
-                console.log("Arquivo lido com sucesso!!");
-                setarValorLocalStorage('arrayDecks', dados)
-            }
-
-            leitor.readAsText(file);
-
-            render()
-        }
-    });
-
+    
     document.getElementById('conteudo').addEventListener('click', (e) => {
         if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
             let elementoPai = e.target.closest('.deck')

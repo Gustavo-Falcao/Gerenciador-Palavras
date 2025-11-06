@@ -61,10 +61,10 @@ function gerarDeck(nome, id, tamanhoDeck, dailyWords) {
     nomeDeck.innerHTML = nome
 
     let quantNoDeck = document.createElement('small')
-    quantNoDeck.innerHTML = tamanhoDeck
+    quantNoDeck.innerHTML = `Total: ${tamanhoDeck}`
 
     let infoDeck = document.createElement('p')
-    infoDeck.innerHTML = `Hoje: ${dailyWords.amount} Dia: ${dailyWords.day}`
+    infoDeck.innerHTML = `Add no dia ${dailyWords.day}: ${dailyWords.amount}`
 
     let opcoesDeck = document.createElement('div')
     opcoesDeck.setAttribute('class', 'opcoes')
@@ -101,36 +101,6 @@ function nenhumDeckCriado() {
     return frase
 }
 
-function linkDownload() {
-    const arrayDeckData = arrayDecks;
-    const linkElement = document.createElement('a');
-    const dadosString = JSON.stringify(arrayDeckData, null, 2);
-    const blob = new Blob([dadosString], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    linkElement.setAttribute('href', url);
-    linkElement.setAttribute('download', 'dados.json');
-    linkElement.textContent = "download dados";
-    linkElement.style.color = 'white'
-
-    return linkElement;
-}
-
-function inserirArquivoJson() {
-    const labelElement = document.createElement('label');
-    labelElement.textContent = "select a file";
-    labelElement.setAttribute('for', 'my-file')
-    const inputFileElement = document.createElement('input');
-    inputFileElement.setAttribute('type', 'file');
-    inputFileElement.setAttribute('accept', '.json');
-    inputFileElement.setAttribute('id', 'my-file');
-
-    const div = document.createElement('div');
-    div.appendChild(labelElement);
-    div.appendChild(inputFileElement);
-
-    return div;
-}
-
 // Renderização da página home
 export function renderHome(root) {
     console.log(`Id do card: ${stateNavegacao.cardPanel.idCardAtivo}`)
@@ -139,7 +109,6 @@ export function renderHome(root) {
     console.log(`ID do pai para mostrar op => ${mostrarOpcoesDeck.idDeckMostrar}`)
     console.log(`É para mostrar ??? ${mostrarOpcoesDeck.isMostrar}`)
     
-
 
     console.log(`Tamanho do array de decks => ${arrayDecks.length}`)
     root.innerHTML = '';
@@ -157,9 +126,6 @@ export function renderHome(root) {
             </button>
         </footer>
     `;
-    const tituloHome = document.getElementById('titulo-home');
-    tituloHome.appendChild(linkDownload())
-    tituloHome.appendChild(inserirArquivoJson())
 
 
     let sectionElement = document.getElementById('conteudo');
@@ -179,10 +145,6 @@ export function renderHome(root) {
         frag.appendChild(janelaModal())
     }
 
-    const preElement = document.createElement('pre');
-    preElement.setAttribute('id', 'cont');
-
-    frag.appendChild(preElement);
     sectionElement.appendChild(frag)
     
     console.log(estadoModalDeck.isModelOpen);
