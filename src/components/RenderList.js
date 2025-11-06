@@ -1,7 +1,10 @@
-import { statePrincipal } from "../state/State.js";
+import { arrayDecks, stateNavegacao, statePrincipal } from "../state/State.js";
 //Renderização da lista de palavras
 export function renderListaPalavras() {
-    const cardsOrdenados = ordenarCards(statePrincipal.entidades.cards, statePrincipal.busca.query);
+    const deckAtual = arrayDecks.find((deck) => deck.id === stateNavegacao.idDeck);
+    console.log("DECK ATUAL ABAIXO");
+    console.log(deckAtual.cards)
+    const cardsOrdenados = ordenarCards(deckAtual.cards, stateNavegacao.query);
     cardsOrdenados.forEach(element => {
         console.log(`Nome card => ${element.nome}`);
     });

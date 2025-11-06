@@ -136,7 +136,6 @@ export function renderBuscarPalavra() {
     console.log(`Quantidade palavras: ${deck.dailyWords.amount}`)
     console.log(`Dia: ${deck.dailyWords.day}`)
 
-    const state = getStatePrincipal();
     console.log(`Estado do cardPopUp => ${stateNavegacao.cardPanel.isOpen}`);
     console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
 

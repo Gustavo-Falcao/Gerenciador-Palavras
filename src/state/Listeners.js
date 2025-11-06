@@ -5,7 +5,6 @@ import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDay } from "../helpers/HandlerDailyWords.js";
 export function listenersHome() {
-    
     document.getElementById('conteudo').addEventListener('click', (e) => {
         if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
             let elementoPai = e.target.closest('.deck')
@@ -121,16 +120,18 @@ export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
     document.getElementById('q').addEventListener('input', debounce((e)=> {
         console.log(`Palavra para buscar => ${e.target.value}`);
-        setStatePrincipal({busca: {query: e.target.value}});
+        setStateNavegacao({query: e.target.value})
         renderListaPalavras();
     }, 250));
 
     //Listener para mostrar as informacoes do card
     document.getElementById('grid').addEventListener('click', (e) => {
         let elementoClicado = e.target.closest('.card')
-        console.log(`Id do elemento clicado => ${elementoClicado.id}`);
-        setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
-        render()
+        if(elementoClicado) {
+            console.log(`Id do elemento clicado => ${elementoClicado.id}`);
+            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
+            render()
+        }
     });
 
     //Listener para fechar o pop-up com as informacoes do card
