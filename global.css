@@ -275,13 +275,17 @@ footer {
 
 .janela-pai-popup {
     background-color: #11182761;
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
+    position: fixed;
     top: 0;
+    bottom: 0;
     left: 0;
+    right: 0;
     z-index: 999;
     backdrop-filter: blur(5px);
+}
+
+.travar-rolamento {
+    overflow-y: hidden;
 }
 
 .mostrar-janela {
@@ -316,6 +320,7 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.328);
     padding: 10px;
     width: 280px;
+    /* max-height: 500px; */
     h2 {
         text-align: center;
     }

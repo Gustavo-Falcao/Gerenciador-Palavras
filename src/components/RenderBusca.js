@@ -15,6 +15,7 @@ function criarJanelaPai() {
     let janelaPai = document.createElement('div');
     janelaPai.setAttribute('id', 'janela-pai');
     janelaPai.setAttribute('class', 'janela-pai-popup');
+
     return janelaPai;
 }
 
@@ -253,6 +254,9 @@ export function renderBuscarPalavra() {
     console.log(`Situação do card => ${stateNavegacao.cardPanel.mode}`);
     if(stateNavegacao.cardPanel.isOpen) {
         stateNavegacao.cardPanel.mode === 'view' ? listenerRemoverCard(stateNavegacao.idDeck) : listenersOpcoesEdit();
+        root.classList.add('travar-rolamento');
+    } else {
+        root.classList.remove('travar-rolamento');
     }
 
     if(cardsDeck.length > 0) listenersBuscarPalavra();
