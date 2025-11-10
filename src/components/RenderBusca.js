@@ -209,6 +209,9 @@ export function renderBuscarPalavra() {
     let desc = document.createElement('pre')
     desc.setAttribute('class', 'alinhar-conteudo');
     desc.setAttribute('wrap', 'hard');
+    const caixaPaiPre = document.createElement('div');
+    caixaPaiPre.setAttribute('class', 'caixa-pre');
+    caixaPaiPre.appendChild(desc);
 
     // usar satate principal
     if(stateNavegacao.cardPanel.isOpen) {
@@ -222,7 +225,7 @@ export function renderBuscarPalavra() {
             desc.innerHTML = `${cardPalavra.desc}`;
             janelaInfo.dataset.id = cardPalavra.id
             janelaConteudo.appendChild(nomePalavra);
-            janelaConteudo.appendChild(desc);
+            janelaConteudo.appendChild(caixaPaiPre);
             janelaInfo.appendChild(janelaConteudo);
             janelaInfo.appendChild(caixaOpcoes);
         }   
