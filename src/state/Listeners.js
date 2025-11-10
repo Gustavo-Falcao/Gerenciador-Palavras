@@ -5,7 +5,6 @@ import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDay } from "../helpers/HandlerDailyWords.js";
 export function listenersHome() {
-
     document.getElementById('conteudo').addEventListener('click', (e) => {
         if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
             let elementoPai = e.target.closest('.deck')
@@ -98,7 +97,7 @@ export function handlerModal() {
                         if(arrayDecks.length === 1 ) {
                             atualizarDeck(newDeck.id)
                         }
-                        localStorage.setItem('arrayDecks', JSON.stringify(arrayDecks))
+                        setarValorLocalStorage('arrayDecks', arrayDecks)
                         setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                     }
                     render()
@@ -121,16 +120,18 @@ export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
     document.getElementById('q').addEventListener('input', debounce((e)=> {
         console.log(`Palavra para buscar => ${e.target.value}`);
-        setStatePrincipal({busca: {query: e.target.value}});
+        setStateNavegacao({query: e.target.value})
         renderListaPalavras();
     }, 250));
 
     //Listener para mostrar as informacoes do card
     document.getElementById('grid').addEventListener('click', (e) => {
         let elementoClicado = e.target.closest('.card')
-        console.log(`Id do elemento clicado => ${elementoClicado.id}`);
-        setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
-        render()
+        if(elementoClicado) {
+            console.log(`Id do elemento clicado => ${elementoClicado.id}`);
+            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
+            render()
+        }
     });
 
     //Listener para fechar o pop-up com as informacoes do card
@@ -164,7 +165,7 @@ export function listenerRemoverCard(idDeck) {
             setArrayDecks(novoDecks)
             setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
 
-            localStorage.setItem('arrayDecks', JSON.stringify(novoDecks))
+            setarValorLocalStorage('arrayDecks', novoDecks);
             //localStorage.setItem('arrayCards', JSON.stringify(novoCards));
             render();
         }
@@ -193,7 +194,7 @@ export function listenersOpcoesEdit() {
                 const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card)} : dec)
                 
                 setArrayDecks(novoArrayDack)
-                localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+                setarValorLocalStorage('arrayDecks', novoArrayDack)
 
                 setStateNavegacao({cardPanel: {isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'view'}})
 
@@ -216,9 +217,13 @@ export function listenerAddPalavra() {
             const novoArrayDack = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, newCard], dailyWords: {amount: (deck.dailyWords.amount + 1), day: deck.dailyWords.day} } : deck)
             
             setArrayDecks(novoArrayDack)
-            localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDack))
+            setarValorLocalStorage('arrayDecks', novoArrayDack)
             setStateNavegacao({page: 'home', idDeck: null})
             render()
         }
     })
+}
+
+function setarValorLocalStorage(chave, valor) {
+    localStorage.setItem(chave, JSON.stringify(valor, null, 2));
 }

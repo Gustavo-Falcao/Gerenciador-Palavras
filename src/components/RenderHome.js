@@ -61,10 +61,10 @@ function gerarDeck(nome, id, tamanhoDeck, dailyWords) {
     nomeDeck.innerHTML = nome
 
     let quantNoDeck = document.createElement('small')
-    quantNoDeck.innerHTML = tamanhoDeck
+    quantNoDeck.innerHTML = `Total: ${tamanhoDeck}`
 
     let infoDeck = document.createElement('p')
-    infoDeck.innerHTML = `Hoje: ${dailyWords.amount} Dia: ${dailyWords.day}`
+    infoDeck.innerHTML = `Add no dia ${dailyWords.day}: ${dailyWords.amount}`
 
     let opcoesDeck = document.createElement('div')
     opcoesDeck.setAttribute('class', 'opcoes')
@@ -110,12 +110,11 @@ export function renderHome(root) {
     console.log(`É para mostrar ??? ${mostrarOpcoesDeck.isMostrar}`)
     
 
-
     console.log(`Tamanho do array de decks => ${arrayDecks.length}`)
     root.innerHTML = '';
 
     root.innerHTML = `
-        <header class="titulo-home">
+        <header class="titulo-home" id="titulo-home">
                 <h1>Decks</h1>
         </header>
         <main>
@@ -126,7 +125,8 @@ export function renderHome(root) {
                 Novo deck
             </button>
         </footer>
-    `
+    `;
+
 
     let sectionElement = document.getElementById('conteudo');
 
