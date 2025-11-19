@@ -13,7 +13,6 @@ export function render() {
     console.log(`Deck já criado ? ${deckComponent.isCriado}`)
 
     
-
     if(stateNavegacao.page === 'add') {
         renderAddPalavra(container);
     } 
