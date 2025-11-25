@@ -19,10 +19,23 @@ export function handlerDailyWordsFirstDeck(dia, quant) {
 
 export function getCurrentDate() {
     const data = new Date();
-    const dataFormatada = data.toLocaleDateString('pt-BR');
+    const dataFormatada = data.toLocaleString();
     return dataFormatada;
+}
+
+export function getCurrentDateTime() {
+    const novaData = new Date();
+    return novaData.getTime();
 }
 
 export function getCurrentDay() {
     return new Date().getDate()
+}
+
+export function formatarDataEHoraParaMostrar(data) {
+    const stringSeparada = data.split(',');
+    const dataFormatada = stringSeparada[0]
+    const hora = stringSeparada[1]
+
+    return `${dataFormatada} as ${hora}`
 }

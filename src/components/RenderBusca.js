@@ -134,8 +134,6 @@ export function renderBuscarPalavra() {
     const deck = encontraDeck(stateNavegacao.idDeck)
     const cardsDeck = deck.cards
     console.log(cardsDeck)
-    console.log(`Quantidade palavras: ${deck.dailyWords.amount}`)
-    console.log(`Dia: ${deck.dailyWords.day}`)
 
     console.log(`Estado do cardPopUp => ${stateNavegacao.cardPanel.isOpen}`);
     console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
@@ -174,7 +172,6 @@ export function renderBuscarPalavra() {
     main.appendChild(frag);
 
     const totalPalavras = cardsDeck.length;
-    const totalPalavrasDia = deck.dailyWords.amount
     //colocar value no input
     root.innerHTML = `
         <header class="menu-bar">
@@ -192,7 +189,6 @@ export function renderBuscarPalavra() {
                 <input type="search" placeholder="Busca..." id="q" autocomplete="off">
                 <div class="box-infos"> 
                     <small class="badge">Total: ${totalPalavras}</small>
-                    <small class="ok">Hoje: ${totalPalavrasDia}</small>
                 </div>
                 </section>
         </div>

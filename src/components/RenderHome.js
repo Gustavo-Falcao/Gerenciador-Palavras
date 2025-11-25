@@ -1,5 +1,7 @@
-import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal } from "../state/State.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage } from "../state/State.js";
 import { render } from "../../main.js";
+import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
+import { gerarId } from "../helpers/GerarId.js";
 
 // Constroi todos os decks que estiverem no localStorage e junta eles em uma string
 // Constroi a janela modal e aplica junto ao elemento de retorno de acordo com o estado do modal
@@ -11,7 +13,7 @@ function mostrarDecks () {
                     <span>${deck.nome}</span>
                     <span>Total: ${deck.cards.length}</span>
                 </div>
-                <p>Última atualização: ${deck.diaAtualizacao ? deck.diaAtualizacao : ''}</p>
+                <p>Ultima atualização: <br>${deck.ultimaAtualizacao ? formatarDataEHoraParaMostrar(deck.ultimaAtualizacao.dataFormatada) : ''}</p>
                 ${deck.mostrarOpcoes ? 
                     `
                     <div class="opcoes">
@@ -102,6 +104,7 @@ function toggleOpecoesAndHandlerOpcoes() {
                         deck.id === idDoPai ? {...deck, mostrarOpcoes: !deck.mostrarOpcoes} : deck
                     ) 
                     setArrayDecks(novoArr)
+                    salvarDecksLocalStorage(novoArr)
                     render();
                 }
             }
@@ -145,15 +148,15 @@ function handlerModal() {
                     const newDeck = {
                         id: gerarId(),
                         nome: nomeDeck,
-                        dailyWords: {
-                            amount: 0,
-                            day: getCurrentDay()
+                        ultimaAtualizacao: {
+                            dataFormatada: getCurrentDate(),
+                            time: getCurrentDateTime()
                         },
                         cards: [],
                         mostrarOpcoes: false
                     }
                     setArrayDecks([...arrayDecks, newDeck])
-                    setarValorLocalStorage('arrayDecks', arrayDecks)
+                    salvarDecksLocalStorage(arrayDecks);
                     setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                 }
                 render()

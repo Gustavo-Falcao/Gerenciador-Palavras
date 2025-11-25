@@ -1,8 +1,9 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao } from "./State.js";
+import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage} from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
+import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
 
 export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
@@ -48,12 +49,12 @@ export function listenerRemoverCard(idDeck) {
         console.log(`ID CARD ATUAL => ${idCardAtual}`);
 
         if(e.target.closest('#deletar')) {    
-            const novoDecks = arrayDecks.map((dec) => dec.id === idDeck ? {...dec, cards: dec.cards.filter(card => card.id !== idCardAtual)} : dec)
+            const novoDecks = arrayDecks.map((dec) => dec.id === idDeck ? {...dec, cards: dec.cards.filter(card => card.id !== idCardAtual), ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}} : dec)
 
             setArrayDecks(novoDecks)
             setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
 
-            setarValorLocalStorage('arrayDecks', novoDecks);
+            salvarDecksLocalStorage(novoDecks)
             render();
         }
         
@@ -78,10 +79,10 @@ export function listenersOpcoesEdit() {
             const contEdit = document.getElementById('cont-edit').value;
 
             if(nomeEdit && contEdit) {
-                const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card)} : dec)
+                const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card), ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}} : dec)
                 
                 setArrayDecks(novoArrayDack)
-                setarValorLocalStorage('arrayDecks', novoArrayDack)
+                salvarDecksLocalStorage(novoArrayDack)
 
                 setStateNavegacao({cardPanel: {isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'view'}})
 
@@ -101,16 +102,12 @@ export function listenerAddPalavra() {
         if(nomePalavra && descPalavra) {
             const newCard = {id: gerarId(), nome: nomePalavra, desc: descPalavra};
 
-            const novoArrayDack = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, newCard], dailyWords: {amount: (deck.dailyWords.amount + 1), day: deck.dailyWords.day} } : deck)
+            const novoArrayDack = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, newCard], ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}, mostrarOcoes: false } : deck)
             
             setArrayDecks(novoArrayDack)
-            setarValorLocalStorage('arrayDecks', novoArrayDack)
+            salvarDecksLocalStorage(novoArrayDack)
             setStateNavegacao({page: 'home', idDeck: null})
             render()
         }
     })
-}
-
-function setarValorLocalStorage(chave, valor) {
-    localStorage.setItem(chave, JSON.stringify(valor, null, 2));
 }
