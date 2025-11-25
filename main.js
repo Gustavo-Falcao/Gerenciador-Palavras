@@ -1,4 +1,4 @@
-import { statePrincipal, stateNavegacao, arrayDecks, deckComponent, setDeckComponente } from "./src/state/State.js";
+import { stateNavegacao, arrayDecks, deckComponent, setDeckComponente } from "./src/state/State.js";
 import { renderAddPalavra } from "./src/components/RenderAdd.js";
 import { renderBuscarPalavra } from "./src/components/RenderBusca.js";
 import { renderHome } from "./src/components/RenderHome.js";
@@ -8,7 +8,6 @@ let container = document.getElementById('root');
 
 export function render() {
     console.log("////////////////////////////////////////////////////")
-    console.log(`Modo do cardPopUp => ${statePrincipal.cardPanel.mode}`);
     console.log(`Qual pagina = > ${stateNavegacao.page}`)
     console.log(`Deck já criado ? ${deckComponent.isCriado}`)
 

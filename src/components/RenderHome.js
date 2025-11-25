@@ -1,104 +1,51 @@
-import { listenersHome } from "../state/Listeners.js";
-import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck } from "../state/State.js";
-import { handlerModal } from "../state/Listeners.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal } from "../state/State.js";
+import { render } from "../../main.js";
 
-//criar janela modal
-function janelaModal() {
-    let janelPai = document.createElement('div')
-    janelPai.setAttribute('class', 'janela-pai-popup');
+// Constroi todos os decks que estiverem no localStorage e junta eles em uma string
+// Constroi a janela modal e aplica junto ao elemento de retorno de acordo com o estado do modal
+function mostrarDecks () {
+    const arrString = arrayDecks.map(deck => 
+        `
+            <div class="deck" id="${deck.id}">
+                <div class ="row-info">
+                    <span>${deck.nome}</span>
+                    <span>Total: ${deck.cards.length}</span>
+                </div>
+                <p>Última atualização: ${deck.diaAtualizacao ? deck.diaAtualizacao : ''}</p>
+                ${deck.mostrarOpcoes ? 
+                    `
+                    <div class="opcoes">
+                        <button id="add-palavra">Add</button>
+                        <button id="buscar">Find</button>
+                    </div>
+                    `
+                    : 
+                    ''
+                }
+            </div>
+        `
+    )
 
-    let janelaCriarDeck = document.createElement('div')
-    janelaCriarDeck.setAttribute('class', 'janela-criar-deck')
+    const modal = `
+        <div class="janela-pai-popup">
+            <div class="janela-criar-deck"> 
+                <div class="cont-criar-deck">
+                    <h2>Criar Deck</h2>
+                    <input type="text" id="nome-deck" placeholder="Nome do deck...">
+                </div>
+                <div class="opcoes-criar-deck" id="opcoes">
+                    <button id="cancel">Cancelar</button>
+                    <button id="add-deck">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    `
 
-    let contCriarDeck = document.createElement('div')
-    contCriarDeck.setAttribute('class', 'cont-criar-deck')
+    const decksElement = arrString.join('');
 
-    let titulo = document.createElement('h2')
-    titulo.innerHTML = 'Criar Deck'
+    const elementoRetorno = estadoModalDeck.isModelOpen ? `${decksElement} ${modal}` : decksElement;
 
-    let input = document.createElement('input')
-    input.setAttribute('type', 'text')
-    input.setAttribute('id', 'nome-deck')
-    input.setAttribute('placeholder', 'Nome do deck...')
-
-    let opcoesCriarDeck = document.createElement('div')
-    opcoesCriarDeck.setAttribute('class', 'opcoes-criar-deck')
-    opcoesCriarDeck.setAttribute('id', 'opcoes')
-
-    let botCancel = document.createElement('button')
-    botCancel.setAttribute('id', 'cancel')
-    botCancel.innerHTML = 'Cancelar'
-
-    let botCriar = document.createElement('button')
-    botCriar.setAttribute('id', 'add-deck')
-    botCriar.innerHTML = 'Adicionar'
-
-
-    contCriarDeck.appendChild(titulo)
-    contCriarDeck.appendChild(input)
-
-    opcoesCriarDeck.appendChild(botCancel)
-    opcoesCriarDeck.appendChild(botCriar)
-
-    janelaCriarDeck.appendChild(contCriarDeck)
-    janelaCriarDeck.appendChild(opcoesCriarDeck)
-
-    janelPai.appendChild(janelaCriarDeck)
-
-    return janelPai
-}
-
-//gerar deck
-function gerarDeck(nome, id, tamanhoDeck, dailyWords) {
-    let deck = document.createElement('div')
-    deck.setAttribute('class', 'deck')
-    deck.setAttribute('id', id)
-
-    let rowInfo = document.createElement('div')
-    rowInfo.setAttribute('class','row-info')
-
-    let nomeDeck = document.createElement('span')
-    nomeDeck.innerHTML = nome
-
-    let quantNoDeck = document.createElement('small')
-    quantNoDeck.innerHTML = `Total: ${tamanhoDeck}`
-
-    let infoDeck = document.createElement('p')
-    infoDeck.innerHTML = `Add no dia ${dailyWords.day}: ${dailyWords.amount}`
-
-    let opcoesDeck = document.createElement('div')
-    opcoesDeck.setAttribute('class', 'opcoes')
-
-    let botAdicionar = document.createElement('button')
-    botAdicionar.setAttribute('id', 'add-palavra')
-    botAdicionar.innerHTML = 'Add'
-
-    let botBuscar = document.createElement('button')
-    botBuscar.setAttribute('id', 'buscar')
-    botBuscar.innerHTML = 'Find'
-
-    opcoesDeck.appendChild(botAdicionar)
-    opcoesDeck.appendChild(botBuscar)
-
-    rowInfo.appendChild(nomeDeck)
-    rowInfo.appendChild(quantNoDeck)
-
-    deck.appendChild(rowInfo)
-    deck.appendChild(infoDeck)
-    if(id === mostrarOpcoesDeck.idDeckMostrar) {
-        if(mostrarOpcoesDeck.isMostrar) {
-            deck.appendChild(opcoesDeck)
-        }
-    }
-
-    return deck
-}
-
-function nenhumDeckCriado() {
-    let frase = document.createElement('p')
-    frase.innerHTML = 'Nenhum deck criando ainda...'
-    
-    return frase
+    return arrayDecks.length > 0 ? elementoRetorno : '<p> Nenhum deck criado...</p>';
 }
 
 // Renderização da página home
@@ -109,8 +56,11 @@ export function renderHome(root) {
     console.log(`ID do pai para mostrar op => ${mostrarOpcoesDeck.idDeckMostrar}`)
     console.log(`É para mostrar ??? ${mostrarOpcoesDeck.isMostrar}`)
     
-
     console.log(`Tamanho do array de decks => ${arrayDecks.length}`)
+
+    const decks = mostrarDecks();
+
+    console.log(arrayDecks);
     root.innerHTML = '';
 
     root.innerHTML = `
@@ -118,7 +68,7 @@ export function renderHome(root) {
                 <h1>Decks</h1>
         </header>
         <main>
-            <section class="main-home" id="conteudo"> </section>
+            <section class="main-home" id="conteudo">${decks}</section>
         </main>
         <footer>
             <button class="bot-add-deck" id="open-deck">
@@ -126,31 +76,91 @@ export function renderHome(root) {
             </button>
         </footer>
     `;
-
-
-    let sectionElement = document.getElementById('conteudo');
-
-    let frag = document.createDocumentFragment();
-
-    if(arrayDecks.length < 1) {
-        sectionElement.appendChild(nenhumDeckCriado())
-    } else {
-        arrayDecks.forEach(deck => {
-            const deckElement = gerarDeck(deck.nome, deck.id, deck.cards.length, deck.dailyWords)
-            frag.appendChild(deckElement)
-        });
-    }
-    
-    if(estadoModalDeck.isModelOpen) {
-        frag.appendChild(janelaModal())
-    }
-
-    sectionElement.appendChild(frag)
-    
     console.log(estadoModalDeck.isModelOpen);
-    listenersHome();
-    handlerModal();
+    handlerHome();
 
 }
 
+// Centraliza as funções com listener para a página
+function handlerHome() {
+    toggleOpecoesAndHandlerOpcoes();
 
+    estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
+}
+
+// Controla o display das opções e lida com as ações das opções do deck clicado 
+function toggleOpecoesAndHandlerOpcoes() {
+    document.getElementById('conteudo').addEventListener('click', (e) => {
+
+        if(e.target.id != 'conteudo' && !e.target.closest('.opcoes') ) {
+            let elementoPai = e.target.closest('.deck')
+            if(elementoPai) {
+                let idDoPai = elementoPai.id 
+                if(idDoPai != null) {
+                    console.log(`ELEMENTO DO PAI (${idDoPai})`)
+                    const novoArr = arrayDecks.map(deck => 
+                        deck.id === idDoPai ? {...deck, mostrarOpcoes: !deck.mostrarOpcoes} : deck
+                    ) 
+                    setArrayDecks(novoArr)
+                    render();
+                }
+            }
+        }
+        else if(e.target.closest('.opcoes')) {
+            const idElemento = e.target.id
+            const idDeck = e.target.closest('.deck').id
+    
+            if(idElemento === 'add-palavra') {
+                setStateNavegacao({page: 'add', idDeck: idDeck})
+                render()
+            }
+            else if(idElemento === 'buscar') {
+                setStateNavegacao({page: 'buscar', idDeck: idDeck})
+                render()
+            }
+        }
+    })
+}
+
+// Abre a janela modal a partir do clique
+function abrirModal() {
+    document.getElementById('open-deck').addEventListener('click', () => {
+        estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
+        render()
+    })
+}
+
+// Lida com as ações das opções do modal
+function handlerModal() {
+    document.getElementById('opcoes').addEventListener('click', (e) => {
+        if(e.target) {
+            if(e.target.id === 'cancel') {
+                setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
+                render()
+            }
+            else if (e.target.id === 'add-deck') {
+                const nomeDeck = document.getElementById('nome-deck').value.trim();
+                console.log("Entrou no else if e conteudo: ", nomeDeck)
+                if(nomeDeck.length > 0) {
+                    const newDeck = {
+                        id: gerarId(),
+                        nome: nomeDeck,
+                        dailyWords: {
+                            amount: 0,
+                            day: getCurrentDay()
+                        },
+                        cards: [],
+                        mostrarOpcoes: false
+                    }
+                    setArrayDecks([...arrayDecks, newDeck])
+                    setarValorLocalStorage('arrayDecks', arrayDecks)
+                    setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
+                }
+                render()
+            }
+            else {
+                return
+            }
+        }
+    })
+}

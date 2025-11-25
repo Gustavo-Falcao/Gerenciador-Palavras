@@ -1,4 +1,4 @@
-import { arrayDecks, stateNavegacao, statePrincipal } from "../state/State.js";
+import { arrayDecks, stateNavegacao } from "../state/State.js";
 //Renderização da lista de palavras
 export function renderListaPalavras() {
     const deckAtual = arrayDecks.find((deck) => deck.id === stateNavegacao.idDeck);

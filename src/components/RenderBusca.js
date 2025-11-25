@@ -1,6 +1,6 @@
 import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome} from "../state/Listeners.js";
-import { getStatePrincipal, statePrincipal, stateNavegacao, arrayDecks } from "../state/State.js";
+import {stateNavegacao, arrayDecks } from "../state/State.js";
 
 function criarMainList() {
     const main = document.createElement('main');
