@@ -252,9 +252,9 @@ export function renderBuscarPalavra() {
     console.log(`Situação do card => ${stateNavegacao.cardPanel.mode}`);
     if(stateNavegacao.cardPanel.isOpen) {
         stateNavegacao.cardPanel.mode === 'view' ? listenerRemoverCard(stateNavegacao.idDeck) : listenersOpcoesEdit();
-        root.classList.add('travar-rolamento');
+        document.body.classList.add('travar-rolamento');
     } else {
-        root.classList.remove('travar-rolamento');
+        document.body.classList.remove('travar-rolamento');
     }
 
     if(cardsDeck.length > 0) listenersBuscarPalavra();

@@ -1,10 +1,10 @@
 import { arrayDecks, setArrayDecks } from "../state/State.js";
 
-export function handlerDailyWords() {
-    const diaAtual = new Date().getDate()
-    const novoArrayDack = arrayDecks.map((deck) => deck.dailyWords.day !== diaAtual ? {...deck, dailyWords: {amount: 0, day: diaAtual}} : deck)
-    setArrayDecks(novoArrayDack)
-}
+// export function handlerDailyWords() {
+//     const diaAtual = new Date().getDate()
+//     const novoArrayDack = arrayDecks.map((deck) => deck.dailyWords.day !== diaAtual ? {...deck, dailyWords: {amount: 0, day: diaAtual}} : deck)
+//     setArrayDecks(novoArrayDack)
+// }
 
 //Retorna um novo dia e uma nova quantidade se o dia guardado for diferente do dia atual
 export function handlerDailyWordsFirstDeck(dia, quant) {
