@@ -18,8 +18,17 @@ body {
     margin: 0;
     font-family:  system-ui, -apple-system BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     /* background-color: #172340; */
-    background-color: #F7F9FC;
     color: var(--fg);
+    background-color: #F7F9FC;
+}
+
+.bg-padrao {
+    background-color: #F7F9FC;
+}
+
+.bg-igual-modal {
+    background-color: #11182761;
+    backdrop-filter: blur(5px);
 }
 
 input {
@@ -290,14 +299,15 @@ footer {
 }
 
 .janela-pai-popup {
-    background-color: #11182761;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 999;
+    background-color: #11182761;
     backdrop-filter: blur(5px);
+    min-height: 100vh;
 }
 
 .travar-rolamento {
@@ -342,7 +352,7 @@ footer {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -55%);
 }
  
 .caixa-op {
