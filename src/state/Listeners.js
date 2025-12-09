@@ -22,13 +22,14 @@ export function listenersBuscarPalavra() {
             render()
         }
     });
+}
 
+export function fecharCard() {
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
         setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
         render()
     });
-
 }
 
 export function voltarHome() {
@@ -59,9 +60,17 @@ export function listenerRemoverCard(idDeck) {
         }
         
         if(e.target.closest('#editar')) {
-            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: idCardAtual, mode: 'edit'}})
+            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'edit'}})
             render();
         }
+    });
+}
+
+export function listenerCardEdit() {
+    document.getElementById('card').addEventListener('click', (e) => {
+        if(!e.target) return;
+
+        console.log(`Nome campo clicado => ${e.target.dataset.field}`)
     });
 }
 

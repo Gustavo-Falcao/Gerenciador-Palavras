@@ -10,15 +10,15 @@ function mostrarDecks () {
         `
             <div class="deck" id="${deck.id}">
                 <div class ="row-info">
-                    <span>${deck.nome}</span>
-                    <span>Total: ${deck.cards.length}</span>
+                    <span class="title-deck">${deck.nome}</span>
+                    <span class="badge">Total: ${deck.cards.length}</span>
                 </div>
                 <p>Ultima atualização: <br>${deck.ultimaAtualizacao ? formatarDataEHoraParaMostrar(deck.ultimaAtualizacao.dataFormatada) : ''}</p>
                 ${deck.mostrarOpcoes ? 
                     `
                     <div class="opcoes">
-                        <button id="add-palavra">Add</button>
-                        <button id="buscar">Find</button>
+                        <button id="add-palavra" class="btn-outline">Add</button>
+                        <button id="buscar" class="btn-outline">Find</button>
                     </div>
                     `
                     : 
@@ -68,12 +68,13 @@ export function renderHome(root) {
     root.innerHTML = `
         <header class="titulo-home" id="titulo-home">
                 <h1>Decks</h1>
+                <input type="file" accept=".json" id="file-inserida">
         </header>
         <main>
             <section class="main-home" id="conteudo">${decks}</section>
         </main>
         <footer>
-            <button class="bot-add-deck" id="open-deck">
+            <button class="btn btn-primary" id="open-deck">
                 Novo deck
             </button>
         </footer>
@@ -86,8 +87,35 @@ export function renderHome(root) {
 // Centraliza as funções com listener para a página
 function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
+    tratarDadosDoArquivoInserido();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
+}
+
+function tratarDadosDoArquivoInserido() {
+    document.getElementById('file-inserida').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+
+        if(file) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    const data = JSON.parse(content);
+                    salvarDecksLocalStorage(data);
+                    setArrayDecks(data)
+                    console.log("Dados do JSON:", data);
+                    e.target.value = '';
+                    render();
+                } catch (error) {
+                    console.error("Erro no parse do JSON", error);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    });
 }
 
 // Controla o display das opções e lida com as ações das opções do deck clicado 
