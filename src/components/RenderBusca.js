@@ -1,5 +1,5 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
-import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome, fecharCard, listenerCardEdit} from "../state/Listeners.js";
+import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome, fecharCard} from "../state/Listeners.js";
 import {stateNavegacao, arrayDecks } from "../state/State.js";
 
 function criarBotDelete() {
@@ -57,9 +57,11 @@ function criarExemplos(exemplos) {
     //Criando caixa para inserir os exemplos
     const fragElement = document.createDocumentFragment();
 
-    exemplos.forEach(exemplo => {
+    exemplos.forEach((exemplo, index) => {
         const exemploElement = document.createElement('span');
         exemploElement.setAttribute('class', 'exemplo');
+        exemploElement.setAttribute('data-field', 'exemplo');
+        exemploElement.setAttribute('data-exemplo-index', index);
         exemploElement.textContent = exemplo;
 
         fragElement.appendChild(exemploElement);
@@ -74,6 +76,8 @@ function criarSignificados(significados) {
     significados.forEach((sig, index) => {
         const caixaSig = document.createElement('div');
         caixaSig.setAttribute('class', 'significado');
+        caixaSig.setAttribute('data-field', 'significado');
+        caixaSig.setAttribute('data-significado-index', index);
 
         //Criando caixa da definicao da palavra e informacoes sobre
         const caixaDef = document.createElement('div');
@@ -84,13 +88,17 @@ function criarSignificados(significados) {
         numeroDefinicao.textContent = index+1;
 
         const contDefinicao = document.createElement('span');
-        contDefinicao.textContent = sig.definicao;
+        
+        const textDefinicao = document.createElement('span');
+        textDefinicao.setAttribute('data-field', 'def-texto');
+        textDefinicao.textContent = sig.definicao;
 
         const tipoDefinicao = document.createElement('span');
         tipoDefinicao.setAttribute('class', `context-tag ${sig.tipoDefinicao}`);
+        tipoDefinicao.setAttribute('data-field', 'tipo-def');
         tipoDefinicao.textContent = sig.tipoDefinicao;
 
-        contDefinicao.appendChild(tipoDefinicao);
+        contDefinicao.append(textDefinicao, tipoDefinicao);
 
         caixaDef.append(numeroDefinicao, contDefinicao);
 
@@ -121,17 +129,20 @@ function criarCard(objPalavra) {
    
     //Criando descricao breve da palavra
     const caixaBrevDesc = document.createElement('div');
-    let hasConteudo = false
     caixaBrevDesc.setAttribute('class', 'brev-desc');
+    caixaBrevDesc.setAttribute('data-field', 'brevDesc');
+    let hasConteudo = false
     if(objPalavra.tipo || objPalavra.brevDesc) {
         
         if(objPalavra.tipo && objPalavra.brevDesc) {
             const tipo = document.createElement('span');
             tipo.setAttribute('class', 'type');
+            tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
             const brevDesc = document.createElement('span');
             brevDesc.setAttribute('class', 'sinonimo');
+            brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
             caixaBrevDesc.append(tipo, brevDesc)
@@ -139,12 +150,14 @@ function criarCard(objPalavra) {
         else if(objPalavra.tipo) {
             const tipo = document.createElement('span');
             tipo.setAttribute('class', 'type');
+            tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
             caixaBrevDesc.appendChild(tipo)
         } else {
             const brevDesc = document.createElement('span');
             brevDesc.setAttribute('class', 'sinonimo');
+            brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
             caixaBrevDesc.appendChild(brevDesc);
@@ -158,6 +171,7 @@ function criarCard(objPalavra) {
     //Criando caixa para a definicao e exemplos
     const caixaDefinicao = document.createElement('div');
     caixaDefinicao.setAttribute('class', 'def-block');
+    caixaDefinicao.setAttribute('data-field', 'significados');
 
     const significados = criarSignificados(objPalavra.significados);
 
@@ -173,6 +187,7 @@ function criarCard(objPalavra) {
 
     const pronuncia = document.createElement('span');
     pronuncia.setAttribute('class', 'fonetica');
+    pronuncia.setAttribute('data-field', 'fonetica');
     pronuncia.textContent = `/ ${objPalavra.pronuncia} /`;
 
     caixaPronuncia.append(labelPronuncia, pronuncia);
@@ -407,4 +422,61 @@ export function renderBuscarPalavra() {
 
     if(deck.cards.length > 0) listenersBuscarPalavra();
     voltarHome()
+}
+
+
+function listenerCardEdit() {
+    document.getElementById('card').addEventListener('click', (e) => {
+        const temAlgumData = Object.keys(e.target.dataset).length > 0;
+        
+        if(!e.target || !temAlgumData) return;
+
+        console.log(`Nome campo clicado => ${e.target.dataset.field}`)
+
+        handlerDataSets(e.target.dataset, e.target)
+    });
+}
+
+function handlerDataSets({field, significadoIndex, exemploIndex}, alvo) {
+    
+    //Separa quando for do tipo (def-texto), (tipo-def) e (exemplo)
+    
+    if(field === "def-texto" || field === "tipo-def" || field === "exemplo") {
+        handlerCamposDentroDeArrays(field, alvo);
+    } else {
+        switch(field) {
+            case "nome":
+                console.log(`Clicou no nome | valor aqui => ${alvo.textContent}`);
+                break;
+            case "brevDesc-tipo":
+                console.log(`Clicou no tipo do brevDesc | valor aqui => ${alvo.textContent}`);
+                break;
+            case "brevDesc-sinonimo":
+                console.log(`Clicou no sinonimo do brevDesc | valor aqui => ${alvo.textContent}`);
+                break;
+            // case "def-texto": 
+            //     const blocoSignificado = alvo.closest('[data-significado-index]');
+            //     console.log(`Clicou na definicao do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+            //     break;
+            // case "tipo-def":
+            //     const blocoSigo = alvo.closest('[data-significado-index]');
+            //     console.log(`Clicou no tipo definicao do bloco ${blocoSigo.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+            //     break;
+            case "fonetica":
+                console.log(`Clicou na pronuncia | valor aqui => ${alvo.textContent}`);
+                break;
+            default:
+                console.log("erro no switch");
+                break;
+        }
+    }
+}
+
+function handlerCamposDentroDeArrays(field, alvo) {
+    const blocoSignificado = alvo.closest('[data-significado-index]');
+    if(field === "def-texto" || field === "tipo-def") {
+        console.log(`Clicou no ${alvo.dataset.field} do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+    } else {
+        console.log(`Clicou no ${alvo.dataset.field} de numero ${alvo.dataset.exemploIndex} do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+    }
 }

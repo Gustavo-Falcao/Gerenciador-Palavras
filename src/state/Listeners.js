@@ -66,14 +66,6 @@ export function listenerRemoverCard(idDeck) {
     });
 }
 
-export function listenerCardEdit() {
-    document.getElementById('card').addEventListener('click', (e) => {
-        if(!e.target) return;
-
-        console.log(`Nome campo clicado => ${e.target.dataset.field}`)
-    });
-}
-
 //Listeners para a edicao do card
 export function listenersOpcoesEdit() {
     document.getElementById('opcoes-edit').addEventListener('click', (e) => {
