@@ -1,9 +1,10 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage} from "./State.js";
+import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, setValorSerEditado, valorSerEditado, scrollyConteudo, setScrollyConteudo, zerarScrollyConteudo} from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
+import { renderBuscarPalavra } from "../components/RenderBusca.js";
 
 export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
@@ -19,7 +20,7 @@ export function listenersBuscarPalavra() {
         if(elementoClicado) {
             console.log(`Id do elemento clicado => ${elementoClicado.id}`);
             setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: elementoClicado.id, mode: 'view'}})
-            render()
+            renderBuscarPalavra();
         }
     });
 }
@@ -27,8 +28,11 @@ export function listenersBuscarPalavra() {
 export function fecharCard() {
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
+        if(valorSerEditado.dataField) setValorSerEditado({dataField: null, color: null, indexSignificado: null, indexExemplo: null, height: null});
         setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
-        render()
+        
+        zerarScrollyConteudo();
+        renderBuscarPalavra();
     });
 }
 
@@ -60,8 +64,10 @@ export function listenerRemoverCard(idDeck) {
         }
         
         if(e.target.closest('#editar')) {
-            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'edit'}})
-            render();
+            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'edit', isEditando: stateNavegacao.cardPanel.isEditando}});
+
+            setScrollyConteudo();
+            renderBuscarPalavra();
         }
     });
 }
@@ -72,7 +78,16 @@ export function listenersOpcoesEdit() {
         const idCard = e.target.closest('.janela-info').dataset.id;
         console.log(`Id que está para ser editado => ${idCard}`);
         if(e.target.id === 'cancelar') {
-            setStateNavegacao({cardPanel: {mode: 'view', isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo}})
+            if(stateNavegacao.cardPanel.isEditando) {
+                setStateNavegacao({cardPanel: {mode: stateNavegacao.cardPanel.mode, isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, isEditando: !stateNavegacao.cardPanel.isEditando}});
+                setValorSerEditado({dataField: null, color: null, indexSignificado: null, indexExemplo: null, height: null});
+                
+                setScrollyConteudo();
+            } else {
+                setStateNavegacao({cardPanel: {mode: 'view', isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, isEditando: stateNavegacao.cardPanel.isEditando}});
+    
+                setScrollyConteudo();
+            }
             render()
         }
         else if(e.target.id === 'salvar') {

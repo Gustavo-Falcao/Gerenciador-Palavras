@@ -9,7 +9,8 @@ export let stateNavegacao = {
     cardPanel: {
         isOpen: false,
         idCardAtivo: null,
-        mode: ''
+        mode: '',
+        isEditando: false
     }
 }
 
@@ -66,4 +67,27 @@ export function setStadoModal(newState) {
 
 export function salvarDecksLocalStorage(deck) {
     localStorage.setItem('arrayDecks', JSON.stringify(deck));
+}
+
+export let valorSerEditado = {
+    dataField: null,
+    color: null,
+    indexSignificado: null,
+    indexExemplo: null,
+    height: null
+};
+
+export let scrollyConteudo = 0;
+
+export function setScrollyConteudo() {
+    const divConteudo = document.querySelector('.def-block');
+    scrollyConteudo = divConteudo.scrollTop;
+}
+
+export function zerarScrollyConteudo() {
+    scrollyConteudo = 0;
+}
+
+export function setValorSerEditado(newValue) {
+    valorSerEditado = {...valorSerEditado, ...newValue};
 }

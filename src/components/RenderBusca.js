@@ -1,6 +1,6 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome, fecharCard} from "../state/Listeners.js";
-import {stateNavegacao, arrayDecks } from "../state/State.js";
+import {stateNavegacao, setStateNavegacao, arrayDecks, valorSerEditado, setValorSerEditado, scrollyConteudo, setScrollyConteudo } from "../state/State.js";
 
 function criarBotDelete() {
     //Criando o botao para deletar o card
@@ -29,12 +29,50 @@ function criarBotEditar() {
     
 }
 
-function criarInput(card) {
-    let input = document.createElement('input');
-    input.setAttribute('type', 'text');
-    input.setAttribute('id', 'nome-edit');
-    input.setAttribute('value', `${card.nome}`);
-    return input;
+function criarInput(valor, style) {
+    const inputEdit = document.createElement('input');
+    inputEdit.setAttribute('type', 'text');
+    inputEdit.setAttribute('class', `input-edit ${valorSerEditado.dataField === "exemplo" ? 'campo-exemplo' : ''} ${style}` );
+    inputEdit.setAttribute('value', valor);
+    inputEdit.style.borderColor = valorSerEditado.color;
+    //if(!valorSerEditado.dataField === "exemplo") 
+    inputEdit.setAttribute('size', valor.length);
+    //campo-exemplo
+    return inputEdit;
+}
+
+function criarTextArea(valor, style) {
+    const textAreaEdit = document.createElement('textarea');
+    textAreaEdit.setAttribute('class', `textarea-edit ${valorSerEditado.dataField === "exemplo" ? "campo-exemplo" : "campo-sig"} ${style}`);
+    if(valor.length > 35) {
+        const valorRows = valor.length / 35
+        const valorFinal = parseFloat(valorRows) ? parseInt(valorRows)+1 : parseInt(valorRows);
+        console.log(`Valor bruto de linhas ${valorRows}`);
+        console.log(`Valor liquido de linhas ${valorFinal}`);
+
+        textAreaEdit.setAttribute('rows', valorFinal);
+    }
+    textAreaEdit.value = valor;
+
+    return textAreaEdit;
+}
+
+function criarInputEdit(valor, style) {
+    if(valorSerEditado.dataField === "def-texto") {
+        if(valorSerEditado.height > 20) {
+            return criarTextArea(valor, style);
+        } 
+        return criarInput(valor, style);
+    } else if(valorSerEditado.dataField === "exemplo") {
+        console.log(`Altura do campo do exemplo clicado => ${valorSerEditado.height}`);
+        //const quantEspacoBranco = valor.split(" ").length - 1;
+        if(valorSerEditado.height > 18) {
+            return criarTextArea(valor, style);
+        }
+        return criarInput(valor, style);
+    } else {
+        return criarInput(valor, style);
+    }
 }
 
 function criarBotSalvar() {
@@ -53,7 +91,7 @@ function criarBotCancelar() {
     return botCancelar;
 }
 
-function criarExemplos(exemplos) {
+function criarExemplos(exemplos, indexSignificado) {
     //Criando caixa para inserir os exemplos
     const fragElement = document.createDocumentFragment();
 
@@ -64,10 +102,48 @@ function criarExemplos(exemplos) {
         exemploElement.setAttribute('data-exemplo-index', index);
         exemploElement.textContent = exemplo;
 
-        fragElement.appendChild(exemploElement);
+        let exemploOuInput
+
+        if(exemploElement.dataset.field === valorSerEditado.dataField && indexSignificado === Number(valorSerEditado.indexSignificado) && index === Number(valorSerEditado.indexExemplo)) {
+            exemploOuInput = criarInputEdit(exemploElement.textContent, `${exemploElement.className} input-edit-sem-zoom-exemplo`);
+        } else {
+            exemploOuInput = exemploElement;
+        }
+
+        fragElement.appendChild(exemploOuInput);
     });
 
     return fragElement;
+}
+
+function criarTexSignificadoOuInput(sig, index) {
+    const textSignificado = document.createElement('span');
+    textSignificado.setAttribute('data-field', 'def-texto');
+    textSignificado.setAttribute('class', 'def');
+    textSignificado.textContent = sig.definicao;
+
+    console.log(`Length da definicao => ${sig.definicao.length}`);
+
+    if(textSignificado.dataset.field === valorSerEditado.dataField && index === Number(valorSerEditado.indexSignificado)) {
+        console.log("Entrou para criar o input do significado");
+        return criarInputEdit(textSignificado.textContent, textSignificado.className);
+    } else {
+        return textSignificado;
+    }
+}
+
+function criarTipoDefinicaoOuInput(sig, index) {
+    const tipoDefNormal = document.createElement('span');
+    tipoDefNormal.setAttribute('class', `context-tag ${sig.tipoDefinicao}`);
+    tipoDefNormal.setAttribute('data-field', 'tipo-def');
+    tipoDefNormal.textContent = sig.tipoDefinicao;
+
+    if(tipoDefNormal.dataset.field === valorSerEditado.dataField && index === Number(valorSerEditado.indexSignificado)) {
+        console.log("Entrou para criar o input do tipo definição");
+        return criarInput(tipoDefNormal.textContent, `${tipoDefNormal.className} input-edit-sem-zoom-tag-brev-desc-sig`);
+    } else {
+        return tipoDefNormal;
+    }
 }
 
 function criarSignificados(significados) {
@@ -89,16 +165,13 @@ function criarSignificados(significados) {
 
         const contDefinicao = document.createElement('span');
         
-        const textDefinicao = document.createElement('span');
-        textDefinicao.setAttribute('data-field', 'def-texto');
-        textDefinicao.textContent = sig.definicao;
+        //text significado ou input
+        const textDefinicaoOuInput = criarTexSignificadoOuInput(sig, index);
 
-        const tipoDefinicao = document.createElement('span');
-        tipoDefinicao.setAttribute('class', `context-tag ${sig.tipoDefinicao}`);
-        tipoDefinicao.setAttribute('data-field', 'tipo-def');
-        tipoDefinicao.textContent = sig.tipoDefinicao;
+        //tipo definicao ou input
+        const tipoDefinicaoOuInput = criarTipoDefinicaoOuInput(sig, index);
 
-        contDefinicao.append(textDefinicao, tipoDefinicao);
+        contDefinicao.append(textDefinicaoOuInput, tipoDefinicaoOuInput);
 
         caixaDef.append(numeroDefinicao, contDefinicao);
 
@@ -106,7 +179,7 @@ function criarSignificados(significados) {
         const caixaExemplos = document.createElement('div');
         caixaExemplos.setAttribute('class', 'exemplos');
 
-        const exemplos = criarExemplos(sig.exemplos);
+        const exemplos = criarExemplos(sig.exemplos, index);
 
         caixaExemplos.appendChild(exemplos);
 
@@ -118,15 +191,7 @@ function criarSignificados(significados) {
     return fragElement;
 }
 
-function criarCard(objPalavra) {
-
-    const conteudoFrag = document.createDocumentFragment();
-
-    //Criando titulo card
-    const h2 = document.createElement('h2');
-    h2.setAttribute('data-field', 'nome');
-    h2.textContent = objPalavra.nome
-   
+function criarBrevDescPalavra(objPalavra) {
     //Criando descricao breve da palavra
     const caixaBrevDesc = document.createElement('div');
     caixaBrevDesc.setAttribute('class', 'brev-desc');
@@ -140,12 +205,16 @@ function criarCard(objPalavra) {
             tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
+            const tipoBrevDesc = valorSerEditado.dataField === tipo.dataset.field ? criarInputEdit(tipo.textContent, tipo.className) : tipo;
+
             const brevDesc = document.createElement('span');
             brevDesc.setAttribute('class', 'sinonimo');
             brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
-            caixaBrevDesc.append(tipo, brevDesc)
+            const sinonimoBrevDesc = valorSerEditado.dataField === brevDesc.dataset.field ? criarInputEdit(brevDesc.textContent, `${brevDesc.className} input-edit-sem-zoom-tag-sinonimo`) : brevDesc;
+
+            caixaBrevDesc.append(tipoBrevDesc, sinonimoBrevDesc)
         }
         else if(objPalavra.tipo) {
             const tipo = document.createElement('span');
@@ -153,17 +222,46 @@ function criarCard(objPalavra) {
             tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
-            caixaBrevDesc.appendChild(tipo)
+            const tipoBrevDesc = valorSerEditado.dataField === tipo.dataset.field ? criarInputEdit(tipo.textContent, tipo.className) : tipo;
+
+            caixaBrevDesc.appendChild(tipoBrevDesc)
         } else {
             const brevDesc = document.createElement('span');
             brevDesc.setAttribute('class', 'sinonimo');
             brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
-            caixaBrevDesc.appendChild(brevDesc);
+            const sinonimoBrevDesc = valorSerEditado.dataField === brevDesc.dataset.field ? criarInputEdit(brevDesc.textContent, `${brevDesc.className} input-edit-sem-zoom-tag-sinonimo`) : brevDesc;
+
+            caixaBrevDesc.appendChild(sinonimoBrevDesc);
         }
         hasConteudo = true;
     }
+
+    return hasConteudo ? caixaBrevDesc : null;
+}
+
+//Titulo card
+function criarTituloCard(objPalavra) {
+    const h2 = document.createElement('h2');
+    h2.setAttribute('class', 'title-card')
+    h2.setAttribute('data-field', 'nome');
+    h2.textContent = objPalavra.nome;
+
+    return h2
+}
+
+function criarCard(objPalavra) {
+
+
+    const conteudoFrag = document.createDocumentFragment();
+
+    //Criando titulo card
+    const h2 = criarTituloCard(objPalavra);
+    const tituloCard = h2.dataset.field === valorSerEditado.dataField ? criarInputEdit(h2.textContent, h2.className) : h2;
+
+    //Verificar o nome do campo da variavel global com o data-field do elemento.
+    const caixaBrevDesc = criarBrevDescPalavra(objPalavra);
 
     //Criado separador visual
     const separador = document.createElement('hr');
@@ -185,15 +283,17 @@ function criarCard(objPalavra) {
     labelPronuncia.setAttribute('class', 'label-som');
     labelPronuncia.textContent = 'pronúncia'
 
-    const pronuncia = document.createElement('span');
-    pronuncia.setAttribute('class', 'fonetica');
-    pronuncia.setAttribute('data-field', 'fonetica');
-    pronuncia.textContent = `/ ${objPalavra.pronuncia} /`;
+    const campoFonetica = document.createElement('span');
+    campoFonetica.setAttribute('class', 'fonetica');
+    campoFonetica.setAttribute('data-field', 'fonetica');
+    campoFonetica.textContent = `/ ${objPalavra.pronuncia} /`;
+
+    const pronuncia = campoFonetica.dataset.field === valorSerEditado.dataField ? criarInputEdit(campoFonetica.textContent, campoFonetica.className) : campoFonetica;
 
     caixaPronuncia.append(labelPronuncia, pronuncia);
 
-    conteudoFrag.append(h2)
-    if(hasConteudo) conteudoFrag.append(caixaBrevDesc);
+    conteudoFrag.append(tituloCard);
+    if(caixaBrevDesc) conteudoFrag.append(caixaBrevDesc);
     conteudoFrag.append(separador, caixaDefinicao, caixaPronuncia);
 
     return conteudoFrag;
@@ -288,6 +388,7 @@ function criarBuscar(deckAtual) {
     section.setAttribute('id', 'toolbar');
 
     const input = document.createElement('input');
+    input.setAttribute('class', 'input-busca');
     input.setAttribute('type', 'search');
     input.setAttribute('placeholder', 'Busca...');
     input.setAttribute('id', 'q');
@@ -306,7 +407,7 @@ function criarBuscar(deckAtual) {
     return divElemement;
 }
 
-function criarModal(objPalavra, mode) {
+function criarModal(objPalavra, mode, isEditando) {
     //Background do modal (janelaPai)
     const backgroundModal = document.createElement('div');
     backgroundModal.setAttribute('id', 'janela-pai');
@@ -347,8 +448,8 @@ function criarModal(objPalavra, mode) {
         const caixaOpcoesEditar = document.createElement('div');
         caixaOpcoesEditar.setAttribute('class', 'caixa-op');
         caixaOpcoesEditar.setAttribute('id', 'opcoes-edit');
-        caixaOpcoesEditar.appendChild(botSalvar);
-        caixaOpcoesEditar.appendChild(botCancelar);
+        if(isEditando) caixaOpcoesEditar.appendChild(botSalvar);
+        caixaOpcoesEditar.append(botCancelar);
 
          //Criar caixa de mensagem explicando como editar
         const caixaMsg = document.createElement('div');
@@ -397,7 +498,7 @@ export function renderBuscarPalavra() {
     if(stateNavegacao.cardPanel.isOpen) {
         const cardAtivo = encontrarCard(stateNavegacao.cardPanel.idCardAtivo, deck.cards)
 
-        const modal = criarModal(cardAtivo, stateNavegacao.cardPanel.mode);
+        const modal = criarModal(cardAtivo, stateNavegacao.cardPanel.mode, stateNavegacao.cardPanel.isEditando);
         root.append(modal);
         
         if(stateNavegacao.cardPanel.mode === 'view') {
@@ -413,6 +514,8 @@ export function renderBuscarPalavra() {
     
         }
         fecharCard();
+        const contCard = document.querySelector('.def-block');
+        contCard.scrollTop = scrollyConteudo;
         document.body.classList.add('travar-rolamento');
     } else {
         const modalElement = root.querySelector('#janela-pai');
@@ -424,7 +527,7 @@ export function renderBuscarPalavra() {
     voltarHome()
 }
 
-
+// criar um objeto temporario para guardar o elemento clicado para usar o input
 function listenerCardEdit() {
     document.getElementById('card').addEventListener('click', (e) => {
         const temAlgumData = Object.keys(e.target.dataset).length > 0;
@@ -434,6 +537,12 @@ function listenerCardEdit() {
         console.log(`Nome campo clicado => ${e.target.dataset.field}`)
 
         handlerDataSets(e.target.dataset, e.target)
+
+        setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: stateNavegacao.cardPanel.mode, isEditando: true}});
+
+        setScrollyConteudo();
+
+        renderBuscarPalavra();
     });
 }
 
@@ -444,26 +553,26 @@ function handlerDataSets({field, significadoIndex, exemploIndex}, alvo) {
     if(field === "def-texto" || field === "tipo-def" || field === "exemplo") {
         handlerCamposDentroDeArrays(field, alvo);
     } else {
+        const styleElement = getComputedStyle(alvo);
         switch(field) {
             case "nome":
                 console.log(`Clicou no nome | valor aqui => ${alvo.textContent}`);
+                setValorSerEditado({dataField: "nome", color: styleElement.color});
                 break;
             case "brevDesc-tipo":
                 console.log(`Clicou no tipo do brevDesc | valor aqui => ${alvo.textContent}`);
+                console.log(`Clicou no tipo do brevDesc | font size => ${styleElement.fontSize}`);
+                setValorSerEditado({dataField: "brevDesc-tipo", color: styleElement.color});
                 break;
             case "brevDesc-sinonimo":
                 console.log(`Clicou no sinonimo do brevDesc | valor aqui => ${alvo.textContent}`);
+                console.log(`Clicou no tipo do sinonimo | font size => ${styleElement.fontSize}`);
+                setValorSerEditado({dataField: "brevDesc-sinonimo", color: styleElement.color});
                 break;
-            // case "def-texto": 
-            //     const blocoSignificado = alvo.closest('[data-significado-index]');
-            //     console.log(`Clicou na definicao do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
-            //     break;
-            // case "tipo-def":
-            //     const blocoSigo = alvo.closest('[data-significado-index]');
-            //     console.log(`Clicou no tipo definicao do bloco ${blocoSigo.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
-            //     break;
             case "fonetica":
                 console.log(`Clicou na pronuncia | valor aqui => ${alvo.textContent}`);
+                console.log(`Clicou na fonetica | font size => ${styleElement.fontSize}`);
+                setValorSerEditado({dataField: "fonetica", color: styleElement.color});
                 break;
             default:
                 console.log("erro no switch");
@@ -474,9 +583,16 @@ function handlerDataSets({field, significadoIndex, exemploIndex}, alvo) {
 
 function handlerCamposDentroDeArrays(field, alvo) {
     const blocoSignificado = alvo.closest('[data-significado-index]');
+    const styleElement = getComputedStyle(alvo);
     if(field === "def-texto" || field === "tipo-def") {
         console.log(`Clicou no ${alvo.dataset.field} do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+        console.log(`Altura => ${styleElement.height}`);
+        //alvo.offsetHeig
+        setValorSerEditado({dataField: alvo.dataset.field, color: styleElement.color, indexSignificado: blocoSignificado.dataset.significadoIndex, height: alvo.offsetHeight});
     } else {
         console.log(`Clicou no ${alvo.dataset.field} de numero ${alvo.dataset.exemploIndex} do bloco ${blocoSignificado.dataset.significadoIndex} | valor aqui => ${alvo.textContent}`);
+        console.log(`Altura do exemplo => ${styleElement.height}`);
+        const alturaFormatada = parseFloat(styleElement.height);
+        setValorSerEditado({dataField: alvo.dataset.field, color: styleElement.color, indexSignificado: blocoSignificado.dataset.significadoIndex, indexExemplo: alvo.dataset.exemploIndex, height: alturaFormatada});
     }
 }

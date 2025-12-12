@@ -31,7 +31,7 @@ body {
     backdrop-filter: blur(5px);
 }
 
-input {
+.input-busca {
     background: white;
     color: var(--fg);
     border: 2px solid #E2E8F0;
@@ -45,7 +45,7 @@ input {
     color: #4A5568;
 }
 
-input:focus {
+.input-busca:focus {
     border-color: #63B3ED; /* Borda azul clara */
     box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
 }
@@ -103,7 +103,7 @@ form {
     align-items: center;
     justify-content: center;
 }
-textarea {
+.textarea-add {
     font-size: 1em;
     background: #111827;
     color: #e2e8f0;
@@ -114,7 +114,20 @@ textarea {
     margin-top: 25px;
 }
 
+.textarea-edit {
+    padding-block-start: 0px;
+    border: 1px solid;
+    border-radius: 10px;
+    outline: none;
+}
 
+.campo-sig {
+    width: 275px;
+}
+
+.campo-exemplo {
+    width: 265px;
+}
 
 /* Estilo da pagina home */
 .main-home {
@@ -339,7 +352,7 @@ footer {
     /* max-height: 340px; */
 }
 
-.janela-pop h2 {
+.title-card {
     text-align: left;
     font-size: 2rem;
     font-weight: 700;
@@ -399,22 +412,27 @@ footer {
 }
 
 .brev-desc {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #6c757d;
     margin-top: 4px;
     margin-bottom: 16px;
-    text-transform: lowercase;
 }
 
 .brev-desc .verb {
     font-style: italic;
 }
 
-.brev-desc .sinonimo {
+.type {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: lowercase;
+}
+
+.sinonimo {
+    font-weight: 600;
     text-transform: uppercase;
     font-size: 0.9rem;
     background-color: #e9ecef;
+    color: #6c757d;
     padding: 2px 6px;
     border-radius: 4px;
     vertical-align: middle;
@@ -462,18 +480,23 @@ hr {
 }
 
 .definicao {
-    font-size: 1rem;
-    color: #2d3436;
-    line-height: 1.5;
     margin-bottom: 8px;
     display: flex;
     gap: 8px;
 }
 
 .def-numero {
+    line-height: 1.5;
+    font-size: 1rem;
     font-weight: 800;
     color: #007bff;
     min-width: 15px;
+}
+
+.def {
+    font-size: 1rem;
+    color: #2d3436;
+    line-height: 1.5;
 }
 
 .exemplos {
@@ -482,11 +505,15 @@ hr {
     padding: 10px 12px 0px 12px;
     border-radius: 0 6px 6px 0;
     margin-left: 22px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.exemplo {
+    background-color: #f8f9fa;
     font-style: italic;
     color: #555;
     font-size: 0.9rem;
-    margin-bottom: 6px;
-    display: block;
 }
 
 .exemplos > span:nth-child(even) {
@@ -627,4 +654,44 @@ button.delet,.edit,.cancel,.save {
     
     padding: 10px 16px;
     border-radius: 0px 0px 25px 25px       
+}
+
+.input-edit {
+    border: 1px solid;
+    outline: none;
+    max-width: 275px;
+    border-radius: 10px;
+    /* font-size: 16px; */
+}
+
+.input-edit-sem-zoom-tag-sinonimo{
+
+}
+
+.input-edit-sem-zoom-tag-brev-desc-sig {
+
+}
+
+.input-edit-sem-zoom-exemplo {
+
+}
+
+/* Previnir zoom no ios ao focar em input */
+@supports (-webkit-touch-callout: none) 
+{
+    .input-edit-sem-zoom-tag-sinonimo {
+        font-size: 16px;
+        transform: scale(0.9);
+        transform-origin: left center;
+    }
+    .input-edit-sem-zoom-tag-brev-desc-sig{
+        font-size: 16px;
+        transform: scale(0.8);
+        transform-origin: left center;
+    }
+    .input-edit-sem-zoom-exemplo {
+        font-size: 16px;
+        transform: scale(0.9);
+        transform-origin: left center;
+    }
 }
