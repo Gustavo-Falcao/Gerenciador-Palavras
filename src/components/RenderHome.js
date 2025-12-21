@@ -70,7 +70,7 @@ export function renderHome(root) {
                 <h1>Decks</h1>
                 <input type="file" accept=".json" id="file-inserida">
         </header>
-        <main>
+        <main class="home-main">
             <section class="main-home" id="conteudo">${decks}</section>
         </main>
         <footer>
@@ -103,8 +103,9 @@ function tratarDadosDoArquivoInserido() {
                 try {
                     const content = e.target.result;
                     const data = JSON.parse(content);
-                    salvarDecksLocalStorage(data);
-                    setArrayDecks(data)
+                    localStorage.setItem('CARD_BASE', JSON.stringify(data));
+                    // salvarDecksLocalStorage(data);
+                    // setArrayDecks(data)
                     console.log("Dados do JSON:", data);
                     e.target.value = '';
                     render();

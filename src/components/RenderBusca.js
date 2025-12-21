@@ -1,4 +1,5 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
+import { debounce } from "../helpers/Debounce.js";
 import { listenersBuscarPalavra, listenerRemoverCard, listenersOpcoesEdit, voltarHome, fecharCard} from "../state/Listeners.js";
 import {stateNavegacao, setStateNavegacao, arrayDecks, valorSerEditado, setValorSerEditado, scrollyConteudo, setScrollyConteudo } from "../state/State.js";
 
@@ -32,6 +33,7 @@ function criarBotEditar() {
 function criarInput(valor, style) {
     const inputEdit = document.createElement('input');
     inputEdit.setAttribute('type', 'text');
+    inputEdit.setAttribute('id', 'valor-edit');
     inputEdit.setAttribute('class', `input-edit ${valorSerEditado.dataField === "exemplo" ? 'campo-exemplo' : ''} ${style}` );
     inputEdit.setAttribute('value', valor);
     inputEdit.style.borderColor = valorSerEditado.color;
@@ -43,6 +45,7 @@ function criarInput(valor, style) {
 
 function criarTextArea(valor, style) {
     const textAreaEdit = document.createElement('textarea');
+    textAreaEdit.setAttribute('id', 'valor-edit');
     textAreaEdit.setAttribute('class', `textarea-edit ${valorSerEditado.dataField === "exemplo" ? "campo-exemplo" : "campo-sig"} ${style}`);
     if(valor.length > 35) {
         const valorRows = valor.length / 35
@@ -411,7 +414,7 @@ function criarModal(objPalavra, mode, isEditando) {
     //Background do modal (janelaPai)
     const backgroundModal = document.createElement('div');
     backgroundModal.setAttribute('id', 'janela-pai');
-    backgroundModal.setAttribute('class', 'janela-pai-popup');
+    backgroundModal.setAttribute('class', 'janela-pai-popup alinhar-centro');
 
     //Todo o conteudo do modal (janelaInfo)
     const modal = document.createElement('div');
@@ -471,6 +474,8 @@ function criarModal(objPalavra, mode, isEditando) {
     }
     backgroundModal.appendChild(modal);
 
+    pegarValorScroll();
+
     return backgroundModal;
 }
 
@@ -516,11 +521,15 @@ export function renderBuscarPalavra() {
         fecharCard();
         const contCard = document.querySelector('.def-block');
         contCard.scrollTop = scrollyConteudo;
-        document.body.classList.add('travar-rolamento');
+        //document.body.classList.add('travar-rolamento');
+        travarScrollBody();
+        travarRoot();
     } else {
         const modalElement = root.querySelector('#janela-pai');
         if(modalElement) modalElement.remove();
-        document.body.classList.remove('travar-rolamento');
+        destravarScrollBody();
+        destravarRoot();
+        //document.body.classList.remove('travar-rolamento');
     }
 
     if(deck.cards.length > 0) listenersBuscarPalavra();
@@ -594,5 +603,81 @@ function handlerCamposDentroDeArrays(field, alvo) {
         console.log(`Altura do exemplo => ${styleElement.height}`);
         const alturaFormatada = parseFloat(styleElement.height);
         setValorSerEditado({dataField: alvo.dataset.field, color: styleElement.color, indexSignificado: blocoSignificado.dataset.significadoIndex, indexExemplo: alvo.dataset.exemploIndex, height: alturaFormatada});
+    }
+}
+
+// Funcao para travar rolamento body
+function travarScrollBody() {
+    
+    
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+  document.body.dataset.scrollY = scrollY; // guarda pra depois
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+
+}
+
+// Funcao para destravar o rolamento body
+function destravarScrollBody() {
+    
+  const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  delete document.body.dataset.scrollY;
+
+  window.scrollTo(0, scrollY);
+}
+
+function travarRoot() {
+    const root = document.getElementById('root');
+    const scrollY = root.scrollY || root.scrollTop;
+
+    root.dataset.scrollY = scrollY;
+    root.style.position = 'fixed';
+    root.style.top = `-${scrollY}px`;
+    root.style.left = '0';
+    root.style.right = '0';
+    root.style.width = '100%';
+}
+
+function destravarRoot() {
+    const root = document.getElementById('root');
+    const scrollY = parseInt(root.dataset.scrollY || '0', 10);
+
+    root.style.position = '';
+    root.style.top = '';
+    root.style.left = '';
+    root.style.right = '';
+    root.style.width = '';
+    delete root.dataset.scrollY;
+
+    root.scrollTo(0, scrollY);
+}
+
+function pegarValorScroll() {
+    const valorEdit = document.getElementById('valor-edit');
+    const backgroundModal = document.getElementById('janela-pai');
+
+    if(valorEdit) {
+
+        valorEdit.addEventListener('focus', () => {
+            if(backgroundModal.classList.contains('alinhar-centro'))
+                backgroundModal.classList.remove('alinhar-centro');
+            backgroundModal.classList.add('alinhar-top');
+        });
+
+        valorEdit.addEventListener('blur', () => {
+            if(backgroundModal.classList.contains('alinhar-top'))
+                backgroundModal.classList.remove('alinhar-top');
+            backgroundModal.classList.add('alinhar-centro');
+        })
     }
 }

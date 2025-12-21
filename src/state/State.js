@@ -83,6 +83,12 @@ export function setScrollyConteudo() {
     const divConteudo = document.querySelector('.def-block');
     scrollyConteudo = divConteudo.scrollTop;
 }
+export let scrollySignificados = 0;
+
+export function salvarScrollySignificados() {
+    const significados = document.getElementById('senses-container');
+    scrollySignificados = significados.scrollTop;
+}
 
 export function zerarScrollyConteudo() {
     scrollyConteudo = 0;

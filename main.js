@@ -12,7 +12,7 @@ export function render() {
 
     
     if(stateNavegacao.page === 'add') {
-        renderAddPalavra(container);
+        renderAddPalavra();
     } 
     if(stateNavegacao.page === 'buscar') {
         renderBuscarPalavra();
