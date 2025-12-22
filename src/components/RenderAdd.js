@@ -2,7 +2,7 @@ import { render } from "../../main.js";
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
-import { stateNavegacao, arrayDecks, scrollySignificados, salvarScrollySignificados} from "../state/State.js";
+import { stateNavegacao, arrayDecks, scrollySignificados, salvarScrollySignificados, salvarDecksLocalStorage} from "../state/State.js";
 // Renderização da página de add palavra
 
 function encontraDeck(id) {
@@ -115,9 +115,7 @@ function criarCampoNomePalavra(cardBaseEmMemoria) {
   input.setAttribute('type', 'text');
   input.setAttribute('name', 'word');
   input.setAttribute('class', 'word-input');
-  input.setAttribute('placeholder', 'Ex: Strident');
-  if(cardBaseEmMemoria.nome)
-    input.value = cardBaseEmMemoria.nome;
+  cardBaseEmMemoria.nome ? input.value = cardBaseEmMemoria.nome : input.setAttribute('placeholder', 'Ex: Strident')
 
   label.append(span, input);
 
@@ -186,10 +184,8 @@ function criarChipRow(cardBaseEmMemoria) {
   inputSinonimo.setAttribute('type', 'text');
   inputSinonimo.setAttribute('name', 'sinonimo');
   inputSinonimo.setAttribute('class', 'chip-input');
-  inputSinonimo.setAttribute('placeholder', 'Ex: loud');
   
-  if(cardBaseEmMemoria.brevDesc)
-    inputSinonimo.value = cardBaseEmMemoria.brevDesc;
+  cardBaseEmMemoria.brevDesc ? inputSinonimo.value = cardBaseEmMemoria.brevDesc : inputSinonimo.setAttribute('placeholder', 'Ex: loud');
 
   chipFieldSinonimo.append(spanSinonimo, inputSinonimo);
 
@@ -212,11 +208,9 @@ function criarCampoPronuncia(cardBaseEmMemoria) {
   input.setAttribute('type', 'text');
   input.setAttribute('name', 'pronuncia');
   input.setAttribute('class', 'pron-input');
-  input.setAttribute('placeholder', '/ STRAI-dãnt /');
   
-  if(cardBaseEmMemoria.pronuncia)
-    input.value = cardBaseEmMemoria.pronuncia;
-
+  cardBaseEmMemoria.pronuncia ? input.value = cardBaseEmMemoria.pronuncia : input.setAttribute('placeholder', '/ STRAI-dãnt /');
+    
   label.append(span, input);
 
   return label;
@@ -305,7 +299,7 @@ function criarSignificado(significadoAtual, index) {
   article.setAttribute('data-id', significadoAtual.id);
 
   //header significado
-  const headerSignificado = criarHeaderSignificado(significadoAtual, index);
+  const headerSignificado = criarHeaderSignificado(index);
 
   //Campo definicao
   const definicaoSignificado = criarCampoDefinicaoSignificado(significadoAtual);
@@ -322,7 +316,7 @@ function criarSignificado(significadoAtual, index) {
 }
 
 //Criar header significado
-function criarHeaderSignificado(significadoAtual, index) {
+function criarHeaderSignificado(index) {
   const header = document.createElement('header');
   header.setAttribute('class', 'sense-header');
 
@@ -363,13 +357,11 @@ function criarCampoDefinicaoSignificado(significadoAtual) {
   span.textContent = "Definição";
 
   const textArea = document.createElement('textarea');
-  textArea.setAttribute('name', 'definition');
+  textArea.setAttribute('name', 'definicao');
   textArea.setAttribute('class', 'def-textarea');
   textArea.setAttribute('rows', '3');
-  textArea.setAttribute('placeholder', 'It means loud, harsh and unpleasant to listen to.');
-
-  if(significadoAtual.definicao)
-    textArea.value = significadoAtual.definicao;
+  
+  significadoAtual.definicao ? textArea.value = significadoAtual.definicao : textArea.setAttribute('placeholder', 'It means loud, harsh and unpleasant to listen to.');
 
   label.append(span, textArea);
 
@@ -387,7 +379,7 @@ function criarCampoContexto(significadoAtual) {
 
   const select = document.createElement('select');
   select.setAttribute('class', 'chip-input');
-  select.setAttribute('name', 'contexto');
+  select.setAttribute('name', 'tipoDefinicao');
 
   const optionVazia = document.createElement('option');
   optionVazia.setAttribute('value', '');
@@ -491,14 +483,12 @@ function criarExemplo(exemplo) {
   inputExemplo.setAttribute('type', 'text');
   inputExemplo.setAttribute('name', 'example');
   inputExemplo.setAttribute('class', 'example-input');
-  inputExemplo.setAttribute('placeholder', 'The strident sound of the alarm woke everyone up.');
-
-  if(exemplo.exemplo)
-    inputExemplo.value = exemplo.exemplo;
-
+  
+  exemplo.exemplo ? inputExemplo.value = exemplo.exemplo : inputExemplo.setAttribute('placeholder', 'The strident sound of the alarm woke everyone up.');
+    
   const buttonRemoveExemplo = document.createElement('button');
   buttonRemoveExemplo.setAttribute('type', 'button');
-  buttonRemoveExemplo.setAttribute('class', 'btn-icon-add');
+  buttonRemoveExemplo.setAttribute('class', 'btn-icon-add danger');
   buttonRemoveExemplo.setAttribute('data-action', 'remove-example');
   buttonRemoveExemplo.setAttribute('aria-label', 'Remover exemplo');
   buttonRemoveExemplo.textContent = "−";
@@ -568,9 +558,9 @@ export function renderAddPalavra() {
 
   // listenerAddPalavra();
   adicionarSignificado();
-  listenersSignificado(cardBaseEmMemoria);
+  listenersSignificado();
   voltarHome();
-  listenerSalvamentoAutomatico(cardBaseEmMemoria);
+  listenerSalvamentoAutomatico();
   adicionarCard();
 }
 
@@ -579,9 +569,13 @@ function adicionarCard() {
     console.log('clicou para adicionar card');
     const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria();
 
-    const novoArrayDeck = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, ...{cards: [...deck.cards, cardBaseAtual]}} : deck);
+    const novoArrayDeck = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
 
     console.log(novoArrayDeck);
+    salvarDecksLocalStorage(novoArrayDeck);
+    const novoCardBase = criarCardBaseVazio();
+    localStorage.setItem('CARD_BASE', JSON.stringify(novoCardBase));
+    renderAddPalavra();
   })
 }
 
@@ -656,10 +650,6 @@ function listenersSignificado() {
 
       const objCardBaseAtualizado = {...cardBase, ...{significados: cardBase.significados.map((significado) => significado.id === significadoElement.dataset.id ? {...significado, ...{exemplos: [...significado.exemplos, objExemploCriado]}} : significado)}};
 
-      const significadoAtual = cardBase.significados.find((significado) => significado.id === significadoElement.dataset.id);
-
-      //console.log(significadoAtual.exemplos.length);
-
       localStorage.setItem('CARD_BASE', JSON.stringify(objCardBaseAtualizado));
 
       const exemploCriado = criarExemplo(objExemploCriado);
@@ -702,13 +692,7 @@ function carregarCardBaseOuSeNaoTiverCria() {
   if(cardBase)
     return JSON.parse(cardBase);
 
-  const objCardBase = {
-      nome: null, 
-      tipo: null, 
-      brevDesc: null, 
-      significados: [],
-      pronuncia: null
-    }
+  const objCardBase = criarCardBaseVazio();
 
   localStorage.setItem('CARD_BASE', JSON.stringify(objCardBase));
   
@@ -716,11 +700,22 @@ function carregarCardBaseOuSeNaoTiverCria() {
     
 }
 
-function listenerSalvamentoAutomatico(cardBaseEmMemoria) {
+function criarCardBaseVazio() {
+  return {
+      nome: null, 
+      tipo: null, 
+      brevDesc: null, 
+      significados: [],
+      pronuncia: null
+    }
+}
+
+function listenerSalvamentoAutomatico() {
   const cardEditor = document.querySelector('.editor-card');
 
   //Funcao para salvar dados de input e select
-  function handleAteracao(e, cardBaseEmMemoria) {
+  function handleAteracao(e) {
+    const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria();
     const elemento = e.target.closest("input, select, textarea");
     if(!elemento) return
 
@@ -730,45 +725,70 @@ function listenerSalvamentoAutomatico(cardBaseEmMemoria) {
 
     const nameElementoClicado = elemento.name;
 
+    if(nameElementoClicado === "definicao" || nameElementoClicado === "tipoDefinicao" || nameElementoClicado === "example") salvarElementosDeArray(nameElementoClicado,cardBaseEmMemoria, elemento);
+
+    let objAtualizado = null;
+
     switch(nameElementoClicado) {
       case "word": 
         console.log('modificar word');
-        const objCardBaseAtualizado = {...cardBaseEmMemoria, ...{nome: elemento.value.trim()}};
-        console.log(objCardBaseAtualizado);
-        salvarCardBaseLocalStorage(objCardBaseAtualizado);
+        objAtualizado = {...cardBaseEmMemoria, ...{nome: elemento.value.trim()}};;
         break;
+
       case "type": 
         console.log('modificar type');
-        const objAtualizado = {...cardBaseEmMemoria, ...{tipo: elemento.value}};
-        console.log(objAtualizado);
-        salvarCardBaseLocalStorage(objAtualizado)
+        objAtualizado = {...cardBaseEmMemoria, ...{tipo: elemento.value}};
         break;
+
       case "sinonimo": 
         console.log('modificar sinonimo');
+        objAtualizado = {...cardBaseEmMemoria, ...{brevDesc: elemento.value.trim()}};
         break;
+
       case "pronuncia": 
         console.log('modificar pronuncia');
-        break;
-      case "definition": 
-        console.log('modificar definicao');
-        break;
-      case "contexto": 
-        console.log('modificar contexto');
-        break;
-      case "example": 
-        console.log('modificar example');
+        objAtualizado = {...cardBaseEmMemoria, ...{pronuncia: elemento.value.trim()}};
         break;
     }
+
+    if(objAtualizado) salvarCardBaseLocalStorage(objAtualizado);
     
     console.log(`Name do elemento que modificou => ${elemento.name}`);
     console.log(`Valor do elemento mudado => ${elemento.value}`);
   
   }
 
-  cardEditor.addEventListener('input', debounce((e) => handleAteracao(e, cardBaseEmMemoria), 1000));
+  cardEditor.addEventListener('input', debounce((e) => handleAteracao(e), 1000));
   
-  //cardEditor.addEventListener('change', handleAteracao);
+  //Funcao para ajustar o curso e o scroll do input de exemplo
+  function ajustarCursorAoClicarNoExemplo(e) {
+    //Time out para 'forcar' o navegador a ajustar o cursor e o foco
+    setTimeout(() => {
+      const comprimentoText = e.target.value.length;
+      e.target.setSelectionRange(comprimentoText, comprimentoText);
+      e.target.scrollLeft = e.target.scrollWidth;
+    }, 0)
+  }
 
+  const inputsExemplo = cardEditor.querySelectorAll('.example-input');
+  inputsExemplo.forEach((input) => input.addEventListener('focus', ajustarCursorAoClicarNoExemplo));
+
+}
+
+function salvarElementosDeArray(nameElementoClicado, cardBaseEmMemoria, elementoTarget) {
+  const significadoElemento = elementoTarget.closest('.sense-card');
+
+  if(nameElementoClicado === "definicao" || nameElementoClicado === "tipoDefinicao") {
+    console.log("ENTROU PARA ALTERAR O CONTEXTO!!!!");
+    const objAtualizado = {...cardBaseEmMemoria, significados: cardBaseEmMemoria.significados.map((significado) => significado.id === significadoElemento.dataset.id ? {...significado, [nameElementoClicado]: elementoTarget.value.trim()} : significado)};
+    
+    salvarCardBaseLocalStorage(objAtualizado); 
+  } else {
+    const linhaExemplo = elementoTarget.closest('.example-row');
+    const objAtualizado = {...cardBaseEmMemoria, significados: cardBaseEmMemoria.significados.map((significado) => significado.id === significadoElemento.dataset.id ? {...significado, exemplos: significado.exemplos.map((ex) => ex.id === linhaExemplo.dataset.exampleId ? {...ex, exemplo: elementoTarget.value.trim()} : ex)} : significado)};
+
+    salvarCardBaseLocalStorage(objAtualizado);
+  }
 }
 
 function salvarCardBaseLocalStorage(cardBase) {

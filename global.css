@@ -138,7 +138,7 @@ body {
 
 .editor-card {
     width: 100%;
-    max-width: 720px;
+    max-width: 329px;
     background: #ffffff;
     border-radius: 0px 20px 20px;
     box-shadow:  0 18px 45px rgba(15, 23, 42, 0.12);
@@ -221,7 +221,7 @@ body {
     border: 1px dashed #d1d5db;
     background: #f9fafb;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #111827;
     transition: all 0.3s ease;
 }
@@ -442,7 +442,7 @@ body {
     border: 1px solid #e5e7eb;
     background: #ffffff;
     outline: none;
-    font-size: 0.9rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -546,7 +546,7 @@ footer {
     top: 88%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: start;
     height: 96px;
     background-color: #ffffff33;

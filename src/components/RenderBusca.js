@@ -103,7 +103,7 @@ function criarExemplos(exemplos, indexSignificado) {
         exemploElement.setAttribute('class', 'exemplo');
         exemploElement.setAttribute('data-field', 'exemplo');
         exemploElement.setAttribute('data-exemplo-index', index);
-        exemploElement.textContent = exemplo;
+        exemploElement.textContent = exemplo.exemplo;
 
         let exemploOuInput
 
@@ -256,7 +256,6 @@ function criarTituloCard(objPalavra) {
 
 function criarCard(objPalavra) {
 
-
     const conteudoFrag = document.createDocumentFragment();
 
     //Criando titulo card
@@ -300,16 +299,6 @@ function criarCard(objPalavra) {
     conteudoFrag.append(separador, caixaDefinicao, caixaPronuncia);
 
     return conteudoFrag;
-}
-
-function criarCardEdit(objPalavra) {
-    //const janela = criarJanelaConteudo();
-
-    janela.innerHTML = `
-        <h2><input type="text" id="nome-edit" value="${objPalavra.nome}"></h2>
-    `
-
-    return janela
 }
 
 function encontraDeck(id) {

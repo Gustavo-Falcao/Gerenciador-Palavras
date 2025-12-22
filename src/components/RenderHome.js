@@ -77,6 +77,10 @@ export function renderHome(root) {
             <button class="btn btn-primary" id="open-deck">
                 Novo deck
             </button>
+            <button class="btn btn-primary" id="atualizar">
+                Atualizar
+            </button>
+            
         </footer>
     `;
     console.log(estadoModalDeck.isModelOpen);
@@ -88,6 +92,7 @@ export function renderHome(root) {
 function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
     tratarDadosDoArquivoInserido();
+    atualizarCards();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
@@ -103,8 +108,8 @@ function tratarDadosDoArquivoInserido() {
                 try {
                     const content = e.target.result;
                     const data = JSON.parse(content);
-                    localStorage.setItem('CARD_BASE', JSON.stringify(data));
-                    // salvarDecksLocalStorage(data);
+                    //localStorage.setItem('CARD_BASE', JSON.stringify(data));
+                    salvarDecksLocalStorage(data);
                     // setArrayDecks(data)
                     console.log("Dados do JSON:", data);
                     e.target.value = '';
@@ -160,6 +165,30 @@ function abrirModal() {
         estadoModalDeck.isModelOpen = !estadoModalDeck.isModelOpen;
         render()
     })
+}
+
+//Funcao para atualizar o objeto dos cards do deck de palavras
+function atualizarCards() {
+    document.getElementById('atualizar').addEventListener('click', () => {
+        const arrayDecks = JSON.parse(localStorage.getItem('arrayDecks'));
+
+        const novoArrayDeck = arrayDecks.map((deck) => 
+            deck.nome === "Palavras" ? 
+                {...deck, cards: deck.cards.map((card)=> 
+                    card.pronuncia ? 
+                        {...card, significados: card.significados.map((significado) =>
+                            significado.id ? significado :
+                                {id: gerarId(), definicao: significado.definicao, tipoDefinicao: significado.tipoDefinicao, exemplos: significado.exemplos.map((exemplo) => 
+                                    exemplo.id ? exemplo 
+                                    : {id: gerarId(), exemplo: exemplo})})} 
+                    : card)} 
+                : deck);
+
+        //Salvar no localSotrage
+        console.log("ARRAY DECK PALAVRAS MODIFICADO COM OS CARDS ATUALIZADOS!!!!");
+        console.log(novoArrayDeck);
+        localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDeck));
+    });
 }
 
 // Lida com as ações das opções do modal
