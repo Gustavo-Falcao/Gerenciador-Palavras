@@ -118,7 +118,6 @@ function tratarDadosDoArquivoInserido() {
                     console.error("Erro no parse do JSON", error);
                 }
             };
-
             reader.readAsText(file);
         }
     });
@@ -139,7 +138,6 @@ function toggleOpecoesAndHandlerOpcoes() {
                     ) 
                     setArrayDecks(novoArr)
                     salvarDecksLocalStorage(novoArr)
-                    render();
                 }
             }
         }
@@ -187,7 +185,9 @@ function atualizarCards() {
         //Salvar no localSotrage
         console.log("ARRAY DECK PALAVRAS MODIFICADO COM OS CARDS ATUALIZADOS!!!!");
         console.log(novoArrayDeck);
+        //setArrayDecks(novoArrayDeck);
         localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDeck));
+        location.reload();
     });
 }
 
