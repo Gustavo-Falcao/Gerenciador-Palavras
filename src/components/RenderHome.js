@@ -138,6 +138,7 @@ function toggleOpecoesAndHandlerOpcoes() {
                     ) 
                     setArrayDecks(novoArr)
                     salvarDecksLocalStorage(novoArr)
+                    render()
                 }
             }
         }
