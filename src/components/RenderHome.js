@@ -77,9 +77,6 @@ export function renderHome(root) {
             <button class="btn btn-primary" id="open-deck">
                 Novo deck
             </button>
-            <button class="btn btn-primary" id="atualizar">
-                Atualizar
-            </button>
             
         </footer>
     `;
@@ -92,7 +89,7 @@ export function renderHome(root) {
 function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
     tratarDadosDoArquivoInserido();
-    atualizarCards();
+    //atualizarCards();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
@@ -167,30 +164,30 @@ function abrirModal() {
 }
 
 //Funcao para atualizar o objeto dos cards do deck de palavras
-function atualizarCards() {
-    document.getElementById('atualizar').addEventListener('click', () => {
-        const arrayDecks = JSON.parse(localStorage.getItem('arrayDecks'));
+// function atualizarCards() {
+//     document.getElementById('atualizar').addEventListener('click', () => {
+//         const arrayDecks = JSON.parse(localStorage.getItem('arrayDecks'));
 
-        const novoArrayDeck = arrayDecks.map((deck) => 
-            deck.nome === "Palavras" ? 
-                {...deck, cards: deck.cards.map((card)=> 
-                    card.pronuncia ? 
-                        {...card, significados: card.significados.map((significado) =>
-                            significado.id ? significado :
-                                {id: gerarId(), definicao: significado.definicao, tipoDefinicao: significado.tipoDefinicao, exemplos: significado.exemplos.map((exemplo) => 
-                                    exemplo.id ? exemplo 
-                                    : {id: gerarId(), exemplo: exemplo})})} 
-                    : card)} 
-                : deck);
+//         const novoArrayDeck = arrayDecks.map((deck) => 
+//             deck.nome === "Palavras" ? 
+//                 {...deck, cards: deck.cards.map((card)=> 
+//                     card.pronuncia ? 
+//                         {...card, significados: card.significados.map((significado) =>
+//                             significado.id ? significado :
+//                                 {id: gerarId(), definicao: significado.definicao, tipoDefinicao: significado.tipoDefinicao, exemplos: significado.exemplos.map((exemplo) => 
+//                                     exemplo.id ? exemplo 
+//                                     : {id: gerarId(), exemplo: exemplo})})} 
+//                     : card)} 
+//                 : deck);
 
-        //Salvar no localSotrage
-        console.log("ARRAY DECK PALAVRAS MODIFICADO COM OS CARDS ATUALIZADOS!!!!");
-        console.log(novoArrayDeck);
-        //setArrayDecks(novoArrayDeck);
-        localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDeck));
-        location.reload();
-    });
-}
+//         //Salvar no localSotrage
+//         console.log("ARRAY DECK PALAVRAS MODIFICADO COM OS CARDS ATUALIZADOS!!!!");
+//         console.log(novoArrayDeck);
+//         //setArrayDecks(novoArrayDeck);
+//         localStorage.setItem('arrayDecks', JSON.stringify(novoArrayDeck));
+//         location.reload();
+//     });
+// }
 
 // Lida com as ações das opções do modal
 function handlerModal() {

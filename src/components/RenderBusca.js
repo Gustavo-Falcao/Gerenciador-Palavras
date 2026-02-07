@@ -409,6 +409,7 @@ function criarModal(objPalavra, mode, isEditando) {
     const modal = document.createElement('div');
     modal.setAttribute('class', 'janela-info');
     modal.setAttribute('id', 'info');
+    modal.setAttribute('data-id', objPalavra.id);
 
     //Caixa que contem o botao para fechar o modal (botSair)
     const caixaBotSair = document.createElement('div');
