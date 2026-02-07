@@ -46,6 +46,7 @@ export function voltarHome() {
 }
 
 //Listener para tratar opçoes do card
+//Mudar nome da funçao para handlerModeView
 export function listenerRemoverCard(idDeck) {
     document.getElementById('opcoes').addEventListener('click', (e) => {
         
@@ -63,6 +64,7 @@ export function listenerRemoverCard(idDeck) {
             render();
         }
         
+        //aqui deve ser chamado a função para mostrar a pagina de criar deck mas com modo de editar
         if(e.target.closest('#editar')) {
             setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'edit', isEditando: stateNavegacao.cardPanel.isEditando}});
 
@@ -73,6 +75,7 @@ export function listenerRemoverCard(idDeck) {
 }
 
 //Listeners para a edicao do card
+//Essa funçao deve ser alterada
 export function listenersOpcoesEdit() {
     document.getElementById('opcoes-edit').addEventListener('click', (e) => {
         const idCard = e.target.closest('.janela-info').dataset.id;

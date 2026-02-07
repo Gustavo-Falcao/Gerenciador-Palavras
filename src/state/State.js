@@ -69,6 +69,7 @@ export function salvarDecksLocalStorage(deck) {
     localStorage.setItem('arrayDecks', JSON.stringify(deck));
 }
 
+//apagar objeto
 export let valorSerEditado = {
     dataField: null,
     color: null,
@@ -94,6 +95,7 @@ export function zerarScrollyConteudo() {
     scrollyConteudo = 0;
 }
 
+//apagar funcao
 export function setValorSerEditado(newValue) {
     valorSerEditado = {...valorSerEditado, ...newValue};
 }

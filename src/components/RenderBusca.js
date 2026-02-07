@@ -60,6 +60,7 @@ function criarTextArea(valor, style) {
     return textAreaEdit;
 }
 
+//Deletar funçao
 function criarInputEdit(valor, style) {
     if(valorSerEditado.dataField === "def-texto") {
         if(valorSerEditado.height > 20) {
@@ -103,8 +104,9 @@ function criarExemplos(exemplos, indexSignificado) {
         exemploElement.setAttribute('class', 'exemplo');
         exemploElement.setAttribute('data-field', 'exemplo');
         exemploElement.setAttribute('data-exemplo-index', index);
-        exemploElement.textContent = exemplo.exemplo;
+        exemploElement.textContent = exemplo;
 
+        //Tirar input
         let exemploOuInput
 
         if(exemploElement.dataset.field === valorSerEditado.dataField && indexSignificado === Number(valorSerEditado.indexSignificado) && index === Number(valorSerEditado.indexExemplo)) {
@@ -119,6 +121,7 @@ function criarExemplos(exemplos, indexSignificado) {
     return fragElement;
 }
 
+//Essa funçao nao deve cirar input
 function criarTexSignificadoOuInput(sig, index) {
     const textSignificado = document.createElement('span');
     textSignificado.setAttribute('data-field', 'def-texto');
@@ -135,6 +138,7 @@ function criarTexSignificadoOuInput(sig, index) {
     }
 }
 
+//Essa funcao nao deve criar input
 function criarTipoDefinicaoOuInput(sig, index) {
     const tipoDefNormal = document.createElement('span');
     tipoDefNormal.setAttribute('class', `context-tag ${sig.tipoDefinicao}`);
@@ -208,6 +212,7 @@ function criarBrevDescPalavra(objPalavra) {
             tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
+            //Tirar input
             const tipoBrevDesc = valorSerEditado.dataField === tipo.dataset.field ? criarInputEdit(tipo.textContent, tipo.className) : tipo;
 
             const brevDesc = document.createElement('span');
@@ -215,6 +220,7 @@ function criarBrevDescPalavra(objPalavra) {
             brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
+            //Tirar input
             const sinonimoBrevDesc = valorSerEditado.dataField === brevDesc.dataset.field ? criarInputEdit(brevDesc.textContent, `${brevDesc.className} input-edit-sem-zoom-tag-sinonimo`) : brevDesc;
 
             caixaBrevDesc.append(tipoBrevDesc, sinonimoBrevDesc)
@@ -225,6 +231,7 @@ function criarBrevDescPalavra(objPalavra) {
             tipo.setAttribute('data-field', 'brevDesc-tipo')
             tipo.textContent = objPalavra.tipo;
 
+            //Tirar input
             const tipoBrevDesc = valorSerEditado.dataField === tipo.dataset.field ? criarInputEdit(tipo.textContent, tipo.className) : tipo;
 
             caixaBrevDesc.appendChild(tipoBrevDesc)
@@ -234,6 +241,7 @@ function criarBrevDescPalavra(objPalavra) {
             brevDesc.setAttribute('data-field', 'brevDesc-sinonimo')
             brevDesc.textContent = objPalavra.brevDesc;
 
+            //Tirar input
             const sinonimoBrevDesc = valorSerEditado.dataField === brevDesc.dataset.field ? criarInputEdit(brevDesc.textContent, `${brevDesc.className} input-edit-sem-zoom-tag-sinonimo`) : brevDesc;
 
             caixaBrevDesc.appendChild(sinonimoBrevDesc);
@@ -258,6 +266,7 @@ function criarCard(objPalavra) {
 
     const conteudoFrag = document.createDocumentFragment();
 
+    //Tirar input
     //Criando titulo card
     const h2 = criarTituloCard(objPalavra);
     const tituloCard = h2.dataset.field === valorSerEditado.dataField ? criarInputEdit(h2.textContent, h2.className) : h2;
@@ -433,17 +442,20 @@ function criarModal(objPalavra, mode, isEditando) {
 
     modal.append(caixaBotSair, conteudoModal);
 
+    //Apagar mode edit
     if(mode === "edit") {
         //criar opcoes edit
         const botSalvar = criarBotSalvar();
         const botCancelar = criarBotCancelar();
 
+        //Apagar essas opcoes
         const caixaOpcoesEditar = document.createElement('div');
         caixaOpcoesEditar.setAttribute('class', 'caixa-op');
         caixaOpcoesEditar.setAttribute('id', 'opcoes-edit');
         if(isEditando) caixaOpcoesEditar.appendChild(botSalvar);
         caixaOpcoesEditar.append(botCancelar);
 
+        //Apagar caixa msg
          //Criar caixa de mensagem explicando como editar
         const caixaMsg = document.createElement('div');
         caixaMsg.setAttribute('class', 'caixa-msg')
@@ -526,6 +538,7 @@ export function renderBuscarPalavra() {
     voltarHome()
 }
 
+//Essa funçao deve ser deletada
 // criar um objeto temporario para guardar o elemento clicado para usar o input
 function listenerCardEdit() {
     document.getElementById('card').addEventListener('click', (e) => {
@@ -545,6 +558,7 @@ function listenerCardEdit() {
     });
 }
 
+//Essa funçao deve ser deletada
 function handlerDataSets({field, significadoIndex, exemploIndex}, alvo) {
     
     //Separa quando for do tipo (def-texto), (tipo-def) e (exemplo)
@@ -580,6 +594,7 @@ function handlerDataSets({field, significadoIndex, exemploIndex}, alvo) {
     }
 }
 
+//funcao deve ser deletada
 function handlerCamposDentroDeArrays(field, alvo) {
     const blocoSignificado = alvo.closest('[data-significado-index]');
     const styleElement = getComputedStyle(alvo);
