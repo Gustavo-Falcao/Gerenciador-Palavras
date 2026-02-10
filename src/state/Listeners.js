@@ -1,6 +1,6 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, setValorSerEditado, valorSerEditado, scrollyConteudo, setScrollyConteudo, zerarScrollyConteudo} from "./State.js";
+import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, setScrollyConteudo, zerarScrollyConteudo} from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
@@ -28,7 +28,6 @@ export function listenersBuscarPalavra() {
 export function fecharCard() {
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
-        if(valorSerEditado.dataField) setValorSerEditado({dataField: null, color: null, indexSignificado: null, indexExemplo: null, height: null});
         setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
         
         zerarScrollyConteudo();
@@ -47,7 +46,7 @@ export function voltarHome() {
 
 //Listener para tratar opçoes do card
 //Mudar nome da funçao para handlerModeView
-export function listenerRemoverCard(idDeck) {
+export function listenersOpcoesViewCard(idDeck) {
     document.getElementById('opcoes').addEventListener('click', (e) => {
         
         let idCardAtual = e.target.closest('.janela-info').dataset.id;
@@ -70,43 +69,6 @@ export function listenerRemoverCard(idDeck) {
 
             setScrollyConteudo();
             renderBuscarPalavra();
-        }
-    });
-}
-
-//Listeners para a edicao do card
-//Essa funçao deve ser alterada
-export function listenersOpcoesEdit() {
-    document.getElementById('opcoes-edit').addEventListener('click', (e) => {
-        const idCard = e.target.closest('.janela-info').dataset.id;
-        console.log(`Id que está para ser editado => ${idCard}`);
-        if(e.target.id === 'cancelar') {
-            if(stateNavegacao.cardPanel.isEditando) {
-                setStateNavegacao({cardPanel: {mode: stateNavegacao.cardPanel.mode, isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, isEditando: !stateNavegacao.cardPanel.isEditando}});
-                setValorSerEditado({dataField: null, color: null, indexSignificado: null, indexExemplo: null, height: null});
-                
-                setScrollyConteudo();
-            } else {
-                setStateNavegacao({cardPanel: {mode: 'view', isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, isEditando: stateNavegacao.cardPanel.isEditando}});
-    
-                setScrollyConteudo();
-            }
-            render()
-        }
-        else if(e.target.id === 'salvar') {
-            const nomeEdit = document.getElementById('nome-edit').value;
-            const contEdit = document.getElementById('cont-edit').value;
-
-            if(nomeEdit && contEdit) {
-                const novoArrayDack = arrayDecks.map((dec) => dec.id === stateNavegacao.idDeck ? {...dec, cards: dec.cards.map(card => card.id === idCard ? {...card, nome: nomeEdit, desc: contEdit} : card), ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}} : dec)
-                
-                setArrayDecks(novoArrayDack)
-                salvarDecksLocalStorage(novoArrayDack)
-
-                setStateNavegacao({cardPanel: {isOpen: stateNavegacao.cardPanel.isOpen, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'view'}})
-
-                render();
-            }
         }
     });
 }

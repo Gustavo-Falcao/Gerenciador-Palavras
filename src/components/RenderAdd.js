@@ -2,7 +2,8 @@ import { render } from "../../main.js";
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
-import { stateNavegacao, arrayDecks, scrollySignificados, salvarScrollySignificados, salvarDecksLocalStorage} from "../state/State.js";
+import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados} from "../state/State.js";
+import { CardModal } from "./CardModal.js";
 // Renderização da página de add palavra
 
 function encontraDeck(id) {
@@ -507,6 +508,7 @@ function criarBotaoPreVisualizacaoCard() {
   button.setAttribute('type', 'button');
   button.setAttribute('class', 'btn-outline-add');
   button.setAttribute('data-action', 'preview');
+  button.setAttribute('id', 'preview-card');
   button.textContent = "Pré-visualizar card";
 
   section.appendChild(button);
@@ -553,8 +555,17 @@ export function renderAddPalavra() {
   const botaoAddCard = criarBotaoCriarCard();
 
   // append tudo
-
-  root.append(botHome, tituloPagina, labelCard, main, botaoAddCard);
+  if(isCardPreviewOpen) {
+    const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria();
+    
+    const modal = CardModal(cardBaseAtual);
+    root.append(botHome, tituloPagina, labelCard, main, botaoAddCard, modal);
+    
+    fecharCard();
+  } else {
+    console.log("Card preview nao esta ativo")
+    root.append(botHome, tituloPagina, labelCard, main, botaoAddCard);
+  }
 
   // listenerAddPalavra();
   adicionarSignificado();
@@ -562,6 +573,23 @@ export function renderAddPalavra() {
   voltarHome();
   listenerSalvamentoAutomatico();
   adicionarCard();
+  preVisualizarCard();
+}
+
+function preVisualizarCard() {
+  document.getElementById('preview-card').addEventListener('click', () => {
+    setIsCardPreviewOpen(true);
+    salvarScrollySignificados();
+    renderAddPalavra();
+  });
+}
+
+function fecharCard() {
+  document.getElementById('sair').addEventListener('click', () => {
+    setIsCardPreviewOpen(false);
+    renderAddPalavra();
+    setScrollySignificados();
+  });
 }
 
 function adicionarCard() {

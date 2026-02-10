@@ -69,15 +69,6 @@ export function salvarDecksLocalStorage(deck) {
     localStorage.setItem('arrayDecks', JSON.stringify(deck));
 }
 
-//apagar objeto
-export let valorSerEditado = {
-    dataField: null,
-    color: null,
-    indexSignificado: null,
-    indexExemplo: null,
-    height: null
-};
-
 export let scrollyConteudo = 0;
 
 export function setScrollyConteudo() {
@@ -91,11 +82,17 @@ export function salvarScrollySignificados() {
     scrollySignificados = significados.scrollTop;
 }
 
+export function setScrollySignificados() {
+    const significados = document.getElementById('senses-container');
+    significados.scrollTop = scrollySignificados;
+}
+
 export function zerarScrollyConteudo() {
     scrollyConteudo = 0;
 }
 
-//apagar funcao
-export function setValorSerEditado(newValue) {
-    valorSerEditado = {...valorSerEditado, ...newValue};
+export let isCardPreviewOpen = false;
+
+export function setIsCardPreviewOpen(valor) {
+    isCardPreviewOpen = valor;
 }
