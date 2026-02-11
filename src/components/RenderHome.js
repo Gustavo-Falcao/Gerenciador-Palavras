@@ -1,4 +1,4 @@
-import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage } from "../state/State.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage} from "../state/State.js";
 import { render } from "../../main.js";
 import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
 import { gerarId } from "../helpers/GerarId.js";
@@ -90,8 +90,17 @@ function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
     tratarDadosDoArquivoInserido();
     //atualizarCards();
+    criarAtualizadoStorage()
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
+}
+
+function criarAtualizadoStorage() {
+    const atualizado = getAtualizadoFromStorage();
+
+    if(atualizado === null) {
+        salvarAtualizadoStorage();
+    }
 }
 
 function tratarDadosDoArquivoInserido() {

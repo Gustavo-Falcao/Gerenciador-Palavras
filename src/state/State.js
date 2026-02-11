@@ -96,3 +96,23 @@ export let isCardPreviewOpen = false;
 export function setIsCardPreviewOpen(valor) {
     isCardPreviewOpen = valor;
 }
+
+export let atualizado = false;
+
+export function setAtualizado(valor) {
+    atualizado = valor;
+}
+
+export function salvarAtualizadoStorage() {
+    localStorage.setItem('atualizado', atualizado);
+}
+
+export function getAtualizadoFromStorage() {
+    const atualizado = localStorage.getItem('atualizado');
+
+    if(atualizado) {
+        return JSON.parse(atualizado);
+    } else {
+        return null;
+    }
+}
