@@ -24,6 +24,10 @@ export function setArrayDecks(newDeck) {
     arrayDecks = newDeck
 }
 
+export function salvarDecksLocalStorage(deck) {
+    localStorage.setItem('arrayDecks', JSON.stringify(deck));
+}
+
 export function atualizarDeck(idDeck) {
     //let cardsAnts = JSON.parse(localStorage.getItem('arrayCards'))
 
@@ -65,10 +69,6 @@ export function setStadoModal(newState) {
     estadoModalDeck = {...estadoModalDeck, ... newState}
 }
 
-export function salvarDecksLocalStorage(deck) {
-    localStorage.setItem('arrayDecks', JSON.stringify(deck));
-}
-
 export let scrollyConteudo = 0;
 
 export function setScrollyConteudo() {
@@ -108,7 +108,7 @@ export function salvarAtualizadoStorage() {
 }
 
 export function getAtualizadoFromStorage() {
-    const atualizado = localStorage.getItem('atualizado');
+    const atualizado = JSON.parse(localStorage.getItem('atualizado'));
 
     if(atualizado) {
         return atualizado;

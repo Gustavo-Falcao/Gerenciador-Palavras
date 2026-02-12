@@ -91,7 +91,7 @@ function handlerHome() {
     tratarDadosDoArquivoInserido();
     //atualizarCards();
     criarAtualizadoStorage()
-   // atualizar();
+    atualizar();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
@@ -111,22 +111,8 @@ function atualizar() {
     if(!atualizado) {
         const novoArrayDecks = arrayDecks.map(deck => ({...deck, cardBase:
             {
-                criar: 
-                    {
-                        nome: null, 
-                        tipo: null, 
-                        brevDesc: null, 
-                        significados: [], 
-                        pronuncia: null
-                    },
-                editar:
-                    {
-                        nome: null, 
-                        tipo: null, 
-                        brevDesc: null, 
-                        significados: [], 
-                        pronuncia: null
-                    }
+                criar: null,
+                editar: null
             }
         }));
 
@@ -190,7 +176,7 @@ function toggleOpecoesAndHandlerOpcoes() {
             const idDeck = e.target.closest('.deck').id
     
             if(idElemento === 'add-palavra') {
-                setStateNavegacao({page: 'add', idDeck: idDeck})
+                setStateNavegacao({page: 'add', idDeck: idDeck, cardPanel: {...stateNavegacao.cardPanel, mode: 'criar'}});
                 render()
             }
             else if(idElemento === 'buscar') {

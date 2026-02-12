@@ -2,8 +2,9 @@ import { render } from "../../main.js";
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
-import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados} from "../state/State.js";
+import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados, setArrayDecks} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
+import { renderHome } from "./RenderHome.js";
 // Renderização da página de add palavra
 
 function encontraDeck(id) {
@@ -34,7 +35,7 @@ function criarBotHome() {
 function criarTitulo() {
   const h1 = document.createElement('h1');
   h1.setAttribute('class', 'titulo-add');
-  h1.textContent = "Criar card";
+  h1.textContent = stateNavegacao.cardPanel.mode === 'criar' ? 'Criar card' : 'Editar card';
 
   return h1;
 }
@@ -524,6 +525,19 @@ function criarBotaoCriarCard() {
   button.setAttribute('class', 'btn btn-primary');
   button.setAttribute('id', 'criarCard');
   button.textContent = 'Criar card';
+  footer.appendChild(button);
+
+  return footer;
+}
+
+//Criar botao para salvar mudancas no card
+function criarBotaoSalvarEdicaoCard() {
+  const footer = document.createElement('footer');
+
+  const button = document.createElement('button');
+  button.setAttribute('class', 'btn btn-primary');
+  button.setAttribute('id', 'save-changes');
+  button.textContent = 'Aplicar mudanças';
 
   footer.appendChild(button);
 
@@ -532,9 +546,10 @@ function criarBotaoCriarCard() {
 
 export function renderAddPalavra() {
   const root = document.getElementById('root');
-  const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria();
   const deckAtual = encontraDeck(stateNavegacao.idDeck);
-
+  const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria(deckAtual);
+  console.log("State navegacao abaixo");
+  console.log(stateNavegacao);
   root.innerHTML = '';
   
   //criar bot home
@@ -550,13 +565,11 @@ export function renderAddPalavra() {
   const main = criarMain(cardBaseEmMemoria);
 
   //Criar botao adicionar card
-  const botaoAddCard = criarBotaoCriarCard();
+  const botaoAddCard = stateNavegacao.cardPanel.mode === 'criar' ? criarBotaoCriarCard() : criarBotaoSalvarEdicaoCard();
 
   // append tudo
   if(isCardPreviewOpen) {
-    const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria();
-    
-    const modal = CardModal(cardBaseAtual);
+    const modal = CardModal(cardBaseEmMemoria);
     root.append(botHome, tituloPagina, labelCard, main, botaoAddCard, modal);
     
     fecharCard();
@@ -566,11 +579,11 @@ export function renderAddPalavra() {
   }
 
   // listenerAddPalavra();
-  adicionarSignificado();
-  listenersSignificado();
+  adicionarSignificado(deckAtual);
+  listenersSignificado(deckAtual);
   voltarHome();
-  listenerSalvamentoAutomatico();
-  adicionarCard();
+  listenerSalvamentoAutomatico(deckAtual);
+  adicionarCard(deckAtual);
   preVisualizarCard();
 }
 
@@ -590,24 +603,24 @@ function fecharCard() {
   });
 }
 
-function adicionarCard() {
+function adicionarCard(deckAtual) {
   document.getElementById('criarCard').addEventListener('click', () => {
     console.log('clicou para adicionar card');
-    const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria();
+    const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria(deckAtual);
 
-    const novoArrayDeck = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
+    const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
 
-    console.log(novoArrayDeck);
-    salvarDecksLocalStorage(novoArrayDeck);
-    const novoCardBase = criarCardBaseVazio();
-    localStorage.setItem('CARD_BASE', JSON.stringify(novoCardBase));
-    renderAddPalavra();
+    const novoArrayDeckComCardBaseNullo = novoArrayDeck.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, [stateNavegacao.cardPanel.mode]: null}} : deck);
+
+    salvarDecksLocalStorage(novoArrayDeckComCardBaseNullo);
+    window.location.reload();
+    //salvarDecksLocalStorage(novoArrayDeckComCardBaseNullo);//deixar como comentario depois quando for testar
   })
 }
 
-function adicionarSignificado() {
+function adicionarSignificado(deckAtual) {
   document.getElementById('add-significado').addEventListener('click', () => {
-    const cardBase = carregarCardBaseOuSeNaoTiverCria();
+    const cardBase = carregarCardBaseOuSeNaoTiverCria(deckAtual);
     const significadosElement = document.getElementById('senses-container');
     const msgSemSignificado = significadosElement.querySelector('.msg-sem-significado');
     if(msgSemSignificado)
@@ -615,13 +628,15 @@ function adicionarSignificado() {
 
     const objSignificado = {id: gerarId(),definicao: null, exemplos: [], tipoDefinicao: null}
 
+    console.log("Card base passado quando adiciona um significado")
+    console.log(cardBase);
     const objCardBaseAtualizado = {...cardBase, ...{significados: [...cardBase.significados, objSignificado]}};
 
     console.log(objCardBaseAtualizado);
     
     console.log(`Tamanho do exemplos do card base => ${cardBase.significados.length}`);
 
-    localStorage.setItem('CARD_BASE', JSON.stringify(objCardBaseAtualizado));
+    salvarCardBaseNoDeck(objCardBaseAtualizado, deckAtual);
 
     salvarScrollySignificados();
     
@@ -631,20 +646,21 @@ function adicionarSignificado() {
   })
 }
 
-function listenersSignificado() {
+function listenersSignificado(deckAtual) {
   document.getElementById('senses-container').addEventListener('click', (e) => {
     //console.log(`Elemento clicado => ${e.target.dataset.action}`);
-    const cardBase = carregarCardBaseOuSeNaoTiverCria();
+    const cardBase = carregarCardBaseOuSeNaoTiverCria(deckAtual);
     if(!e.target)
       return
+    //Remover significado
     if(e.target.dataset.action === 'remove-sense') {
       const significadoElement = e.target.closest('.sense-card');
 
       console.log(`Id do significado para deletar => ${significadoElement.dataset.id}`);
 
       const objCardBaseAtualizado = {...cardBase, ...{significados: cardBase.significados.filter(significado => significado.id !== significadoElement.dataset.id)}} 
-
-      localStorage.setItem('CARD_BASE', JSON.stringify(objCardBaseAtualizado));
+      
+      salvarCardBaseNoDeck(objCardBaseAtualizado, deckAtual);
 
       significadoElement.remove();
 
@@ -653,11 +669,7 @@ function listenersSignificado() {
         const msgSemSignificados = criarMsgSemSignificados();
         significados.append(msgSemSignificados);
       }
-      
-      //console.log(objCardBaseAtualizado);
-      //Tentar com o findeIndex
-      //Se nao der certo
-      //-> Colocar id nos significados 
+
     }
     else if(e.target.dataset.action === "add-example") {
       const significadoElement = e.target.closest('.sense-card');
@@ -676,7 +688,7 @@ function listenersSignificado() {
 
       const objCardBaseAtualizado = {...cardBase, ...{significados: cardBase.significados.map((significado) => significado.id === significadoElement.dataset.id ? {...significado, ...{exemplos: [...significado.exemplos, objExemploCriado]}} : significado)}};
 
-      localStorage.setItem('CARD_BASE', JSON.stringify(objCardBaseAtualizado));
+      salvarCardBaseNoDeck(objCardBaseAtualizado, deckAtual);
 
       const exemploCriado = criarExemplo(objExemploCriado);
       listExemplos.append(exemploCriado);
@@ -697,7 +709,7 @@ function listenersSignificado() {
 
       console.log(significadoAtual.exemplos.length);
 
-      localStorage.setItem('CARD_BASE', JSON.stringify(objCardBaseAtualizado));
+      salvarCardBaseNoDeck(objCardBaseAtualizado, deckAtual);
 
       linhaExemplo.remove();
 
@@ -711,25 +723,20 @@ function listenersSignificado() {
   })
 }
 
-//Nao vai mais existir
-function carregarCardBaseOuSeNaoTiverCria() {
-  console.log('Entrou no carregamento de dados do localStorage');
-  const cardBase = localStorage.getItem('CARD_BASE');
-
-  if(cardBase)
-    return JSON.parse(cardBase);
-
-  const objCardBase = criarCardBaseVazio();
-
-  localStorage.setItem('CARD_BASE', JSON.stringify(objCardBase));
+function carregarCardBaseOuSeNaoTiverCria(deckAtual) {
+  const deckAtualEmMemoriaAtualizado = arrayDecks.find(deck => deck.id === deckAtual.id);
+  const cardBase = stateNavegacao.cardPanel.mode === 'criar' ? deckAtualEmMemoriaAtualizado.cardBase.criar : deckAtualEmMemoriaAtualizado.cardBase.editar; 
   
-  return objCardBase;
+  //deckAtual.cardBase.criar : deckAtual.cardBase.editar;
+
+  return cardBase ? cardBase : criarCardBaseVazio(); 
     
 }
 
-//Nao vai mais existir
+
 function criarCardBaseVazio() {
   return {
+      id: null,
       nome: null, 
       tipo: null, 
       brevDesc: null, 
@@ -738,12 +745,13 @@ function criarCardBaseVazio() {
     }
 }
 
-function listenerSalvamentoAutomatico() {
+function listenerSalvamentoAutomatico(deckAtual) {
   const cardEditor = document.querySelector('.editor-card');
 
   //Funcao para salvar dados de input e select
   function handleAteracao(e) {
-    const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria();
+    //pode dar erro aqui
+    const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria(deckAtual);
     const elemento = e.target.closest("input, select, textarea");
     if(!elemento) return
 
@@ -753,14 +761,18 @@ function listenerSalvamentoAutomatico() {
 
     const nameElementoClicado = elemento.name;
 
-    if(nameElementoClicado === "definicao" || nameElementoClicado === "tipoDefinicao" || nameElementoClicado === "example") salvarElementosDeArray(nameElementoClicado,cardBaseEmMemoria, elemento);
+    if(nameElementoClicado === "definicao" || nameElementoClicado === "tipoDefinicao" || nameElementoClicado === "example") salvarElementosDeArray(nameElementoClicado,cardBaseEmMemoria, elemento, deckAtual);
 
     let objAtualizado = null;
 
     switch(nameElementoClicado) {
       case "word": 
         console.log('modificar word');
-        objAtualizado = {...cardBaseEmMemoria, ...{nome: elemento.value.trim()}};;
+        console.log("CARD BASE ENTRANDO PARA MUDAR WORD")
+        console.log(cardBaseEmMemoria);
+        objAtualizado = {...cardBaseEmMemoria, ...{nome: elemento.value.trim()}};
+        console.log("CARD BASE ATUALIZADO DEPOIS DE MUDAR WORD")
+        console.log(objAtualizado);
         break;
 
       case "type": 
@@ -775,11 +787,11 @@ function listenerSalvamentoAutomatico() {
 
       case "pronuncia": 
         console.log('modificar pronuncia');
-        objAtualizado = {...cardBaseEmMemoria, ...{pronuncia: elemento.value.trim()}};
+        objAtualizado = {...cardBaseEmMemoria, pronuncia: elemento.value.trim()};
         break;
     }
 
-    if(objAtualizado) salvarCardBaseLocalStorage(objAtualizado);
+    if(objAtualizado) salvarCardBaseNoDeck(objAtualizado, deckAtual);
     
     console.log(`Name do elemento que modificou => ${elemento.name}`);
     console.log(`Valor do elemento mudado => ${elemento.value}`);
@@ -803,23 +815,37 @@ function listenerSalvamentoAutomatico() {
 
 }
 
-function salvarElementosDeArray(nameElementoClicado, cardBaseEmMemoria, elementoTarget) {
+function salvarElementosDeArray(nameElementoClicado, cardBaseEmMemoria, elementoTarget, deckAtual) {
   const significadoElemento = elementoTarget.closest('.sense-card');
 
   if(nameElementoClicado === "definicao" || nameElementoClicado === "tipoDefinicao") {
     console.log("ENTROU PARA ALTERAR O CONTEXTO!!!!");
+    console.log(cardBaseEmMemoria);
     const objAtualizado = {...cardBaseEmMemoria, significados: cardBaseEmMemoria.significados.map((significado) => significado.id === significadoElemento.dataset.id ? {...significado, [nameElementoClicado]: elementoTarget.value.trim()} : significado)};
     
-    salvarCardBaseLocalStorage(objAtualizado); 
+    salvarCardBaseNoDeck(objAtualizado, deckAtual);
   } else {
+    console.log("Exemploo");
+    console.log(cardBaseEmMemoria);
     const linhaExemplo = elementoTarget.closest('.example-row');
     const objAtualizado = {...cardBaseEmMemoria, significados: cardBaseEmMemoria.significados.map((significado) => significado.id === significadoElemento.dataset.id ? {...significado, exemplos: significado.exemplos.map((ex) => ex.id === linhaExemplo.dataset.exampleId ? {...ex, exemplo: elementoTarget.value.trim()} : ex)} : significado)};
 
-    salvarCardBaseLocalStorage(objAtualizado);
+    salvarCardBaseNoDeck(objAtualizado, deckAtual);
   }
 }
 
-function salvarCardBaseLocalStorage(cardBase) {
-  localStorage.setItem('CARD_BASE', JSON.stringify(cardBase));
+// function salvarCardBaseLocalStorage(cardBase) {
+//   localStorage.setItem('CARD_BASE', JSON.stringify(cardBase));
+// }
+
+function salvarCardBaseNoDeck(cardBaseAtualizado, deckAtual) {
+  console.log("CARD BASE ATUALIZADO NA FUNCAO SALVAR CARDBASE NO DECK");
+  console.log(cardBaseAtualizado);
+  const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, [stateNavegacao.cardPanel.mode]: cardBaseAtualizado}} : deck);
+
+  //salvar localstorage
+  setArrayDecks(novoArrayDeck);
+  salvarDecksLocalStorage(novoArrayDeck);
+  console.log(novoArrayDeck);
 }
 
