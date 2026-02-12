@@ -91,6 +91,7 @@ function handlerHome() {
     tratarDadosDoArquivoInserido();
     //atualizarCards();
     criarAtualizadoStorage()
+   // atualizar();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
@@ -102,6 +103,42 @@ function criarAtualizadoStorage() {
         salvarAtualizadoStorage();
     }
 }
+
+//Atualizacao de criar dois card base para cada deck existente e apagar o card base que esta sendo utilizado
+function atualizar() {
+    const atualizado = getAtualizadoFromStorage();
+
+    if(!atualizado) {
+        const novoArrayDecks = arrayDecks.map(deck => ({...deck, cardBase:
+            {
+                criar: 
+                    {
+                        nome: null, 
+                        tipo: null, 
+                        brevDesc: null, 
+                        significados: [], 
+                        pronuncia: null
+                    },
+                editar:
+                    {
+                        nome: null, 
+                        tipo: null, 
+                        brevDesc: null, 
+                        significados: [], 
+                        pronuncia: null
+                    }
+            }
+        }));
+
+        setArrayDecks(novoArrayDecks);
+        salvarDecksLocalStorage(novoArrayDecks);
+        setAtualizado(true);
+        salvarAtualizadoStorage();
+        console.log("Novo array deck abaixo");
+        console.log(novoArrayDecks);
+    }
+}
+
 
 function tratarDadosDoArquivoInserido() {
     document.getElementById('file-inserida').addEventListener('change', (e) => {

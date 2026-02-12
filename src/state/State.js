@@ -111,7 +111,7 @@ export function getAtualizadoFromStorage() {
     const atualizado = localStorage.getItem('atualizado');
 
     if(atualizado) {
-        return JSON.parse(atualizado);
+        return atualizado;
     } else {
         return null;
     }

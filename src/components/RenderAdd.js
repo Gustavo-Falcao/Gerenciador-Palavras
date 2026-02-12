@@ -536,8 +536,6 @@ export function renderAddPalavra() {
   const deckAtual = encontraDeck(stateNavegacao.idDeck);
 
   root.innerHTML = '';
-
-  const deck = encontraDeck(stateNavegacao.idDeck)
   
   //criar bot home
   const botHome = criarBotHome();
@@ -713,6 +711,7 @@ function listenersSignificado() {
   })
 }
 
+//Nao vai mais existir
 function carregarCardBaseOuSeNaoTiverCria() {
   console.log('Entrou no carregamento de dados do localStorage');
   const cardBase = localStorage.getItem('CARD_BASE');
@@ -728,6 +727,7 @@ function carregarCardBaseOuSeNaoTiverCria() {
     
 }
 
+//Nao vai mais existir
 function criarCardBaseVazio() {
   return {
       nome: null, 
