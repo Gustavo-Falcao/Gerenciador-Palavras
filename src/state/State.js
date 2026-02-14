@@ -69,12 +69,8 @@ export function setStadoModal(newState) {
     estadoModalDeck = {...estadoModalDeck, ... newState}
 }
 
-export let scrollyConteudo = 0;
 
-export function setScrollyConteudo() {
-    const divConteudo = document.querySelector('.def-block');
-    scrollyConteudo = divConteudo.scrollTop;
-}
+
 export let scrollySignificados = 0;
 
 export function salvarScrollySignificados() {
@@ -87,6 +83,8 @@ export function setScrollySignificados() {
     significados.scrollTop = scrollySignificados;
 }
 
+export let scrollyConteudo = 0;
+
 export function zerarScrollyConteudo() {
     scrollyConteudo = 0;
 }
@@ -95,6 +93,12 @@ export let isCardPreviewOpen = false;
 
 export function setIsCardPreviewOpen(valor) {
     isCardPreviewOpen = valor;
+}
+
+export let isModalAtencaoEdicaoOpen = false;
+
+export function setIsModalAtencaoEdicaoOpen(valor) {
+    isModalAtencaoEdicaoOpen = valor;
 }
 
 export let atualizado = false;
@@ -115,4 +119,16 @@ export function getAtualizadoFromStorage() {
     } else {
         return null;
     }
+}
+
+export let scrollYBody;
+
+export function setScrollYBody(valor) {
+    scrollYBody = valor;
+}
+
+export let usarScrollYBodyPersonalizado = false;
+
+export function setUsarScrollYBodyPersonalizado(valor) {
+    usarScrollYBodyPersonalizado = valor;
 }

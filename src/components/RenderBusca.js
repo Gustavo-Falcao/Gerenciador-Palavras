@@ -1,6 +1,6 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenersOpcoesViewCard, voltarHome, fecharCard} from "../state/Listeners.js";
-import {stateNavegacao, arrayDecks} from "../state/State.js";
+import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
 
 function encontraDeck(id) {
@@ -136,7 +136,7 @@ export function renderBuscarPalavra() {
         }   
         fecharCard();
         
-        travarScrollBody();
+        travarScrollBodyPersonalizado ? travarScrollBodyPersonalizado() : travarScrollBody();
     } else {
         const modalElement = root.querySelector('#janela-pai');
         if(modalElement) modalElement.remove();
@@ -151,12 +151,12 @@ export function renderBuscarPalavra() {
 
 
 // Funcao para travar rolamento body
-function travarScrollBody() {
+export function travarScrollBody() {
     
-    
-  const scrollY = window.scrollY || document.documentElement.scrollTop;
+   const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-  document.body.dataset.scrollY = scrollY; // guarda pra depois
+   setScrollYBody(scrollY);
+
   document.body.style.position = 'fixed';
   document.body.style.top = `-${scrollY}px`;
   document.body.style.left = '0';
@@ -165,17 +165,28 @@ function travarScrollBody() {
 
 }
 
+//arrumar o funcionamento dessa funcao
+function travarScrollBodyPersonalizado() {
+   
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollYBody}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+}
+
 // Funcao para destravar o rolamento body
-function destravarScrollBody() {
+export function destravarScrollBody() {
     
-  const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+  const scrollY = scrollYBody;
 
   document.body.style.position = '';
   document.body.style.top = '';
   document.body.style.left = '';
   document.body.style.right = '';
   document.body.style.width = '';
-  delete document.body.dataset.scrollY;
+
+  setScrollYBody(0);
 
   window.scrollTo(0, scrollY);
 }

@@ -1,10 +1,10 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, setScrollyConteudo, zerarScrollyConteudo} from "./State.js";
+import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, zerarScrollyConteudo, setUsarScrollYBodyPersonalizado} from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
-import { renderBuscarPalavra } from "../components/RenderBusca.js";
+import { destravarScrollBody, renderBuscarPalavra } from "../components/RenderBusca.js";
 
 export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
@@ -29,7 +29,8 @@ export function fecharCard() {
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
         setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
-        
+        setUsarScrollYBodyPersonalizado(false);
+
         zerarScrollyConteudo();
         renderBuscarPalavra();
     });
@@ -65,10 +66,11 @@ export function listenersOpcoesViewCard(idDeck) {
         
         //aqui deve ser chamado a função para mostrar a pagina de criar deck mas com modo de editar
         if(e.target.closest('#editar')) {
-            setStateNavegacao({cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'edit', isEditando: stateNavegacao.cardPanel.isEditando}});
+            setStateNavegacao({page:'add', cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'editar', isEditando: stateNavegacao.cardPanel.isEditando}});
 
-            setScrollyConteudo();
-            renderBuscarPalavra();
+            //setScrollyConteudo();
+            destravarScrollBody();
+            render();
         }
     });
 }

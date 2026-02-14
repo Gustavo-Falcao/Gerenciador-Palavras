@@ -1,10 +1,6 @@
 import { Modal } from "./Modal.js";
 
 export function CardModal(objPalavra, type) {
- //Background do modal (janelaPai)
-    // const backgroundModal = document.createElement('div');
-    // backgroundModal.setAttribute('id', 'janela-pai');
-    // backgroundModal.setAttribute('class', 'janela-pai-popup alinhar-centro');
 
     //Todo o conteudo do modal (janelaInfo)
     const modal = document.createElement('div');

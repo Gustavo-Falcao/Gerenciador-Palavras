@@ -2,7 +2,7 @@ import { render } from "../../main.js";
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
-import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados, setArrayDecks} from "../state/State.js";
+import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados, setArrayDecks, setStateNavegacao, setUsarScrollYBodyPersonalizado} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
 import { renderHome } from "./RenderHome.js";
 // Renderização da página de add palavra
@@ -53,13 +53,18 @@ function criarLabelCard(nomeCard) {
 function criarMain(cardBaseEmMemoria) {
   const main = document.createElement('main');
   main.setAttribute('class', 'page-body');
+  main.setAttribute('id', 'main-content');
 
   //criar editor card
   // append na main
 
   const editorCard = criarEditorCard(cardBaseEmMemoria);
 
-  main.appendChild(editorCard);
+  const msgSucesso = document.createElement('div');
+  msgSucesso.setAttribute('id', 'msg-success');
+  msgSucesso.textContent = '✅ Card criado com sucesso!';
+
+  main.append(editorCard, msgSucesso);
 
   return main;
 }
@@ -512,36 +517,49 @@ function criarBotaoPreVisualizacaoCard() {
   button.setAttribute('id', 'preview-card');
   button.textContent = "Pré-visualizar card";
 
-  section.appendChild(button);
-
-  return section;
+  return button;
 }
 
 //Criar botao para criar card
 function criarBotaoCriarCard() {
-  const footer = document.createElement('footer');
 
   const button = document.createElement('button');
   button.setAttribute('class', 'btn btn-primary');
   button.setAttribute('id', 'criarCard');
   button.textContent = 'Criar card';
-  footer.appendChild(button);
 
-  return footer;
+  return button;
 }
 
 //Criar botao para salvar mudancas no card
 function criarBotaoSalvarEdicaoCard() {
-  const footer = document.createElement('footer');
 
   const button = document.createElement('button');
   button.setAttribute('class', 'btn btn-primary');
   button.setAttribute('id', 'save-changes');
   button.textContent = 'Aplicar mudanças';
 
-  footer.appendChild(button);
+  return button;
+}
 
-  return footer;
+//Criar botao para voltar ao deck
+function criarBotaoVoltarDeck() {
+  const button = document.createElement('button');
+  button.setAttribute('class', 'btn btn-primary');
+  button.setAttribute('id', 'voltar-deck');
+  button.textContent = 'Voltar ao deck';
+
+  return button;
+}
+
+//Criar footer para opcoes
+function criarFooterAction() {
+  const footerAction = document.createElement('footer');
+  footerAction.setAttribute('id', 'action-bar');
+
+  stateNavegacao.cardPanel.mode === 'criar' ? footerAction.appendChild(criarBotaoCriarCard()) : footerAction.append(criarBotaoSalvarEdicaoCard(), criarBotaoVoltarDeck());
+
+  return footerAction;
 }
 
 export function renderAddPalavra() {
@@ -564,18 +582,18 @@ export function renderAddPalavra() {
   //criar main
   const main = criarMain(cardBaseEmMemoria);
 
-  //Criar botao adicionar card
-  const botaoAddCard = stateNavegacao.cardPanel.mode === 'criar' ? criarBotaoCriarCard() : criarBotaoSalvarEdicaoCard();
+  //Criar footer para botao
+  const footerAction = criarFooterAction();
 
   // append tudo
   if(isCardPreviewOpen) {
     const modal = CardModal(cardBaseEmMemoria);
-    root.append(botHome, tituloPagina, labelCard, main, botaoAddCard, modal);
+    root.append(botHome, tituloPagina, labelCard, main, footerAction, modal);
     
     fecharCard();
   } else {
     console.log("Card preview nao esta ativo")
-    root.append(botHome, tituloPagina, labelCard, main, botaoAddCard);
+    root.append(botHome, tituloPagina, labelCard, main, footerAction);
   }
 
   // listenerAddPalavra();
@@ -583,7 +601,7 @@ export function renderAddPalavra() {
   listenersSignificado(deckAtual);
   voltarHome();
   listenerSalvamentoAutomatico(deckAtual);
-  adicionarCard(deckAtual);
+  handlerActionBar(deckAtual);
   preVisualizarCard();
 }
 
@@ -603,19 +621,52 @@ function fecharCard() {
   });
 }
 
-function adicionarCard(deckAtual) {
-  document.getElementById('criarCard').addEventListener('click', () => {
-    console.log('clicou para adicionar card');
+function handlerActionBar(deckAtual) {
+  document.getElementById('action-bar').addEventListener('click', (e) => {
+    if(!e.target)
+      return;
+
     const cardBaseAtual = carregarCardBaseOuSeNaoTiverCria(deckAtual);
 
-    const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
+    switch (e.target.id) {
+      case 'criarCard':
+        const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
+  
+        const novoArrayDeckComCardBaseNullo = novoArrayDeck.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, [stateNavegacao.cardPanel.mode]: null}} : deck);
+    
+        salvarDecksLocalStorage(novoArrayDeckComCardBaseNullo);
+        setArrayDecks(novoArrayDeckComCardBaseNullo);
+        renderAddPalavra();
+        mostrarMsgSucesso();
+      break;
+      
+      case 'save-changes':
+        //salvar alteracoes no card original
+      break;
 
-    const novoArrayDeckComCardBaseNullo = novoArrayDeck.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, [stateNavegacao.cardPanel.mode]: null}} : deck);
+      case 'voltar-deck':
+        setStateNavegacao({page: 'buscar'});
+        setUsarScrollYBodyPersonalizado(true);
+        render();
+      break;
 
-    salvarDecksLocalStorage(novoArrayDeckComCardBaseNullo);
-    window.location.reload();
-    //salvarDecksLocalStorage(novoArrayDeckComCardBaseNullo);//deixar como comentario depois quando for testar
+      default: return; 
+    }
   })
+}
+
+function mostrarMsgSucesso() {
+  let timer = null;
+  const msg = document.getElementById('msg-success');
+
+  msg.style.display = "block";
+
+  clearTimeout(timer)
+
+  timer = setTimeout(() => {
+    msg.style.display = "none";
+  }, 4000);
+
 }
 
 function adicionarSignificado(deckAtual) {
@@ -727,10 +778,45 @@ function carregarCardBaseOuSeNaoTiverCria(deckAtual) {
   const deckAtualEmMemoriaAtualizado = arrayDecks.find(deck => deck.id === deckAtual.id);
   const cardBase = stateNavegacao.cardPanel.mode === 'criar' ? deckAtualEmMemoriaAtualizado.cardBase.criar : deckAtualEmMemoriaAtualizado.cardBase.editar; 
   
-  //deckAtual.cardBase.criar : deckAtual.cardBase.editar;
+  //card base vazio
+  //card base igual card clicado
+  //card base diferente card clicado
+  if(stateNavegacao.cardPanel.mode === 'editar') {
+    if(cardBase) {
+      if(cardBase.id === stateNavegacao.cardPanel.idCardAtivo) {
+        return cardBase;
+      } else {
+        //mostrar o modal dizendo que já tem um card em aberto sendo editado e perguntar o quer deseja ser feito com ele, como descartar alteracoes e abrir novo card para editar e aplicar alteracoes e abrir novo card para editar
 
-  return cardBase ? cardBase : criarCardBaseVazio(); 
-    
+        //descartar alteracoes e abrir novo card para editar
+          //atribuir o objeto do card ativo ao objeto do cardBase correspondente com o mode e fechar o modal
+        
+        //aplicar alteracoes e abrir novo card para editar
+          //atribuir o valor do objeto do cardBase correspondente com o mode ao objeto card cujo o id é igual.
+          //atribuir o valor do objeto do card correspondente com o idCardAtivo para o cardBase correspondente ao mode
+          //fechar o modal
+      }
+    } else {
+      //retornar card clicado para editar
+
+      const cardParaEdicao = encontrarCard(deckAtualEmMemoriaAtualizado, stateNavegacao.cardPanel.idCardAtivo);
+
+      console.log("CARD PARA EDICAO");
+      console.log(cardParaEdicao);
+      console.log("Id card ativo => ", stateNavegacao.cardPanel.idCardAtivo);
+      
+      return cardParaEdicao;
+    }
+  } else {
+    return cardBase ? cardBase : criarCardBaseVazio();
+  }
+
+  //deckAtual.cardBase.criar : deckAtual.cardBase.editar;
+ 
+}
+
+function encontrarCard(deckAtual, idCard) {
+  return deckAtual.cards.find((card) => card.id === idCard);
 }
 
 

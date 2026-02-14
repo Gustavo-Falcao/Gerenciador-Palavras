@@ -138,6 +138,7 @@ function tratarDadosDoArquivoInserido() {
                     const content = e.target.result;
                     const data = JSON.parse(content);
                     //localStorage.setItem('CARD_BASE', JSON.stringify(data));
+                    setArrayDecks(data);
                     salvarDecksLocalStorage(data);
                     // setArrayDecks(data)
                     console.log("Dados do JSON:", data);
