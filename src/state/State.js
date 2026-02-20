@@ -132,3 +132,9 @@ export let usarScrollYBodyPersonalizado = false;
 export function setUsarScrollYBodyPersonalizado(valor) {
     usarScrollYBodyPersonalizado = valor;
 }
+
+export let displayCards = 'dois-por-linha';
+
+export function setDisplayCards(mode) {
+    displayCards = mode;
+}

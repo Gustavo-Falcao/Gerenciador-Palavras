@@ -1,14 +1,21 @@
-import { arrayDecks, stateNavegacao } from "../state/State.js";
+import { arrayDecks, displayCards, stateNavegacao } from "../state/State.js";
 //Renderização da lista de palavras
 export function renderListaPalavras() {
     const deckAtual = arrayDecks.find((deck) => deck.id === stateNavegacao.idDeck);
     console.log("DECK ATUAL ABAIXO");
     console.log(deckAtual.cards)
     const cardsOrdenados = ordenarCards(deckAtual.cards, stateNavegacao.query);
-    cardsOrdenados.forEach(element => {
-        console.log(`Nome card => ${element.nome}`);
-    });
+
     let mainList = document.getElementById('grid');
+    if(!mainList.classList.contains(displayCards)) {
+        if(displayCards === 'um-por-linha') {
+            mainList.classList.remove('dois-por-linha');
+            mainList.classList.add(displayCards);
+        } else if(displayCards === 'dois-por-linha') {
+            mainList.classList.remove('um-por-linha');
+            mainList.classList.add(displayCards);
+        }
+    }
 
         mainList.innerHTML = '';
     

@@ -693,10 +693,17 @@ footer {
 .grid {
     margin: 0px 20px 0px 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     height: fit-content;
     padding-bottom: 20px;
+}
+
+.um-por-linha {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.dois-por-linha {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .card {
@@ -817,6 +824,7 @@ footer {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .caixa-pre {
@@ -1164,6 +1172,16 @@ button.delet,.edit,.cancel,.save {
 .btn-voltar-deck {
     background-color: #000000c4;
     color: #ffffff;
+}
+
+.select-display-card {
+    min-width: 0px;
+}
+
+.caixa-select {
+    display: flex;
+    gap: 5px;
+    align-items: center;
 }
 
 .input-edit-sem-zoom-tag-sinonimo{

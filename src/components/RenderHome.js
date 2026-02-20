@@ -92,6 +92,7 @@ function handlerHome() {
     //atualizarCards();
     criarAtualizadoStorage()
     atualizar();
+    removerValoresInuteisDoLocalStorage();
 
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }

@@ -1,6 +1,6 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenersOpcoesViewCard, voltarHome, fecharCard} from "../state/Listeners.js";
-import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody, usarScrollYBodyPersonalizado} from "../state/State.js";
+import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody, usarScrollYBodyPersonalizado, displayCards} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
 
 function encontraDeck(id) {
@@ -16,7 +16,7 @@ function criarCards(cards) {
     
     const main = document.createElement('main');
     main.setAttribute('id', 'grid');
-    main.setAttribute('class', 'grid');
+    main.setAttribute('class', `grid ${displayCards}`);
     main.setAttribute('aria-alive', 'polite');
 
     if(cards.length > 0) {
@@ -95,7 +95,41 @@ function criarBuscar(deckAtual) {
     badgeTotal.setAttribute('class', 'badge');
     badgeTotal.textContent = `Total: ${deckAtual.cards.length}`
 
-    section.append(input, caixaInfo, badgeTotal);
+    //caixaInfo append -> badgeTotal e opcoesdisplay cards
+    
+    const caixaSelect = document.createElement('div');
+    caixaSelect.setAttribute('class', 'caixa-select');
+
+    const spanInfoSelect = document.createElement('span');
+    spanInfoSelect.setAttribute('class', 'chip-label');
+    spanInfoSelect.textContent = 'Cards por linha:';
+
+    const select = document.createElement('select');
+    select.setAttribute('name', 'type-display');
+    select.setAttribute('class', 'chip-input select-display-card');
+    select.setAttribute('id', 'display-card');
+
+    const optionUmPorLinha = document.createElement('option');
+    optionUmPorLinha.setAttribute('value', 'um-por-linha');
+    optionUmPorLinha.textContent = "1";
+  
+    const optionDoisPorLinha = document.createElement('option');
+    optionDoisPorLinha.setAttribute('value', 'dois-por-linha');
+    optionDoisPorLinha.textContent = "2";
+
+    select.append(optionUmPorLinha, optionDoisPorLinha);
+
+    select.selectedIndex = displayCards === 'um-por-linha' ? 0 : 1;
+
+    caixaSelect.append(spanInfoSelect, select);
+
+    if(deckAtual.cards.length > 0) {
+        caixaInfo.append(badgeTotal, caixaSelect);
+        section.append(input, caixaInfo);
+    } else {
+        section.append(input, badgeTotal);
+    }
+
     divElemement.append(header, section);
 
     return divElemement;
