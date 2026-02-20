@@ -2,8 +2,10 @@ import { render } from "../../main.js";
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
 import { listenerAddPalavra, voltarHome } from "../state/Listeners.js";
-import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados, setArrayDecks, setStateNavegacao, setUsarScrollYBodyPersonalizado} from "../state/State.js";
+import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLocalStorage, isCardPreviewOpen, setIsCardPreviewOpen, setScrollySignificados, setArrayDecks, setStateNavegacao, setUsarScrollYBodyPersonalizado, isModalAtencaoEdicaoOpen, setIsModalAtencaoEdicaoOpen} from "../state/State.js";
+import { AvisoEdicaoModal } from "./AvisoEdicaoModal.js";
 import { CardModal } from "./CardModal.js";
+import { destravarScrollBodySemAlterarValorScroll } from "./RenderBusca.js";
 import { renderHome } from "./RenderHome.js";
 // Renderização da página de add palavra
 
@@ -166,11 +168,14 @@ function criarChipRow(cardBaseEmMemoria) {
   adverbOption.setAttribute('value', 'adverb');
   adverbOption.textContent = "adverb";
 
+  const slangOption = document.createElement('option');
+  adverbOption.setAttribute('value', 'slang');
+  adverbOption.textContent = "slang";
   
-  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption);
+  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
   
   if(cardBaseEmMemoria.tipo) {
-    const values = ["adjective", "noun", "verb", "adverb"];
+    const values = ["adjective", "noun", "verb", "adverb", "slang"];
     select.selectedIndex = values.indexOf(cardBaseEmMemoria.tipo)+1;
   }
   
@@ -420,10 +425,14 @@ function criarCampoContexto(significadoAtual) {
   adverbOption.setAttribute('value', 'adverb');
   adverbOption.textContent = "adverb";
 
-  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, adjectiveOption, nounOption, verbOption, adverbOption);
+  const slangOption = document.createElement('option');
+  adverbOption.setAttribute('value', 'slang');
+  adverbOption.textContent = "slang";
+
+  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
   
   if(significadoAtual.tipoDefinicao) {
-    const values = ["literal", "figurative", "formal", "adjective", "noun", "verb", "adverb"];
+    const values = ["literal", "figurative", "formal", "adjective", "noun", "verb", "adverb", "slang"];
     select.selectedIndex = values.indexOf(significadoAtual.tipoDefinicao)+1;
   }
   label.append(span, select);
@@ -563,8 +572,12 @@ function criarFooterAction() {
 }
 
 export function renderAddPalavra() {
+  //verifica se ja existe um card que nao foi salvo
+  verificarAtencaoEdicao();
+
   const root = document.getElementById('root');
   const deckAtual = encontraDeck(stateNavegacao.idDeck);
+  //recebe o objeto cardbase correspondente
   const cardBaseEmMemoria = carregarCardBaseOuSeNaoTiverCria(deckAtual);
   console.log("State navegacao abaixo");
   console.log(stateNavegacao);
@@ -589,11 +602,18 @@ export function renderAddPalavra() {
   if(isCardPreviewOpen) {
     const modal = CardModal(cardBaseEmMemoria);
     root.append(botHome, tituloPagina, labelCard, main, footerAction, modal);
-    
+    travarScrollBodyComScrollY0();
     fecharCard();
-  } else {
-    console.log("Card preview nao esta ativo")
+  } 
+  else if(isModalAtencaoEdicaoOpen) {
+    const modalAviso = AvisoEdicaoModal(cardBaseEmMemoria);
+    root.append(botHome, tituloPagina, labelCard, main, footerAction, modalAviso);
+    travarScrollBodyComScrollY0();
+    handlerActionsAviso(cardBaseEmMemoria);
+  } 
+  else {
     root.append(botHome, tituloPagina, labelCard, main, footerAction);
+    destravarScrollBodySemAlterarValorScroll();
   }
 
   // listenerAddPalavra();
@@ -603,6 +623,66 @@ export function renderAddPalavra() {
   listenerSalvamentoAutomatico(deckAtual);
   handlerActionBar(deckAtual);
   preVisualizarCard();
+}
+
+function handlerActionsAviso(cardBaseEmMemoria) {
+  document.getElementById('actions-aviso').addEventListener('click', (e) => {
+    if(!e.target) return;
+
+    if(e.target.id === 'voltar-deck') {
+      setStateNavegacao({page: 'buscar', cardPanel: {
+        ...stateNavegacao.cardPanel, mode: 'view'}});
+      setUsarScrollYBodyPersonalizado(true);
+      destravarScrollBodySemAlterarValorScroll();
+      setIsModalAtencaoEdicaoOpen(false);
+      render();
+    }
+    else if(e.target.id === 'save') {
+      //salvar cardbase no deck principal
+      const arrayDeckComCardAtualizado = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cards: deck.cards.map((card) => card.id === cardBaseEmMemoria.id ? cardBaseEmMemoria : card)} : deck);
+
+      //atribuir o card com o id ativo para o cardbase
+      const cardEncontrado = encontrarCard(encontraDeck(stateNavegacao.idDeck), stateNavegacao.cardPanel.idCardAtivo);
+
+      const arrayDeckComCardBaseAtualizado = arrayDeckComCardAtualizado.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cardBase: {...deck.cardBase, editar: cardEncontrado}} : deck);
+
+      salvarDecksLocalStorage(arrayDeckComCardBaseAtualizado);
+      setArrayDecks(arrayDeckComCardBaseAtualizado);
+      setIsModalAtencaoEdicaoOpen(false);
+      renderAddPalavra();
+    }
+    else if(e.target.id === 'descartar') {
+      //nao salvar no deck principal
+
+      //atribuir o card com id ativo para o cardbase
+      //Encontrar card que será atribuido ao cardbase
+      const cardEncontrado = encontrarCard(encontraDeck(stateNavegacao.idDeck), stateNavegacao.cardPanel.idCardAtivo);
+
+      //Atualizando o cardbase com o card encontrado
+      const arrayDeckComCardBaseAtualizado = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, cardBase: {...deck.cardBase, editar: cardEncontrado}} : deck);
+
+      salvarDecksLocalStorage(arrayDeckComCardBaseAtualizado);
+      setArrayDecks(arrayDeckComCardBaseAtualizado);
+      setIsModalAtencaoEdicaoOpen(false);
+      renderAddPalavra();
+    }
+  })
+}
+
+function verificarAtencaoEdicao() {
+  //cardidativo é diferente do card já presente no cardbase
+    //se sim mostra o modal
+    //se nao nada acontece
+  if(!isModalAtencaoEdicaoOpen) {
+    if(stateNavegacao.cardPanel.mode === 'editar') {
+      const deck = encontraDeck(stateNavegacao.idDeck);
+  
+      if(deck.cardBase.editar && deck.cardBase.editar.id !== stateNavegacao.cardPanel.idCardAtivo) {
+        setIsModalAtencaoEdicaoOpen(true);
+        renderAddPalavra();
+      }
+    }
+  }
 }
 
 function preVisualizarCard() {
@@ -642,10 +722,21 @@ function handlerActionBar(deckAtual) {
       
       case 'save-changes':
         //salvar alteracoes no card original
+        const arrayDeckComCardAtualizado = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: deck.cards.map((card) => card.id === stateNavegacao.cardPanel.idCardAtivo ? deck.cardBase.editar : card)} : deck);
+
+        const arrayDeckComCardBaseEditarZerado = arrayDeckComCardAtualizado.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, editar: null}} : deck);
+        
+        salvarDecksLocalStorage(arrayDeckComCardBaseEditarZerado);
+        setArrayDecks(arrayDeckComCardBaseEditarZerado);
+        setStateNavegacao({page: 'buscar', cardPanel: {
+          ...stateNavegacao.cardPanel, mode: 'view'}});
+        setUsarScrollYBodyPersonalizado(true);
+        render();
       break;
 
       case 'voltar-deck':
-        setStateNavegacao({page: 'buscar'});
+        setStateNavegacao({page: 'buscar', cardPanel: {
+          ...stateNavegacao.cardPanel, mode: 'view'}});
         setUsarScrollYBodyPersonalizado(true);
         render();
       break;
@@ -774,45 +865,29 @@ function listenersSignificado(deckAtual) {
   })
 }
 
+//retornar o cardbase correspondente
 function carregarCardBaseOuSeNaoTiverCria(deckAtual) {
   const deckAtualEmMemoriaAtualizado = arrayDecks.find(deck => deck.id === deckAtual.id);
   const cardBase = stateNavegacao.cardPanel.mode === 'criar' ? deckAtualEmMemoriaAtualizado.cardBase.criar : deckAtualEmMemoriaAtualizado.cardBase.editar; 
+
+  //retornar o cardbase
   
   //card base vazio
   //card base igual card clicado
   //card base diferente card clicado
   if(stateNavegacao.cardPanel.mode === 'editar') {
     if(cardBase) {
-      if(cardBase.id === stateNavegacao.cardPanel.idCardAtivo) {
-        return cardBase;
-      } else {
-        //mostrar o modal dizendo que já tem um card em aberto sendo editado e perguntar o quer deseja ser feito com ele, como descartar alteracoes e abrir novo card para editar e aplicar alteracoes e abrir novo card para editar
-
-        //descartar alteracoes e abrir novo card para editar
-          //atribuir o objeto do card ativo ao objeto do cardBase correspondente com o mode e fechar o modal
-        
-        //aplicar alteracoes e abrir novo card para editar
-          //atribuir o valor do objeto do cardBase correspondente com o mode ao objeto card cujo o id é igual.
-          //atribuir o valor do objeto do card correspondente com o idCardAtivo para o cardBase correspondente ao mode
-          //fechar o modal
-      }
+      return cardBase;
     } else {
       //retornar card clicado para editar
 
       const cardParaEdicao = encontrarCard(deckAtualEmMemoriaAtualizado, stateNavegacao.cardPanel.idCardAtivo);
-
-      console.log("CARD PARA EDICAO");
-      console.log(cardParaEdicao);
-      console.log("Id card ativo => ", stateNavegacao.cardPanel.idCardAtivo);
       
       return cardParaEdicao;
     }
   } else {
     return cardBase ? cardBase : criarCardBaseVazio();
   }
-
-  //deckAtual.cardBase.criar : deckAtual.cardBase.editar;
- 
 }
 
 function encontrarCard(deckAtual, idCard) {
@@ -935,3 +1010,11 @@ function salvarCardBaseNoDeck(cardBaseAtualizado, deckAtual) {
   console.log(novoArrayDeck);
 }
 
+// Funcao para travar rolamento do body no modal de aviso
+export function travarScrollBodyComScrollY0() {
+    document.body.style.position = 'fixed';
+    document.body.style.top = `0px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+}

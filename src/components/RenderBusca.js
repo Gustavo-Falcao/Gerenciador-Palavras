@@ -1,6 +1,6 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenersOpcoesViewCard, voltarHome, fecharCard} from "../state/Listeners.js";
-import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody} from "../state/State.js";
+import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody, usarScrollYBodyPersonalizado} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
 
 function encontraDeck(id) {
@@ -107,6 +107,9 @@ export function renderBuscarPalavra() {
 
     console.log(`Estado do cardPopUp => ${stateNavegacao.cardPanel.isOpen}`);
     console.log(`Id que está no estado do popup => ${stateNavegacao.cardPanel.idCardAtivo}`)
+    console.log(`Estado do state navegacao abaixo`)
+    console.log(stateNavegacao);
+    console.log(`Estado do usar scroll personalizado => ${usarScrollYBodyPersonalizado}`);
 
     let root = document.getElementById('root');
 
@@ -136,13 +139,9 @@ export function renderBuscarPalavra() {
         }   
         fecharCard();
         
-        travarScrollBodyPersonalizado ? travarScrollBodyPersonalizado() : travarScrollBody();
+        usarScrollYBodyPersonalizado ? travarScrollBodyPersonalizado() : travarScrollBody();
     } else {
-        const modalElement = root.querySelector('#janela-pai');
-        if(modalElement) modalElement.remove();
         destravarScrollBody();
-        
-        document.body.classList.remove('travar-rolamento');
     }
 
     if(deck.cards.length > 0) listenersBuscarPalavra();
@@ -178,7 +177,9 @@ function travarScrollBodyPersonalizado() {
 // Funcao para destravar o rolamento body
 export function destravarScrollBody() {
     
-  const scrollY = scrollYBody;
+  const scrollY = scrollYBody ?? 0;
+
+    console.log("Destravar o scroll body para -> " + scrollY);
 
   document.body.style.position = '';
   document.body.style.top = '';
@@ -189,4 +190,16 @@ export function destravarScrollBody() {
   setScrollYBody(0);
 
   window.scrollTo(0, scrollY);
+}
+
+export function destravarScrollBodySemAlterarValorScroll() {
+    
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+
+    window.scrollTo(0, 0);
+
 }

@@ -1,4 +1,4 @@
-import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage} from "../state/State.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage, setUsarScrollYBodyPersonalizado, setScrollYBody} from "../state/State.js";
 import { render } from "../../main.js";
 import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
 import { gerarId } from "../helpers/GerarId.js";
@@ -96,6 +96,14 @@ function handlerHome() {
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
 
+//Remover dados inutilizados do local storage
+function removerValoresInuteisDoLocalStorage() {
+    const cardBase = localStorage.getItem('CARD_BASE');
+    if(cardBase) {
+        localStorage.removeItem('CARD_BASE');
+    }
+}
+
 function criarAtualizadoStorage() {
     const atualizado = getAtualizadoFromStorage();
 
@@ -181,6 +189,12 @@ function toggleOpecoesAndHandlerOpcoes() {
                 render()
             }
             else if(idElemento === 'buscar') {
+                if(stateNavegacao.cardPanel.isOpen) {
+                    setStateNavegacao({page: 'buscar', idDeck: idDeck, cardPanel: {...stateNavegacao.cardPanel, isOpen: false, idCardAtivo: null, mode: ''
+                    }});
+                    setUsarScrollYBodyPersonalizado(false);
+                    setScrollYBody(0);
+                }
                 setStateNavegacao({page: 'buscar', idDeck: idDeck})
                 render()
             }

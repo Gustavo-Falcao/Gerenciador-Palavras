@@ -996,6 +996,11 @@ hr {
     background-color: #fee2e2;
 }
 
+.slang {
+    color: #854d0e;
+    background-color: #fef9c3;
+}
+
 .def-block {
     min-height: 137px;
     max-height: 302px;
@@ -1099,6 +1104,66 @@ button.delet,.edit,.cancel,.save {
 
 .msg-sem-exemplo {
     color: #9ca3af;
+}
+
+.modal-aviso {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: left;
+}
+
+.modal-aviso h3 {
+    margin-top: 0;
+    color: #d48806; 
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.modal-aviso p {
+    color: #5f6368;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.card-name {
+    font-weight: bold;
+    color: #202124;
+}
+
+.modal-actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-modal-aviso {
+    padding: 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 90%;
+    margin: auto;
+}
+
+.btn-save {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.btn-discard {
+    background-color: #f1f3f4;
+    color: #d93025;
+}
+
+.btn-voltar-deck {
+    background-color: #000000c4;
+    color: #ffffff;
 }
 
 .input-edit-sem-zoom-tag-sinonimo{

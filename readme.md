@@ -39,9 +39,6 @@
 - Mudança feita para o cardBase ser usado de acordo com o deck atual e com o modo desejado (criar/editar)
 - Salvamento automatico funcionando
 - Criacao de card funcionando
-
-
-# A fazer
-- A parte de edicao do card
-
-Encontrar uma forma das acoes de dentro do significado resultar em uma re-renderizacao
+- Aplicar alterações em editar card fundionando
+- Modal de aviso caso um card seja aberto para editar e tem um card salvo nas edicoes funcionando.
+- Acoes para o modal de aviso funcionando.

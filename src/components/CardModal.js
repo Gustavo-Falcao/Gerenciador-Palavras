@@ -164,12 +164,12 @@ function criarSignificados(significados) {
         const contDefinicao = document.createElement('span');
         
         //text significado ou input
-        const textDefinicaoOuInput = criarTexSignificado(sig);
+        const textDefinicao = criarTexSignificado(sig);
 
         //tipo definicao ou input
-        const tipoDefinicaoOuInput = criarTipoDefinicao(sig);
+        const tipoDefinicao = criarTipoDefinicao(sig);
 
-        contDefinicao.append(textDefinicaoOuInput, tipoDefinicaoOuInput);
+        contDefinicao.append(textDefinicao, tipoDefinicao);
 
         caixaDef.append(numeroDefinicao, contDefinicao);
 

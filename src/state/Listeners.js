@@ -4,7 +4,7 @@ import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDe
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
-import { destravarScrollBody, renderBuscarPalavra } from "../components/RenderBusca.js";
+import { destravarScrollBody, destravarScrollBodySemAlterarValorScroll, renderBuscarPalavra } from "../components/RenderBusca.js";
 
 export function listenersBuscarPalavra() {
     //Listener para o input de buscar palavra
@@ -28,9 +28,9 @@ export function listenersBuscarPalavra() {
 export function fecharCard() {
     //Listener para fechar o pop-up com as informacoes do card
     document.getElementById('sair').addEventListener('click', () => {
-        setStateNavegacao({cardPanel: {isOpen: !stateNavegacao.cardPanel.isOpen, idCardAtivo: null, mode: ''}})
+        setStateNavegacao({cardPanel: {...stateNavegacao.cardPanel, isOpen: false, idCardAtivo: null, mode: ''}})
         setUsarScrollYBodyPersonalizado(false);
-
+        console.log("Entrou no fechar card")
         zerarScrollyConteudo();
         renderBuscarPalavra();
     });
@@ -69,7 +69,8 @@ export function listenersOpcoesViewCard(idDeck) {
             setStateNavegacao({page:'add', cardPanel: {isOpen: true, idCardAtivo: stateNavegacao.cardPanel.idCardAtivo, mode: 'editar', isEditando: stateNavegacao.cardPanel.isEditando}});
 
             //setScrollyConteudo();
-            destravarScrollBody();
+            //destravarScrollBody();
+            destravarScrollBodySemAlterarValorScroll();
             render();
         }
     });
