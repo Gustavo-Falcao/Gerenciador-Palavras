@@ -257,7 +257,11 @@ function handlerModal() {
                             time: getCurrentDateTime()
                         },
                         cards: [],
-                        mostrarOpcoes: false
+                        mostrarOpcoes: false,
+                        cardBase: {
+                            criar: null,
+                            editar: null
+                        }
                     }
                     setArrayDecks([...arrayDecks, newDeck])
                     salvarDecksLocalStorage(arrayDecks);
