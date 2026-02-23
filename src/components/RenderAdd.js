@@ -169,13 +169,21 @@ function criarChipRow(cardBaseEmMemoria) {
   adverbOption.textContent = "adverb";
 
   const slangOption = document.createElement('option');
-  adverbOption.setAttribute('value', 'slang');
-  adverbOption.textContent = "slang";
+  slangOption.setAttribute('value', 'slang');
+  slangOption.textContent = "slang";
+
+  const optionFormal = document.createElement('option');
+  optionFormal.setAttribute('value', 'formal');
+  optionFormal.textContent = "formal";
   
-  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
+  const optionInformal = document.createElement('option');
+  optionInformal.setAttribute('value', 'informal');
+  optionInformal.textContent = "informal";
+
+  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption, slangOption, optionFormal, optionInformal);
   
   if(cardBaseEmMemoria.tipo) {
-    const values = ["adjective", "noun", "verb", "adverb", "slang"];
+    const values = ["adjective", "noun", "verb", "adverb", "slang", "formal", "informal"];
     select.selectedIndex = values.indexOf(cardBaseEmMemoria.tipo)+1;
   }
   
@@ -409,6 +417,10 @@ function criarCampoContexto(significadoAtual) {
   optionFormal.setAttribute('value', 'formal');
   optionFormal.textContent = "formal";
 
+  const optionInformal = document.createElement('option');
+  optionInformal.setAttribute('value', 'informal');
+  optionInformal.textContent = "informal";
+
   const adjectiveOption = document.createElement('option');
   adjectiveOption.setAttribute('value', 'adjective');
   adjectiveOption.textContent = "adjective";
@@ -426,13 +438,13 @@ function criarCampoContexto(significadoAtual) {
   adverbOption.textContent = "adverb";
 
   const slangOption = document.createElement('option');
-  adverbOption.setAttribute('value', 'slang');
-  adverbOption.textContent = "slang";
+  slangOption.setAttribute('value', 'slang');
+  slangOption.textContent = "slang";
 
-  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
+  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, optionInformal, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
   
   if(significadoAtual.tipoDefinicao) {
-    const values = ["literal", "figurative", "formal", "adjective", "noun", "verb", "adverb", "slang"];
+    const values = ["literal", "figurative", "formal", "informal", "adjective", "noun", "verb", "adverb", "slang"];
     select.selectedIndex = values.indexOf(significadoAtual.tipoDefinicao)+1;
   }
   label.append(span, select);
