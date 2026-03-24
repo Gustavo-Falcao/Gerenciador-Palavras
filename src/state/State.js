@@ -1,8 +1,8 @@
 //Estado principal
 import { handlerDailyWordsFirstDeck } from "../helpers/HandlerDailyWords.js";
-const savedDailyWords = JSON.parse(localStorage.getItem('infoDailyWords')) || {};
+//const savedDailyWords = JSON.parse(localStorage.getItem('infoDailyWords')) || {};
 
-export let stateNavegacao = {
+export let stateNavegacao = JSON.parse(sessionStorage.getItem("NAV")) || {
     page: 'home',
     idDeck: null,
     query: '',
@@ -14,8 +14,10 @@ export let stateNavegacao = {
     }
 }
 
+
 export function setStateNavegacao(newState) {
     stateNavegacao = {...stateNavegacao, ...newState}
+    sessionStorage.setItem("NAV", JSON.stringify(stateNavegacao))
 }
 
 export let arrayDecks = JSON.parse(localStorage.getItem('arrayDecks')) || []

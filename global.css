@@ -1018,6 +1018,16 @@ hr {
     background-color: #ffedd5;
 }
 
+.preposition {
+    color: #0891b2;
+    background-color: #ecfeff;
+}
+
+.modal-verb {
+    color: #065f46;
+    background-color: #d1fae5;
+}
+
 .def-block {
     min-height: 137px;
     max-height: 302px;

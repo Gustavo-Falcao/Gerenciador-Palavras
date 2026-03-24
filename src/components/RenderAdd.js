@@ -168,6 +168,14 @@ function criarChipRow(cardBaseEmMemoria) {
   adverbOption.setAttribute('value', 'adverb');
   adverbOption.textContent = "adverb";
 
+  const modalVerbOption = document.createElement('option');
+  modalVerbOption.setAttribute('value', 'modal-verb');
+  modalVerbOption.textContent = "modal verb";
+
+  const prepositionOption = document.createElement('option');
+  prepositionOption.setAttribute('value', 'preposition');
+  prepositionOption.textContent = "preposition";
+
   const slangOption = document.createElement('option');
   slangOption.setAttribute('value', 'slang');
   slangOption.textContent = "slang";
@@ -180,10 +188,10 @@ function criarChipRow(cardBaseEmMemoria) {
   optionInformal.setAttribute('value', 'informal');
   optionInformal.textContent = "informal";
 
-  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption, slangOption, optionFormal, optionInformal);
+  select.append(optionVazia, adjectiveOption, nounOption, verbOption, adverbOption, modalVerbOption, prepositionOption, slangOption, optionFormal, optionInformal);
   
   if(cardBaseEmMemoria.tipo) {
-    const values = ["adjective", "noun", "verb", "adverb", "slang", "formal", "informal"];
+    const values = ["adjective", "noun", "verb", "adverb", "modal-verb", "preposition", "slang", "formal", "informal"];
     select.selectedIndex = values.indexOf(cardBaseEmMemoria.tipo)+1;
   }
   
@@ -437,14 +445,22 @@ function criarCampoContexto(significadoAtual) {
   adverbOption.setAttribute('value', 'adverb');
   adverbOption.textContent = "adverb";
 
+  const modalVerbOption = document.createElement('option');
+  modalVerbOption.setAttribute('value', 'modal-verb');
+  modalVerbOption.textContent = "modal verb";
+
+  const prepositionOption = document.createElement('option');
+  prepositionOption.setAttribute('value', 'preposition');
+  prepositionOption.textContent = "preposition";
+
   const slangOption = document.createElement('option');
   slangOption.setAttribute('value', 'slang');
   slangOption.textContent = "slang";
 
-  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, optionInformal, adjectiveOption, nounOption, verbOption, adverbOption, slangOption);
+  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, optionInformal, adjectiveOption, nounOption, verbOption, adverbOption, modalVerbOption, prepositionOption, slangOption);
   
   if(significadoAtual.tipoDefinicao) {
-    const values = ["literal", "figurative", "formal", "informal", "adjective", "noun", "verb", "adverb", "slang"];
+    const values = ["literal", "figurative", "formal", "informal", "adjective", "noun", "verb", "adverb", "modal-verb", "preposition","slang"];
     select.selectedIndex = values.indexOf(significadoAtual.tipoDefinicao)+1;
   }
   label.append(span, select);
