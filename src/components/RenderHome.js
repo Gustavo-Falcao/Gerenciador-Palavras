@@ -1,8 +1,10 @@
-import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage, setUsarScrollYBodyPersonalizado, setScrollYBody} from "../state/State.js";
+import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage, setUsarScrollYBodyPersonalizado, setScrollYBody, getUserVersionFromStorage, setUserVersionStorage} from "../state/State.js";
 import { render } from "../../main.js";
 import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
 import { gerarId } from "../helpers/GerarId.js";
 
+
+const APP_LATEST_VERSION = "2.3.1";
 // Constroi todos os decks que estiverem no localStorage e junta eles em uma string
 // Constroi a janela modal e aplica junto ao elemento de retorno de acordo com o estado do modal
 function mostrarDecks () {
@@ -50,6 +52,7 @@ function mostrarDecks () {
     return arrayDecks.length > 0 ? elementoRetorno : '<p> Nenhum deck criado...</p>';
 }
 
+
 // Renderização da página home
 export function renderHome(root) {
     console.log(`Id do card: ${stateNavegacao.cardPanel.idCardAtivo}`)
@@ -59,30 +62,30 @@ export function renderHome(root) {
     console.log(`É para mostrar ??? ${mostrarOpcoesDeck.isMostrar}`)
     
     console.log(`Tamanho do array de decks => ${arrayDecks.length}`)
-
+    
     const decks = mostrarDecks();
-
+    
     console.log(arrayDecks);
     root.innerHTML = '';
-
+    
     root.innerHTML = `
-        <header class="titulo-home" id="titulo-home">
-                <h1>Decks</h1>
-                <input type="file" accept=".json" id="file-inserida">
-        </header>
-        <main class="home-main">
-            <section class="main-home" id="conteudo">${decks}</section>
-        </main>
-        <footer>
-            <button class="btn btn-primary" id="open-deck">
-                Novo deck
-            </button>
-            
-        </footer>
+    <header class="titulo-home" id="titulo-home">
+    <h1>Decks</h1>
+    <input type="file" accept=".json" id="file-inserida">
+    </header>
+    <main class="home-main">
+    <section class="main-home" id="conteudo">${decks}</section>
+    </main>
+    <footer>
+    <button class="btn btn-primary" id="open-deck">
+    Novo deck
+    </button>
+    
+    </footer>
     `;
     console.log(estadoModalDeck.isModelOpen);
     handlerHome();
-
+    
 }
 
 // Centraliza as funções com listener para a página
@@ -91,9 +94,9 @@ function handlerHome() {
     tratarDadosDoArquivoInserido();
     //atualizarCards();
     criarAtualizadoStorage()
-    atualizar();
+    handlerVersion();
     removerValoresInuteisDoLocalStorage();
-
+    
     estadoModalDeck.isModelOpen ? handlerModal() : abrirModal();
 }
 
@@ -107,16 +110,32 @@ function removerValoresInuteisDoLocalStorage() {
 
 function criarAtualizadoStorage() {
     const atualizado = getAtualizadoFromStorage();
-
+    
     if(atualizado === null) {
         salvarAtualizadoStorage();
+    }
+}
+
+function handlerVersion() {
+    const userVersion = getUserVersionFromStorage();
+
+    //Para atualizar - versao usuario tem que existir e ser diferente da minha atual
+    //Versao do usuario não existe - seta no local storage a minha ultima versao
+    //Versao do usuario existe é igual a minha - nao faz nada
+
+    if(userVersion) {
+        if(userVersion !== APP_LATEST_VERSION) {
+            //atualizar();
+        }
+    } else {
+        setUserVersionStorage(APP_LATEST_VERSION)
     }
 }
 
 //Atualizacao de criar dois card base para cada deck existente e apagar o card base que esta sendo utilizado
 function atualizar() {
     const atualizado = getAtualizadoFromStorage();
-
+    
     if(!atualizado) {
         const novoArrayDecks = arrayDecks.map(deck => ({...deck, cardBase:
             {

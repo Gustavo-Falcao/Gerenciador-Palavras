@@ -123,6 +123,14 @@ export function getAtualizadoFromStorage() {
     }
 }
 
+export function getUserVersionFromStorage() {
+    return localStorage.getItem('USER_VERSION');
+}
+
+export function setUserVersionStorage(newUserVersion) {
+    localStorage.setItem('USER_VERSION', newUserVersion)
+}
+
 export let scrollYBody;
 
 export function setScrollYBody(valor) {
