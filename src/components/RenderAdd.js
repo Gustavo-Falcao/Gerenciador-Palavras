@@ -457,10 +457,14 @@ function criarCampoContexto(significadoAtual) {
   slangOption.setAttribute('value', 'slang');
   slangOption.textContent = "slang";
 
-  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, optionInformal, adjectiveOption, nounOption, verbOption, adverbOption, modalVerbOption, prepositionOption, slangOption);
+  const phraseOption = document.createElement('option');
+  phraseOption.setAttribute('value', 'phrase');
+  phraseOption.textContent = "phrase";
+
+  select.append(optionVazia, optionLiteral, optionFigurative, optionFormal, optionInformal, adjectiveOption, nounOption, verbOption, adverbOption, modalVerbOption, prepositionOption, slangOption, phraseOption);
   
   if(significadoAtual.tipoDefinicao) {
-    const values = ["literal", "figurative", "formal", "informal", "adjective", "noun", "verb", "adverb", "modal-verb", "preposition","slang"];
+    const values = ["literal", "figurative", "formal", "informal", "adjective", "noun", "verb", "adverb", "modal-verb", "preposition","slang", "phrase"];
     select.selectedIndex = values.indexOf(significadoAtual.tipoDefinicao)+1;
   }
   label.append(span, select);
