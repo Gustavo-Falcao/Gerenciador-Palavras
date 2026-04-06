@@ -1,6 +1,6 @@
 import { debounce } from "../helpers/Debounce.js";
 import { gerarId } from "../helpers/GerarId.js";
-import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, zerarScrollyConteudo, setUsarScrollYBodyPersonalizado, setDisplayCards} from "./State.js";
+import { setArrayDecks, arrayDecks, setStateNavegacao, stateNavegacao , salvarDecksLocalStorage, zerarScrollyConteudo, setUsarScrollYBodyPersonalizado} from "./State.js";
 import { render } from "../../main.js";
 import { renderListaPalavras } from "../components/RenderList.js";
 import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
@@ -30,7 +30,10 @@ export function listenersBuscarPalavra() {
 
         const valorInput = e.target.value;
         console.log(`VALOR PARA O DISPLAY CARDS => ${valorInput}`);
-        setDisplayCards(valorInput);
+        const novoArrayDeck = arrayDecks.map((deck) => deck.id === stateNavegacao.idDeck ? {...deck, displayCards: valorInput} : deck);
+
+        setArrayDecks(novoArrayDeck);
+        salvarDecksLocalStorage(novoArrayDeck);
         renderListaPalavras();
 
     });

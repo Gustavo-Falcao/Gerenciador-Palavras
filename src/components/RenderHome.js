@@ -1,10 +1,11 @@
 import { arrayDecks, estadoModalDeck, stateNavegacao, mostrarOpcoesDeck, setArrayDecks, setStateNavegacao, setStadoModal, salvarDecksLocalStorage, getAtualizadoFromStorage, setAtualizado, salvarAtualizadoStorage, setUsarScrollYBodyPersonalizado, setScrollYBody, getUserVersionFromStorage, setUserVersionStorage} from "../state/State.js";
 import { render } from "../../main.js";
-import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
+import { formatarDataEHoraParaMostrar, getCurrentDate, getCurrentDateTime, formatarDiaEMesParaMostrar, gerarDayToCompare} from "../helpers/HandlerDailyWords.js";
 import { gerarId } from "../helpers/GerarId.js";
 
 
-const APP_LATEST_VERSION = "2.3.1";
+const APP_LATEST_VERSION = "2.3.3";
+//2.3.3
 // Constroi todos os decks que estiverem no localStorage e junta eles em uma string
 // Constroi a janela modal e aplica junto ao elemento de retorno de acordo com o estado do modal
 function mostrarDecks () {
@@ -93,7 +94,6 @@ function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
     tratarDadosDoArquivoInserido();
     //atualizarCards();
-    criarAtualizadoStorage()
     handlerVersion();
     removerValoresInuteisDoLocalStorage();
     
@@ -108,49 +108,36 @@ function removerValoresInuteisDoLocalStorage() {
     }
 }
 
-function criarAtualizadoStorage() {
-    const atualizado = getAtualizadoFromStorage();
-    
-    if(atualizado === null) {
-        salvarAtualizadoStorage();
-    }
-}
-
 function handlerVersion() {
     const userVersion = getUserVersionFromStorage();
 
-    //Para atualizar - versao usuario tem que existir e ser diferente da minha atual
-    //Versao do usuario não existe - seta no local storage a minha ultima versao
-    //Versao do usuario existe é igual a minha - nao faz nada
-
     if(userVersion) {
         if(userVersion !== APP_LATEST_VERSION) {
-            //atualizar();
+            atualizar();
         }
     } else {
         setUserVersionStorage(APP_LATEST_VERSION)
     }
 }
 
-//Atualizacao de criar dois card base para cada deck existente e apagar o card base que esta sendo utilizado
+//Atualizacao para atribuir o objeto 
 function atualizar() {
-    const atualizado = getAtualizadoFromStorage();
-    
-    if(!atualizado) {
-        const novoArrayDecks = arrayDecks.map(deck => ({...deck, cardBase:
-            {
-                criar: null,
-                editar: null
-            }
-        }));
 
-        setArrayDecks(novoArrayDecks);
-        salvarDecksLocalStorage(novoArrayDecks);
-        setAtualizado(true);
-        salvarAtualizadoStorage();
-        console.log("Novo array deck abaixo");
-        console.log(novoArrayDecks);
-    }
+    const novoArrayDeck = arrayDecks.map(deck => (
+        {...deck, ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}, dailyWords: {...deck.dailyWords, day: formatarDiaEMesParaMostrar(), dayToCompare: gerarDayToCompare()}, displayCards: 'dois-por-linha'}
+    ));
+
+        //Adicionar
+            //atualizar o objeto daily words
+            //adicionar ultima atualizacao
+            //Adicionar atributo para visualizacao de cards por linha
+
+        setArrayDecks(novoArrayDeck);
+        salvarDecksLocalStorage(novoArrayDeck);
+        setUserVersionStorage(APP_LATEST_VERSION)
+        
+        console.log("Novo array deck abaixo atualizado");
+        console.log(novoArrayDeck);
 }
 
 
@@ -280,10 +267,19 @@ function handlerModal() {
                         cardBase: {
                             criar: null,
                             editar: null
-                        }
+                        },
+                        dailyWords: {
+                            amount: 0,
+                            day: formatarDiaEMesParaMostrar(),
+                            dayToCompare: gerarDayToCompare()
+                        },
+                        displayCards: 'dois-por-linha'
                     }
                     setArrayDecks([...arrayDecks, newDeck])
                     salvarDecksLocalStorage(arrayDecks);
+                    console.log("Novo array deck com novo objeto atualizado abaixo")
+                    console.log(arrayDecks)
+
                     setStadoModal({isModelOpen: !estadoModalDeck.isModelOpen})
                 }
                 render()

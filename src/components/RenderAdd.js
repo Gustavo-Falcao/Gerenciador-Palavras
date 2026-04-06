@@ -6,7 +6,7 @@ import { stateNavegacao, arrayDecks,  salvarScrollySignificados, salvarDecksLoca
 import { AvisoEdicaoModal } from "./AvisoEdicaoModal.js";
 import { CardModal } from "./CardModal.js";
 import { destravarScrollBodySemAlterarValorScroll } from "./RenderBusca.js";
-import { renderHome } from "./RenderHome.js";
+import { getCurrentDate, getCurrentDateTime } from "../helpers/HandlerDailyWords.js";
 // Renderização da página de add palavra
 
 function encontraDeck(id) {
@@ -742,7 +742,7 @@ function handlerActionBar(deckAtual) {
 
     switch (e.target.id) {
       case 'criarCard':
-        const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}]} : deck);
+        const novoArrayDeck = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: [...deck.cards, {...cardBaseAtual, id: gerarId()}], ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}} : deck);
   
         const novoArrayDeckComCardBaseNullo = novoArrayDeck.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, [stateNavegacao.cardPanel.mode]: null}} : deck);
     
@@ -754,7 +754,7 @@ function handlerActionBar(deckAtual) {
       
       case 'save-changes':
         //salvar alteracoes no card original
-        const arrayDeckComCardAtualizado = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: deck.cards.map((card) => card.id === stateNavegacao.cardPanel.idCardAtivo ? deck.cardBase.editar : card)} : deck);
+        const arrayDeckComCardAtualizado = arrayDecks.map((deck) => deck.id === deckAtual.id ? {...deck, cards: deck.cards.map((card) => card.id === stateNavegacao.cardPanel.idCardAtivo ? deck.cardBase.editar : card), ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}} : deck);
 
         const arrayDeckComCardBaseEditarZerado = arrayDeckComCardAtualizado.map((deck) => deck.id === deckAtual.id ? {...deck, cardBase: {...deck.cardBase, editar: null}} : deck);
         

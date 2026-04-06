@@ -1,4 +1,4 @@
-import { arrayDecks, displayCards, stateNavegacao } from "../state/State.js";
+import { arrayDecks, stateNavegacao } from "../state/State.js";
 //Renderização da lista de palavras
 export function renderListaPalavras() {
     const deckAtual = arrayDecks.find((deck) => deck.id === stateNavegacao.idDeck);
@@ -7,13 +7,13 @@ export function renderListaPalavras() {
     const cardsOrdenados = ordenarCards(deckAtual.cards, stateNavegacao.query);
 
     let mainList = document.getElementById('grid');
-    if(!mainList.classList.contains(displayCards)) {
-        if(displayCards === 'um-por-linha') {
+    if(!mainList.classList.contains(deckAtual.displayCards)) {
+        if(deckAtual.displayCards === 'um-por-linha') {
             mainList.classList.remove('dois-por-linha');
-            mainList.classList.add(displayCards);
-        } else if(displayCards === 'dois-por-linha') {
+            mainList.classList.add(deckAtual.displayCards);
+        } else if(deckAtual.displayCards === 'dois-por-linha') {
             mainList.classList.remove('um-por-linha');
-            mainList.classList.add(displayCards);
+            mainList.classList.add(deckAtual.displayCards);
         }
     }
 

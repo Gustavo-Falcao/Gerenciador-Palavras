@@ -1,6 +1,6 @@
 // import { getCurrentDate } from "../helpers/HandlerDailyWords.js";
 import { listenersBuscarPalavra, listenersOpcoesViewCard, voltarHome, fecharCard} from "../state/Listeners.js";
-import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody, usarScrollYBodyPersonalizado, displayCards} from "../state/State.js";
+import {stateNavegacao, arrayDecks, scrollYBody, setScrollYBody, usarScrollYBodyPersonalizado} from "../state/State.js";
 import { CardModal } from "./CardModal.js";
 
 function encontraDeck(id) {
@@ -16,7 +16,7 @@ function criarCards(cards) {
     
     const main = document.createElement('main');
     main.setAttribute('id', 'grid');
-    main.setAttribute('class', `grid ${displayCards}`);
+    main.setAttribute('class', `grid ${encontraDeck(stateNavegacao.idDeck).displayCards}`);
     main.setAttribute('aria-alive', 'polite');
 
     if(cards.length > 0) {
@@ -119,7 +119,8 @@ function criarBuscar(deckAtual) {
 
     select.append(optionUmPorLinha, optionDoisPorLinha);
 
-    select.selectedIndex = displayCards === 'um-por-linha' ? 0 : 1;
+    //receber valor do atributo que guarda esse valor no deck
+    select.selectedIndex = deckAtual.displayCards === 'um-por-linha' ? 0 : 1;
 
     caixaSelect.append(spanInfoSelect, select);
 

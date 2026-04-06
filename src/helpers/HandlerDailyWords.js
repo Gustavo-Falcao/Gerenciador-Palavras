@@ -17,6 +17,16 @@ export function handlerDailyWordsFirstDeck(dia, quant) {
     return {amount: quant, day: dia}
 }
 
+export function gerarDayToCompare() {
+    const data = new Date();
+
+    return {
+        dia: data.getDate(),
+        mes: data.getMonth(),
+        ano: data.getFullYear()
+    }
+}
+
 export function getCurrentDate() {
     const data = new Date();
     const dataFormatada = data.toLocaleString();
@@ -30,6 +40,14 @@ export function getCurrentDateTime() {
 
 export function getCurrentDay() {
     return new Date().getDate()
+}
+
+export function formatarDiaEMesParaMostrar() {
+    const data = new Date();
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth()+1).padStart(2, '0');
+
+    return `${dia}/${mes}`;
 }
 
 export function formatarDataEHoraParaMostrar(data) {
