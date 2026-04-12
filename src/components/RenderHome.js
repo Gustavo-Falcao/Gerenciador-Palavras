@@ -16,12 +16,12 @@ function mostrarDecks () {
                     <span class="title-deck">${deck.nome}</span>
                     <span class="badge">Total: ${deck.cards.length}</span>
                 </div>
-                <p>Ultima atualização: <br>${deck.ultimaAtualizacao ? formatarDataEHoraParaMostrar(deck.ultimaAtualizacao.dataFormatada) : ''}</p>
+                <p>Ultima atualização: ${deck.ultimaAtualizacao ? formatarDataEHoraParaMostrar(deck.ultimaAtualizacao.dataFormatada) : ''}</p>
                 ${deck.mostrarOpcoes ? 
                     `
                     <div class="opcoes">
-                        <button id="add-palavra" class="btn-outline">Add</button>
-                        <button id="buscar" class="btn-outline">Find</button>
+                        <button id="add-palavra" class="btn-deck btn-add">＋ Add</button>
+                        <button id="buscar" class="btn-deck btn-find">🔍 Find</button>
                     </div>
                     `
                     : 
@@ -68,17 +68,16 @@ export function renderHome(root) {
     
     console.log(arrayDecks);
     root.innerHTML = '';
-    
+    // <input type="file" accept=".json" id="file-inserida">
+    // </header>
     root.innerHTML = `
     <header class="titulo-home" id="titulo-home">
     <h1>Decks</h1>
-    <input type="file" accept=".json" id="file-inserida">
-    </header>
     <main class="home-main">
     <section class="main-home" id="conteudo">${decks}</section>
     </main>
     <footer>
-    <button class="btn btn-primary" id="open-deck">
+    <button class="btn-novo-deck" id="open-deck">
     Novo deck
     </button>
     
