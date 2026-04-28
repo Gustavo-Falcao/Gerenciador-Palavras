@@ -91,7 +91,7 @@ export function renderHome(root) {
 // Centraliza as funções com listener para a página
 function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
-    tratarDadosDoArquivoInserido();
+    //tratarDadosDoArquivoInserido();
     //atualizarCards();
     handlerVersion();
     removerValoresInuteisDoLocalStorage();
