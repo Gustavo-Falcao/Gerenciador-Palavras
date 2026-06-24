@@ -69,18 +69,17 @@ export function renderHome(root) {
     console.log(arrayDecks);
     root.innerHTML = '';
     // <input type="file" accept=".json" id="file-inserida">
-    // </header>
     root.innerHTML = `
     <header class="titulo-home" id="titulo-home">
-    <h1>Decks</h1>
+        <h1>Decks</h1>
+    </header>
     <main class="home-main">
-    <section class="main-home" id="conteudo">${decks}</section>
+        <section class="main-home" id="conteudo">${decks}</section>
     </main>
     <footer>
-    <button class="btn-novo-deck" id="open-deck">
-    Novo deck
-    </button>
-    
+        <button class="btn-novo-deck" id="open-deck">
+            Novo deck
+        </button>
     </footer>
     `;
     console.log(estadoModalDeck.isModelOpen);
@@ -91,7 +90,7 @@ export function renderHome(root) {
 // Centraliza as funções com listener para a página
 function handlerHome() {
     toggleOpecoesAndHandlerOpcoes();
-    //tratarDadosDoArquivoInserido();
+    // tratarDadosDoArquivoInserido();
     //atualizarCards();
     handlerVersion();
     removerValoresInuteisDoLocalStorage();
@@ -125,11 +124,6 @@ function atualizar() {
     const novoArrayDeck = arrayDecks.map(deck => (
         {...deck, ultimaAtualizacao: {dataFormatada: getCurrentDate(), time: getCurrentDateTime()}, dailyWords: {...deck.dailyWords, day: formatarDiaEMesParaMostrar(), dayToCompare: gerarDayToCompare()}, displayCards: 'dois-por-linha'}
     ));
-
-        //Adicionar
-            //atualizar o objeto daily words
-            //adicionar ultima atualizacao
-            //Adicionar atributo para visualizacao de cards por linha
 
         setArrayDecks(novoArrayDeck);
         salvarDecksLocalStorage(novoArrayDeck);

@@ -8,7 +8,7 @@ function encontraDeck(id) {
 }
 
 function encontrarCard(id, cards) {
-    return cards.find((card) => card.id === id)
+    return cards.find((card) => card && card.id === id)
 }
 
 // Renderização da página de buscar palavra
@@ -21,11 +21,12 @@ function criarCards(cards) {
 
     if(cards.length > 0) {
         cards.forEach(card => {
+            
             const article = document.createElement('article');
             article.setAttribute('class', 'card');
-            article.setAttribute('id', `${card.id}`)
+            article.setAttribute('id', `${card ? card.id : ""}`)
             const h3 = document.createElement('h3');
-            h3.innerHTML = `${card.nome}`
+            h3.innerHTML = `${card ? card.nome : ""}`
             article.appendChild(h3);
             main.appendChild(article);
         });
